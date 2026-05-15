@@ -25,7 +25,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;font-size:13px;background
 .month-label{font-size:13px;font-weight:600;color:var(--text);min-width:130px;text-align:center;}
 .today-btn{background:var(--accent);border:none;color:#fff;padding:5px 12px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;}
 .page-tabs{display:flex;gap:4px;margin-left:12px;}
-.page-tab{padding:5px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;border:1px solid var(--border2);background:transparent;color:var(--text3);}
+.page-tab{padding:5px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;border:1px solid var(--border2);background:transparent;color:var(--text3);white-space:nowrap;}
 .page-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 .theme-toggle{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);user-select:none;}
 .toggle-track{width:30px;height:16px;border-radius:8px;background:var(--border2);position:relative;transition:background .2s;flex-shrink:0;}
@@ -558,9 +558,9 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .sum-month-cell { text-align: center; font-size: 10px; font-weight: 700; color: var(--text2); padding: 3px 0; border-right: 1px solid var(--border2); border-bottom: 1px solid var(--border); background: var(--surface); }
 
 
-/* 탭 텍스트: 기본은 풀텍스트, 반응형에서 short로 전환 */
-.t-short { display: none; }
-.t-full  { display: inline; }
+/* 탭 텍스트: 기본은 짧은 텍스트, 대형 화면(1400px+)에서 풀텍스트 복원 */
+.t-short { display: inline; }
+.t-full  { display: none; }
 
 /* 모바일 하단 탭바 - 데스크탑에서 숨김 */
 .mob-tabbar { display: none; }
@@ -689,7 +689,15 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 
 /* ═══════════════════════════════
-   노트북 반응형 (1024px ~ 1399px)
+   대형 화면 (1400px 이상): 풀텍스트 복원
+═══════════════════════════════ */
+@media (min-width: 1400px) {
+  .t-full  { display: inline; }
+  .t-short { display: none; }
+}
+
+/* ═══════════════════════════════
+   노트북 반응형 (1399px 이하)
 ═══════════════════════════════ */
 @media (max-width: 1399px) {
   /* ── topbar 1줄 강제 유지 ── */
@@ -735,10 +743,6 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     font-size: 10px !important;
     white-space: nowrap;
   }
-
-  /* 단축 텍스트로 전환 */
-  .t-full { display: none; }
-  .t-short { display: inline; }
 
   /* 포캐스팅 센터 종합평가 카드: 3열 → 2열 */
   #fcSummaryArea {
@@ -817,10 +821,6 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     padding: 4px 8px;
     white-space: nowrap;
   }
-
-  /* 단축 텍스트로 전환 */
-  .t-full { display: none; }
-  .t-short { display: inline; }
 
   /* 포캐스팅 센터 종합평가 카드: 1열 */
   #fcSummaryArea {
