@@ -684,6 +684,149 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   #pageFc, #pageBoard { display: none !important; }
 }
 
+/* ═══════════════════════════════
+   노트북 반응형 (1024px ~ 1399px)
+═══════════════════════════════ */
+@media (min-width: 1024px) and (max-width: 1399px) {
+  /* 상단 탭 버튼 글자 크기 축소 */
+  .page-tab {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  /* 포캐스팅 센터 종합평가 카드: 3열 → 2열 */
+  #fcSummaryArea {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .fc-summary-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* 포캐스팅 센터별 카드: 3열 → 2열 */
+  .fc-center-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* PPT 캡처 그리드: 3열 → 2열 */
+  #capGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* 간트 Summary: 너비 유지, 폰트 소폭 축소 */
+  .sum-row-label.proj {
+    font-size: 11px;
+  }
+  .sum-month-cell {
+    font-size: 9px;
+  }
+
+  /* 간트차트 테이블: 가로 스크롤 허용 */
+  .gantt-area {
+    overflow-x: auto;
+  }
+
+  /* 프로젝트 선택 칩: 줄바꿈 허용 */
+  #chipArea {
+    flex-wrap: wrap !important;
+  }
+
+  /* 센터 패널 최소 너비 축소 */
+  .center-panel {
+    min-width: 340px;
+  }
+
+  /* 지표 값 폰트 소폭 축소 */
+  .metric-value {
+    font-size: 16px;
+  }
+}
+
+/* ═══════════════════════════════
+   소형 노트북 / 태블릿 가로 (769px ~ 1023px)
+═══════════════════════════════ */
+@media (min-width: 769px) and (max-width: 1023px) {
+  /* 탑바: 높이 유동, 내용 줄바꿈 허용 */
+  .topbar {
+    height: auto;
+    min-height: 52px;
+    flex-wrap: wrap;
+    padding: 6px 14px;
+    gap: 4px;
+  }
+
+  .topbar-right {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* 탭 버튼: 가로 스크롤 + 축약 */
+  .page-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 3px;
+  }
+
+  .page-tab {
+    font-size: 11px;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+
+  /* 포캐스팅 센터 종합평가 카드: 1열 */
+  #fcSummaryArea {
+    grid-template-columns: 1fr !important;
+  }
+  .fc-summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 포캐스팅 센터별 카드: 1열 */
+  .fc-center-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* PPT 캡처 그리드: 1열 */
+  #capGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 간트차트 테이블: 가로 스크롤 */
+  .gantt-area {
+    overflow-x: auto;
+  }
+
+  /* 간트 Summary: 가로 스크롤 */
+  #summaryContainer {
+    overflow-x: auto;
+  }
+
+  /* 프로젝트 선택 칩: 줄바꿈 허용 */
+  #chipArea {
+    flex-wrap: wrap !important;
+  }
+
+  /* 센터 패널 최소 너비 축소 */
+  .center-panel {
+    min-width: 260px;
+  }
+
+  /* 지표 값 폰트 축소 */
+  .metric-value {
+    font-size: 15px;
+  }
+
+  /* 간트 Summary 레이블 폰트 조정 */
+  .sum-row-label.proj {
+    font-size: 11px;
+  }
+  .sum-row-label.center {
+    font-size: 11px;
+  }
+  .sum-month-cell {
+    font-size: 9px;
+  }
+}
+
 </style>
 </head>
 <body>
