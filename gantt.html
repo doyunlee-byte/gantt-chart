@@ -1801,7 +1801,7 @@ function renderCapMobile(selP) {
     const s = on
       ? `background:${p.color}18;border:1.5px solid ${p.color};color:${p.color};`
       : 'background:#f0f2f8;border:1.5px solid #e0e4ef;color:#9096b0;';
-    return `<button onclick="toggleCapMobileChip('${p.id}')" style="${s}display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:14px;font-size:10px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+    return `<button onclick="toggleCapMobileChip('${p.id}')" style="${s}display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:12px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;">
       <span style="width:5px;height:5px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>${p.name}</button>`;
   }).join('');
 
@@ -1905,10 +1905,10 @@ function renderCapMobile(selP) {
     </div>`;
   });
 
-  mv.style.cssText = 'padding:10px 12px;background:#f5f7fa;min-height:100%;';
+  mv.style.cssText = 'width:100%;box-sizing:border-box;padding:10px 12px;background:#f5f7fa;min-height:100%;';
   mv.innerHTML = `
-    <div id="capMobileChipScroll" style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;margin-bottom:8px;">${chipHtml}</div>
-    <div id="capMobileCards" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${cardsHtml}</div>
+    <div id="capMobileChipScroll" style="display:flex;flex-wrap:wrap;gap:5px;padding-bottom:6px;margin-bottom:8px;">${chipHtml}</div>
+    <div id="capMobileCards" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;box-sizing:border-box;">${cardsHtml}</div>
   `;
 
   if(pageEl) pageEl.scrollTop = savedPageScroll;
