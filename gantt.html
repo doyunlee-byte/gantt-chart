@@ -1791,6 +1791,7 @@ function renderCapMobile(selP) {
   if(!mv){
     mv = document.createElement('div');
     mv.id = 'capMobileView';
+    mv.style.cssText = 'padding:10px 12px;background:#f5f7fa;min-height:100%;';
     pageEl.appendChild(mv);
   }
 
@@ -1904,10 +1905,11 @@ function renderCapMobile(selP) {
     </div>`;
   });
 
-  mv.innerHTML = `<div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:#f5f7fa;min-height:100%;">
-    <div id="capMobileChipScroll" style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;">${chipHtml}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${cardsHtml}</div>
-  </div>`;
+  mv.style.cssText = 'padding:10px 12px;background:#f5f7fa;min-height:100%;';
+  mv.innerHTML = `
+    <div id="capMobileChipScroll" style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;margin-bottom:8px;">${chipHtml}</div>
+    <div id="capMobileCards" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${cardsHtml}</div>
+  `;
 
   if(pageEl) pageEl.scrollTop = savedPageScroll;
   const newChipEl = document.getElementById('capMobileChipScroll');
