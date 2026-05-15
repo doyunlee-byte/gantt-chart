@@ -558,9 +558,9 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .sum-month-cell { text-align: center; font-size: 10px; font-weight: 700; color: var(--text2); padding: 3px 0; border-right: 1px solid var(--border2); border-bottom: 1px solid var(--border); background: var(--surface); }
 
 
-/* 탭 텍스트: 기본은 짧은 텍스트, 대형 화면(1400px+)에서 풀텍스트 복원 */
-.t-short { display: inline; }
-.t-full  { display: none; }
+/* 탭 텍스트: 기본은 풀텍스트, 반응형에서 short로 전환 */
+.t-short { display: none; }
+.t-full  { display: inline; }
 
 /* 모바일 하단 탭바 - 데스크탑에서 숨김 */
 .mob-tabbar { display: none; }
@@ -689,14 +689,6 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 
 /* ═══════════════════════════════
-   대형 화면 (1400px 이상): 풀텍스트 복원
-═══════════════════════════════ */
-@media (min-width: 1400px) {
-  .t-full  { display: inline; }
-  .t-short { display: none; }
-}
-
-/* ═══════════════════════════════
    노트북 반응형 (1399px 이하)
 ═══════════════════════════════ */
 @media (max-width: 1399px) {
@@ -743,6 +735,10 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     font-size: 10px !important;
     white-space: nowrap;
   }
+
+  /* 단축 텍스트로 전환 */
+  .t-full { display: none; }
+  .t-short { display: inline; }
 
   /* 포캐스팅 센터 종합평가 카드: 3열 → 2열 */
   #fcSummaryArea {
@@ -821,6 +817,10 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     padding: 4px 8px;
     white-space: nowrap;
   }
+
+  /* 단축 텍스트로 전환 */
+  .t-full { display: none; }
+  .t-short { display: inline; }
 
   /* 포캐스팅 센터 종합평가 카드: 1열 */
   #fcSummaryArea {
