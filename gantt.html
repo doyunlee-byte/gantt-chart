@@ -558,9 +558,6 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .sum-month-cell { text-align: center; font-size: 10px; font-weight: 700; color: var(--text2); padding: 3px 0; border-right: 1px solid var(--border2); border-bottom: 1px solid var(--border); background: var(--surface); }
 
 
-/* 탭 텍스트: 기본은 풀텍스트, 반응형에서 short로 전환 */
-.t-short { display: none; }
-.t-full  { display: inline; }
 
 /* 모바일 하단 탭바 - 데스크탑에서 숨김 */
 .mob-tabbar { display: none; }
@@ -689,9 +686,9 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 
 /* ═══════════════════════════════
-   노트북 반응형 (1399px 이하)
+   노트북 반응형 (1500px 이하)
 ═══════════════════════════════ */
-@media (max-width: 1399px) {
+@media (max-width: 1500px) {
   /* ── topbar 1줄 강제 유지 ── */
   .topbar {
     flex-wrap: nowrap !important;
@@ -707,8 +704,6 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   /* sync-badge 완전 숨김 */
   .sync-badge { display: none !important; }
 
-  /* 테마 토글 텍스트 완전 숨김 */
-  #themeLabel { display: none !important; }
   .theme-toggle { padding: 3px 6px; gap: 3px; }
 
   /* 월 네비게이션 최소화 */
@@ -721,24 +716,20 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   /* 탭 컨테이너 */
   .page-tabs { gap: 2px; margin-left: 4px; }
 
-  /* 탭 버튼: 글자 크기 10px + 패딩 4px 6px */
+  /* 탭 버튼: 글자 크기 10px + 패딩 4px 5px */
   .page-tab {
     font-size: 10px !important;
-    padding: 4px 6px !important;
+    padding: 4px 5px !important;
     white-space: nowrap;
   }
 
   /* 설정 공유 버튼 */
   #shareBtn {
-    padding: 4px 6px !important;
+    padding: 4px 5px !important;
     margin-left: 2px !important;
     font-size: 10px !important;
     white-space: nowrap;
   }
-
-  /* 단축 텍스트로 전환 */
-  .t-full { display: none; }
-  .t-short { display: inline; }
 
   /* 포캐스팅 센터 종합평가 카드: 3열 → 2열 */
   #fcSummaryArea {
@@ -817,10 +808,6 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     padding: 4px 8px;
     white-space: nowrap;
   }
-
-  /* 단축 텍스트로 전환 */
-  .t-full { display: none; }
-  .t-short { display: inline; }
 
   /* 포캐스팅 센터 종합평가 카드: 1열 */
   #fcSummaryArea {
@@ -902,19 +889,18 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
       <div class="theme-toggle" onclick="toggleTheme()">
         <span id="themeIcon">🌙</span>
         <div class="toggle-track"><div class="toggle-thumb"></div></div>
-        <span id="themeLabel">다크</span>
       </div>
       <button class="nav-btn" id="prevBtn">←</button>
       <span class="month-label" id="monthLabel"></span>
       <button class="nav-btn" id="nextBtn">→</button>
       <button class="today-btn" onclick="goToday()">오늘</button>
       <div class="page-tabs">
-        <button class="page-tab active" id="tabFc" onclick="switchPage('fc')"><span class="t-full">🔮 포캐스팅</span><span class="t-short">🔮 포캐</span></button>
-        <button class="page-tab" id="tabGantt" onclick="switchPage('gantt')"><span class="t-full">📊 간트차트</span><span class="t-short">📊 간트</span></button>
-        <button class="page-tab" id="tabCap" onclick="switchPage('cap')"><span class="t-full">📸 포캐스팅 Summary</span><span class="t-short">📸 포캐S</span></button>
-        <button class="page-tab" id="tabSummary" onclick="switchPage('summary')"><span class="t-full">📈 간트 Summary</span><span class="t-short">📈 간트S</span></button>
-        <button class="page-tab" id="tabBoard" onclick="switchPage('board')"><span class="t-full">📋 태스크 보드</span><span class="t-short">📋 태스크</span></button>
-        <button id="shareBtn" onclick="copyShareLink()" style="margin-left:8px;padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;"><span class="t-full">🔗 설정 공유</span><span class="t-short">🔗 설정</span></button>
+        <button class="page-tab active" id="tabFc" onclick="switchPage('fc')">🔮 포캐스팅</button>
+        <button class="page-tab" id="tabGantt" onclick="switchPage('gantt')">📊 간트차트</button>
+        <button class="page-tab" id="tabCap" onclick="switchPage('cap')">📸 포캐Summary</button>
+        <button class="page-tab" id="tabSummary" onclick="switchPage('summary')">📈 간트Summary</button>
+        <button class="page-tab" id="tabBoard" onclick="switchPage('board')">📋 태스크</button>
+        <button id="shareBtn" onclick="copyShareLink()" style="margin-left:8px;padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">🔗 설정</button>
       </div>
       <!-- 모바일 전용 동기화 표시 -->
       <div class="mob-sync-pill"><div class="sync-dot" style="width:7px;height:7px;"></div></div>
@@ -1197,11 +1183,10 @@ function goToday(){viewYear=TODAY.getFullYear();viewMonth=TODAY.getMonth();rende
 function toggleTheme(){
   const il=document.documentElement.classList.toggle('light');
   document.getElementById('themeIcon').textContent=il?'☀️':'🌙';
-  document.getElementById('themeLabel').textContent=il?'라이트':'다크';
   try{localStorage.setItem('ganttTheme',il?'light':'dark');}catch(e){}
   renderAll();
 }
-(function(){try{if(localStorage.getItem('ganttTheme')==='light'){document.documentElement.classList.add('light');setTimeout(()=>{const i=document.getElementById('themeIcon');const l=document.getElementById('themeLabel');if(i)i.textContent='☀️';if(l)l.textContent='라이트';},50);}}catch(e){}})();
+(function(){try{if(localStorage.getItem('ganttTheme')==='light'){document.documentElement.classList.add('light');setTimeout(()=>{const i=document.getElementById('themeIcon');if(i)i.textContent='☀️';},50);}}catch(e){}})();
 
 // ── 간트 렌더링
 function renderAll(){renderChips();renderMetrics();renderCenterPanel();renderTable();}
