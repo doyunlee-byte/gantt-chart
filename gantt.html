@@ -1848,56 +1848,56 @@ function renderCapMobile(selP) {
         const fcDateStr = st.fcDate ? `${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}` : '-';
 
         if (!fixed) {
-          projRowsHtml += `<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-top:1px solid #f0f2f8;">
+          projRowsHtml += `<div style="display:flex;align-items:center;gap:5px;padding:5px 0;border-top:1px solid #f0f2f8;">
             <span style="width:5px;height:5px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
-            <span style="font-size:11px;color:#c0c6d8;flex:1;">${p.name}</span>
-            <span style="font-size:10px;color:#c0c6d8;font-style:italic;">미배정</span>
+            <span style="font-size:10px;color:#c0c6d8;flex:1;">${p.name}</span>
+            <span style="font-size:9px;color:#c0c6d8;font-style:italic;">미배정</span>
           </div>`;
         } else {
-          projRowsHtml += `<div style="padding:7px 0;border-top:1px solid #f0f2f8;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-              <div style="display:flex;align-items:center;gap:5px;">
+          projRowsHtml += `<div style="padding:5px 0;border-top:1px solid #f0f2f8;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+              <div style="display:flex;align-items:center;gap:4px;">
                 <span style="width:5px;height:5px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
-                <span style="font-size:11px;font-weight:700;color:#1a1d2e;">${p.name}</span>
-                <span style="font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;background:${modeBg};color:${modeColor};">${modeLabel}</span>
+                <span style="font-size:10px;font-weight:700;color:#1a1d2e;">${p.name}</span>
+                <span style="font-size:8px;font-weight:600;padding:1px 4px;border-radius:3px;background:${modeBg};color:${modeColor};">${modeLabel}</span>
               </div>
-              <span style="font-size:9px;font-weight:700;color:${st.color};">${st.label}</span>
+              <span style="font-size:8px;font-weight:700;color:${st.color};">${st.label}</span>
             </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-              <span style="font-size:10px;color:#9096b0;">${s.realPersonnel}명 · ${s.realDaily}건/일</span>
-              <span style="font-size:10px;color:#9096b0;">잔 <strong style="color:#1a1d2e;">${cRem}</strong> · 예상 <strong style="color:${st.color};">${fcDateStr}</strong></span>
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+              <span style="font-size:9px;color:#9096b0;">${s.realPersonnel}명 · ${s.realDaily}건/일</span>
+              <span style="font-size:9px;color:#9096b0;">잔 <strong style="color:#1a1d2e;">${cRem}</strong> · 예상 <strong style="color:${st.color};">${fcDateStr}</strong></span>
             </div>
             <div style="height:4px;background:#eef0f8;border-radius:2px;overflow:hidden;">
               <div style="height:100%;width:${cpct}%;background:${p.color};border-radius:2px;transition:width .3s;"></div>
             </div>
-            <div style="font-size:9px;color:${p.color};font-weight:700;text-align:right;margin-top:2px;">${cpct}%</div>
+            <div style="font-size:8px;color:${p.color};font-weight:700;text-align:right;margin-top:2px;">${cpct}%</div>
           </div>`;
         }
       });
     }
 
-    cardsHtml += `<div style="background:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 1px 8px rgba(0,0,0,.08);overflow:hidden;">
+    cardsHtml += `<div style="background:#fff;border-radius:12px;padding:8px 10px;box-shadow:0 1px 8px rgba(0,0,0,.08);overflow:hidden;">
       <!-- 카드 헤더 -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block;"></span>
-          <span style="font-size:13px;font-weight:800;color:#1a1d2e;">${shortName}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:11px;font-weight:800;color:#1a1d2e;">${shortName}</span>
         </div>
-        <div style="display:flex;align-items:center;gap:4px;">
-          <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;background:${modeBg};color:${modeColor};">${modeLabel}</span>
-          <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;background:${statusBg};color:${statusColor};">${statusLabel}</span>
+        <div style="display:flex;align-items:center;gap:3px;">
+          <span style="font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;background:${modeBg};color:${modeColor};">${modeLabel}</span>
+          <span style="font-size:7px;font-weight:700;padding:2px 5px;border-radius:4px;background:${statusBg};color:${statusColor};">${statusLabel}</span>
         </div>
       </div>
       <!-- 총 인원 / 일별가능 통계 -->
-      <div style="display:flex;gap:14px;padding-bottom:8px;border-bottom:1px solid #f0f2f8;margin-bottom:2px;">
+      <div style="display:flex;gap:10px;padding-bottom:6px;border-bottom:1px solid #f0f2f8;margin-bottom:2px;">
         <div>
-          <div style="font-size:18px;font-weight:800;color:#4f7cff;line-height:1;">${cls.totalPersonnel}<span style="font-size:10px;font-weight:500;color:#9096b0;margin-left:2px;">명</span></div>
-          <div style="font-size:9px;color:#9096b0;margin-top:2px;">총 인원</div>
+          <div style="font-size:15px;font-weight:800;color:#4f7cff;line-height:1;">${cls.totalPersonnel}<span style="font-size:9px;font-weight:500;color:#9096b0;margin-left:2px;">명</span></div>
+          <div style="font-size:8px;color:#9096b0;margin-top:2px;">총 인원</div>
         </div>
         ${isFixed ? `<div>
-          <div style="font-size:18px;font-weight:800;color:#1a1d2e;line-height:1;">${dailyCap}<span style="font-size:10px;font-weight:500;color:#9096b0;margin-left:2px;">건/일</span></div>
-          <div style="font-size:9px;color:#9096b0;margin-top:2px;">일별가능</div>
-        </div>` : `<div style="display:flex;align-items:center;"><span style="font-size:11px;color:#c0c6d8;">픽스 미완료</span></div>`}
+          <div style="font-size:15px;font-weight:800;color:#1a1d2e;line-height:1;">${dailyCap}<span style="font-size:9px;font-weight:500;color:#9096b0;margin-left:2px;">건/일</span></div>
+          <div style="font-size:8px;color:#9096b0;margin-top:2px;">일별가능</div>
+        </div>` : `<div style="display:flex;align-items:center;"><span style="font-size:10px;color:#c0c6d8;">픽스 미완료</span></div>`}
       </div>
       <!-- 프로젝트별 행 -->
       ${projRowsHtml}
@@ -1906,7 +1906,7 @@ function renderCapMobile(selP) {
 
   mv.innerHTML = `<div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:#f5f7fa;min-height:100%;">
     <div id="capMobileChipScroll" style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;">${chipHtml}</div>
-    ${cardsHtml}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${cardsHtml}</div>
   </div>`;
 
   if(pageEl) pageEl.scrollTop = savedPageScroll;
