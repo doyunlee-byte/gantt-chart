@@ -784,11 +784,11 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   <div class="mob-tabbar" id="mobTabbar">
     <button class="mob-tab active" id="mobTabCap" onclick="switchPage('cap')">
       <span class="mob-icon">📸</span>
-      <span>포캐스팅Summary</span>
+      <span>센터별 현황</span>
     </button>
     <button class="mob-tab" id="mobTabSummary" onclick="switchPage('summary')">
       <span class="mob-icon">📈</span>
-      <span>간트Summary</span>
+      <span>종합</span>
     </button>
   </div>
 </div>
@@ -1577,11 +1577,19 @@ function updateFcInput(input){
 
 // 모바일 포캐스팅Summary 뷰
 function renderCapMobile(selP) {
+  const pageEl = document.getElementById('pageCap');
+  const savedPageScroll = pageEl ? pageEl.scrollTop : 0;
+
   let mv = document.getElementById('capMobileView');
+  let savedChipScroll = 0;
+  if(mv) {
+    const chipEl = document.getElementById('capMobileChipScroll');
+    if(chipEl) savedChipScroll = chipEl.scrollLeft;
+  }
   if(!mv){
     mv = document.createElement('div');
     mv.id = 'capMobileView';
-    document.getElementById('pageCap').appendChild(mv);
+    pageEl.appendChild(mv);
   }
 
   const now = new Date();
@@ -1616,38 +1624,50 @@ function renderCapMobile(selP) {
                                           worst = {label:'✅ 완료', color:'#059669', hBg:'#f0fdf4', hBorder:'#059669'};
     });
 
-    // 프로젝트 행 (픽스된 것만)
+    // 프로젝트 행 (선택된 모든 프로젝트 표시, 픽스 여부에 따라 다르게)
     let projRowsHtml = '';
-    if(fixedP.length === 0) {
-      projRowsHtml = `<div style="font-size:11px;color:var(--text3);padding:8px 0 4px;text-align:center;">픽스된 프로젝트 없음</div>`;
+    if(selP.length === 0) {
+      projRowsHtml = `<div style="font-size:11px;color:var(--text3);padding:8px 0 4px;text-align:center;">선택된 프로젝트 없음</div>`;
     } else {
-      fixedP.forEach(p => {
-        const s = getPCS(p.id, c.name);
-        const cRem = getCRem(c.name, p);
-        const cDone = Object.values(CENTER_DAILY[p.name]?.[c.name] || {}).reduce((a,b) => a+b, 0);
-        const cTot = cDone + cRem;
-        const cpct = cTot > 0 ? Math.round(cDone/cTot*100) : 0;
-        const st = calcProjStatus(p, c);
-        const fcStr = st.fcDate ? `${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}` : '-';
+      selP.forEach(p => {
+        const isFixed = !!fcFixMap[p.id+'_'+c.name];
+        if(!isFixed) {
+          projRowsHtml += `<div style="border-top:1px solid var(--border);padding:9px 0 5px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--text);">
+                <span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}
+              </span>
+              <span style="font-size:11px;font-weight:600;color:var(--text3);background:var(--surface2);border:1px solid var(--border2);padding:2px 9px;border-radius:20px;">미배정</span>
+            </div>
+          </div>`;
+        } else {
+          const s = getPCS(p.id, c.name);
+          const cRem = getCRem(c.name, p);
+          const cDone = Object.values(CENTER_DAILY[p.name]?.[c.name] || {}).reduce((a,b) => a+b, 0);
+          const cTot = cDone + cRem;
+          const cpct = cTot > 0 ? Math.round(cDone/cTot*100) : 0;
+          const st = calcProjStatus(p, c);
+          const fcStr = st.fcDate ? `${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}` : '-';
 
-        projRowsHtml += `<div style="border-top:1px solid var(--border);padding:9px 0 5px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
-            <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--text);">
-              <span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}
-            </span>
-            <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:${st.color}18;color:${st.color};">${st.label}</span>
-          </div>
-          <div style="display:flex;gap:12px;font-size:11px;color:var(--text2);margin-bottom:6px;flex-wrap:wrap;">
-            <span>가용인원 <strong style="color:var(--text);">${s.realPersonnel}명</strong></span>
-            <span>일별 <strong style="color:var(--text);">${s.realDaily}건/일</strong></span>
-            <span>잔여 <strong style="color:var(--text);">${cRem}건</strong></span>
-            <span>예상 <strong style="color:${st.color};">${fcStr}</strong></span>
-          </div>
-          <div style="height:7px;background:var(--border2);border-radius:4px;overflow:hidden;">
-            <div style="height:100%;width:${cpct}%;background:${p.color};border-radius:4px;transition:width .3s;"></div>
-          </div>
-          <div style="font-size:9px;color:var(--text3);text-align:right;margin-top:3px;">${cpct}% 완료 (${cDone}/${cTot}건)</div>
-        </div>`;
+          projRowsHtml += `<div style="border-top:1px solid var(--border);padding:9px 0 5px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+              <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--text);">
+                <span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}
+              </span>
+              <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:${st.color}18;color:${st.color};">${st.label}</span>
+            </div>
+            <div style="display:flex;gap:12px;font-size:11px;color:var(--text2);margin-bottom:6px;flex-wrap:wrap;">
+              <span>인원 <strong style="color:var(--text);">${s.realPersonnel}명</strong></span>
+              <span>일별 <strong style="color:var(--text);">${s.realDaily}건/일</strong></span>
+              <span>잔여 <strong style="color:var(--text);">${cRem}건</strong></span>
+              <span>예상 <strong style="color:${st.color};">${fcStr}</strong></span>
+            </div>
+            <div style="height:7px;background:var(--border2);border-radius:4px;overflow:hidden;">
+              <div style="height:100%;width:${cpct}%;background:${p.color};border-radius:4px;transition:width .3s;"></div>
+            </div>
+            <div style="font-size:9px;color:var(--text3);text-align:right;margin-top:3px;">${cpct}% 완료 (${cDone}/${cTot}건)</div>
+          </div>`;
+        }
       });
     }
 
@@ -1666,9 +1686,14 @@ function renderCapMobile(selP) {
 
   mv.innerHTML = `
     <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">${dateStr}</div>
-    <div style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;margin-bottom:14px;">${chipHtml}</div>
+    <div id="capMobileChipScroll" style="display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;margin-bottom:14px;">${chipHtml}</div>
     <div style="display:flex;flex-direction:column;gap:10px;">${cardsHtml}</div>
   `;
+
+  // 스크롤 위치 복원
+  if(pageEl) pageEl.scrollTop = savedPageScroll;
+  const newChipEl = document.getElementById('capMobileChipScroll');
+  if(newChipEl) newChipEl.scrollLeft = savedChipScroll;
 }
 
 function toggleCapMobileChip(pid){
@@ -2569,29 +2594,20 @@ function renderSummaryPage() {
         <span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block;"></span>${p.name}</button>`;
     }).join('');
 
-    // 프로젝트별 진척도 카드
+    // 프로젝트별 진척도 카드 (2열 그리드)
     const mobProjCards = activeProjs.length ? activeProjs.map(p => {
       const {total, done, pct} = getProjPct(p);
-      const risk = getRisk(p);
-      const rl = risk && risk !== 'ok' ? RL[risk] : null;
-      const rBadge = rl
-        ? `<span style="font-size:11px;font-weight:700;color:${rl.color};background:${rl.color}18;padding:2px 9px;border-radius:12px;">${rl.text}</span>`
-        : `<span style="font-size:11px;font-weight:700;color:#10b981;background:#10b98118;padding:2px 9px;border-radius:12px;">정상</span>`;
-      return `<div style="background:${bg1};border-radius:14px;padding:16px 18px;box-shadow:0 2px 12px rgba(80,90,180,.10);">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="width:10px;height:10px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>
-            <span style="font-size:14px;font-weight:700;color:${txt1};">${p.name}</span>
-          </div>
-          ${rBadge}
+      return `<div style="background:${bg1};border-radius:12px;padding:12px 14px;box-shadow:0 2px 10px rgba(80,90,180,.08);">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;min-width:0;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:12px;font-weight:700;color:${txt1};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
         </div>
-        <div style="font-size:34px;font-weight:800;color:${p.color};letter-spacing:-.02em;line-height:1;margin-bottom:6px;">${pct}%</div>
-        <div style="font-size:13px;color:${txt2};margin-bottom:10px;">${done.toLocaleString()} / ${total.toLocaleString()}건 완료</div>
-        <div style="background:${bg2};border-radius:6px;height:9px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:${p.color};border-radius:6px;transition:width .4s;"></div>
+        <div style="font-size:26px;font-weight:800;color:${p.color};letter-spacing:-.02em;line-height:1;margin-bottom:7px;">${pct}%</div>
+        <div style="background:${bg2};border-radius:4px;height:6px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${p.color};border-radius:4px;transition:width .4s;"></div>
         </div>
       </div>`;
-    }).join('') : `<div style="background:${bg1};border-radius:14px;padding:24px;text-align:center;color:${txt2};font-size:13px;">진행 중인 프로젝트 없음</div>`;
+    }).join('') : `<div style="background:${bg1};border-radius:14px;padding:24px;text-align:center;color:${txt2};font-size:13px;grid-column:span 2;">진행 중인 프로젝트 없음</div>`;
 
     el.innerHTML = `<div style="padding:14px 16px;display:flex;flex-direction:column;gap:18px;background:${bg0};min-height:100%;font-family:'Pretendard','Apple SD Gothic Neo',-apple-system,sans-serif;">
 
@@ -2604,7 +2620,7 @@ function renderSummaryPage() {
       <!-- 프로젝트별 진척도 -->
       <div>
         <div style="font-size:11px;font-weight:700;color:${txt2};letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">프로젝트별 진척도</div>
-        <div style="display:flex;flex-direction:column;gap:12px;">${mobProjCards}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${mobProjCards}</div>
       </div>
 
       <!-- 센터별 주간 비교 그래프 -->
