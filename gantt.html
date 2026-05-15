@@ -558,6 +558,10 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .sum-month-cell { text-align: center; font-size: 10px; font-weight: 700; color: var(--text2); padding: 3px 0; border-right: 1px solid var(--border2); border-bottom: 1px solid var(--border); background: var(--surface); }
 
 
+/* 탭 텍스트: 기본은 풀텍스트, 반응형에서 short로 전환 */
+.t-short { display: none; }
+.t-full  { display: inline; }
+
 /* 모바일 하단 탭바 - 데스크탑에서 숨김 */
 .mob-tabbar { display: none; }
 
@@ -688,11 +692,51 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
    노트북 반응형 (1024px ~ 1399px)
 ═══════════════════════════════ */
 @media (min-width: 1024px) and (max-width: 1399px) {
-  /* 상단 탭 버튼 글자 크기 축소 */
+  /* ── topbar 1줄 강제 유지 ── */
+  .topbar {
+    flex-wrap: nowrap !important;
+    height: 52px;
+  }
+  .topbar-right {
+    flex-wrap: nowrap !important;
+    gap: 5px;
+  }
+
+  /* sync-badge 숨김 (공간 확보) */
+  .sync-badge { display: none !important; }
+
+  /* 테마 토글 레이블 숨김 */
+  #themeLabel { display: none !important; }
+  .theme-toggle { padding: 4px 7px; gap: 4px; }
+
+  /* 월 네비게이션 축소 */
+  .month-label { font-size: 12px; min-width: 110px; }
+  .nav-btn { padding: 4px 8px; font-size: 11px; }
+
+  /* 오늘 버튼 패딩 축소 */
+  .today-btn { padding: 4px 9px; font-size: 11px; }
+
+  /* 탭 컨테이너 */
+  .page-tabs { gap: 3px; margin-left: 6px; }
+
+  /* 탭 버튼: 글자 크기 + 패딩 축소 */
   .page-tab {
     font-size: 11px;
-    padding: 4px 10px;
+    padding: 4px 8px;
+    white-space: nowrap;
   }
+
+  /* 설정 공유 버튼 */
+  #shareBtn {
+    padding: 4px 8px !important;
+    margin-left: 4px !important;
+    font-size: 11px !important;
+    white-space: nowrap;
+  }
+
+  /* 단축 텍스트로 전환 */
+  .t-full { display: none; }
+  .t-short { display: inline; }
 
   /* 포캐스팅 센터 종합평가 카드: 3열 → 2열 */
   #fcSummaryArea {
@@ -771,6 +815,10 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     padding: 4px 8px;
     white-space: nowrap;
   }
+
+  /* 단축 텍스트로 전환 */
+  .t-full { display: none; }
+  .t-short { display: inline; }
 
   /* 포캐스팅 센터 종합평가 카드: 1열 */
   #fcSummaryArea {
@@ -859,12 +907,12 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
       <button class="nav-btn" id="nextBtn">→</button>
       <button class="today-btn" onclick="goToday()">오늘</button>
       <div class="page-tabs">
-        <button class="page-tab active" id="tabFc" onclick="switchPage('fc')">🔮 포캐스팅</button>
-        <button class="page-tab" id="tabGantt" onclick="switchPage('gantt')">📊 간트차트</button>
-        <button class="page-tab" id="tabCap" onclick="switchPage('cap')">📸 포캐스팅 Summary</button>
-        <button class="page-tab" id="tabSummary" onclick="switchPage('summary')">📈 간트 Summary</button>
-        <button class="page-tab" id="tabBoard" onclick="switchPage('board')">📋 태스크 보드</button>
-        <button id="shareBtn" onclick="copyShareLink()" style="margin-left:8px;padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">🔗 설정 공유</button>
+        <button class="page-tab active" id="tabFc" onclick="switchPage('fc')"><span class="t-full">🔮 포캐스팅</span><span class="t-short">🔮 포캐스팅</span></button>
+        <button class="page-tab" id="tabGantt" onclick="switchPage('gantt')"><span class="t-full">📊 간트차트</span><span class="t-short">📊 간트</span></button>
+        <button class="page-tab" id="tabCap" onclick="switchPage('cap')"><span class="t-full">📸 포캐스팅 Summary</span><span class="t-short">📸 포캐 Sum</span></button>
+        <button class="page-tab" id="tabSummary" onclick="switchPage('summary')"><span class="t-full">📈 간트 Summary</span><span class="t-short">📈 간트 Sum</span></button>
+        <button class="page-tab" id="tabBoard" onclick="switchPage('board')"><span class="t-full">📋 태스크 보드</span><span class="t-short">📋 태스크</span></button>
+        <button id="shareBtn" onclick="copyShareLink()" style="margin-left:8px;padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;"><span class="t-full">🔗 설정 공유</span><span class="t-short">🔗 설정</span></button>
       </div>
       <!-- 모바일 전용 동기화 표시 -->
       <div class="mob-sync-pill"><div class="sync-dot" style="width:7px;height:7px;"></div></div>
