@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>프로젝트 태스크 보드</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --surface2: #f1efe8;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.14);
+    --text: #1a1917;
+    --text2: #6b6a65;
+    --text3: #9e9d98;
+    --blue-bg: #E6F1FB; --blue-text: #0C447C; --blue-avatar: #B5D4F4;
+    --teal-bg: #E1F5EE; --teal-text: #085041; --teal-avatar: #9FE1CB;
+    --teal2-bg: #d0f0e4; --teal2-text: #04342C; --teal2-avatar: #5DCAA5;
+    --amber-bg: #FAEEDA; --amber-text: #633806; --amber-avatar: #FAC775;
+    --purple-bg: #EEEDFE; --purple-text: #3C3489; --purple-avatar: #CECBF6;
+    --red-bg: #FCEBEB; --red-text: #A32D2D;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111110; --surface: #1c1c1a; --surface2: #252523;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+      --text: #e8e6e0; --text2: #9e9d98; --text3: #5f5e5a;
+      --blue-bg: #0C447C; --blue-text: #B5D4F4; --blue-avatar: #185FA5;
+      --teal-bg: #085041; --teal-text: #9FE1CB; --teal-avatar: #0F6E56;
+      --teal2-bg: #04342C; --teal2-text: #9FE1CB; --teal2-avatar: #1D9E75;
+      --amber-bg: #633806; --amber-text: #FAC775; --amber-avatar: #854F0B;
+      --purple-bg: #3C3489; --purple-text: #CECBF6; --purple-avatar: #534AB7;
+      --red-bg: #791F1F; --red-text: #F7C1C1;
+    }
+  }
+
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 1440px; margin: 0 auto; }
+
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.4px; }
+  .page-sub { font-size: 13px; color: var(--text2); margin-top: 3px; }
+
+  .ai-box {
+    background: var(--surface);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .ai-box-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .ai-input-row { display: flex; gap: 8px; align-items: flex-end; }
+
+  .ai-input-row textarea {
+    flex: 1;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    resize: none;
+    min-height: 40px;
+    max-height: 120px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .ai-input-row textarea:focus { border-color: rgba(56,138,221,0.5); }
+
+  .ai-send-btn {
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+    font-family: inherit;
+  }
+
+  .ai-send-btn:hover { opacity: 0.8; }
+
+  .ai-status {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 6px;
+    min-height: 18px;
+  }
+
+  .ai-hint {
+    font-size: 11.5px;
+    color: var(--text3);
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  .ai-hint span {
+    display: inline-block;
+    background: var(--surface2);
+    border: 0.5px solid var(--border2);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 11px;
+    margin: 1px 2px;
+    color: var(--text2);
+  }
+
+  .date-row {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .date-row label { font-size: 13px; color: var(--text2); white-space: nowrap; }
+
+  .date-row input[type="date"] {
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 5px 10px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .date-clear {
+    font-size: 12px;
+    color: var(--text3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    margin-left: auto;
+  }
+
+  #projects-container { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .project-section {
+    background: var(--surface);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.25rem 1rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .project-section.is-default {
+    background: #FFFDF7;
+    border-color: rgba(180, 140, 50, 0.35);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .project-section.is-default {
+      background: #1d1a10;
+      border-color: rgba(250, 199, 117, 0.22);
+    }
+  }
+
+  .default-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    background: var(--amber-bg);
+    color: var(--amber-text);
+    border-radius: 20px;
+    padding: 2px 8px;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .project-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .project-name { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; }
+
+  .project-period {
+    font-size: 12px;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    padding: 2px 10px;
+  }
+
+  .project-delete {
+    margin-left: auto;
+    background: none;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text3);
+    font-size: 12px;
+    padding: 3px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .project-delete:hover { border-color: var(--red-text); color: var(--red-text); }
+
+  .dept-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 1000px) { .dept-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px)  { .dept-grid { grid-template-columns: 1fr; } }
+
+  .dept-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .dept-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.9rem;
+    border-bottom: 0.5px solid var(--border);
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .dept-name-wrap { display: flex; align-items: center; gap: 8px; }
+
+  .dept-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .dept-name-text { font-size: 14px; font-weight: 500; }
+
+  .deadline-wrap { display: flex; align-items: center; gap: 6px; }
+  .d-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .d-date { font-size: 11px; color: var(--text3); }
+  .d-remain { font-size: 11px; font-weight: 500; }
+
+  .dept-tasks { padding: 0.6rem 0.9rem; }
+
+  .task-item {
+    display: flex; gap: 8px;
+    padding: 5px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  .task-item:last-child { border-bottom: none; }
+  .task-num { color: var(--text3); min-width: 16px; padding-top: 1px; font-size: 11px; }
+
+  .task-check {
+    width: 14px; height: 14px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    cursor: pointer;
+    accent-color: #1A6B35;
+  }
+
+  .task-item.is-done .task-body {
+    opacity: 0.38;
+    text-decoration: line-through;
+    text-decoration-color: var(--text3);
+  }
+
+  .done-badge {
+    display: none;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    background: #D4EDDA;
+    color: #1A6B35;
+    border-radius: 20px;
+    padding: 2px 9px;
+    align-items: center;
+  }
+
+  .dept-card.all-done .dept-header { background: #EDF7EF; }
+  .dept-card.all-done .done-badge  { display: inline-flex; }
+  .dept-card.all-done .d-remain    { display: none; }
+
+  @media (prefers-color-scheme: dark) {
+    .done-badge { background: #1A3D25; color: #7ED99A; }
+    .dept-card.all-done .dept-header { background: #152A1D; }
+  }
+  .task-body { flex: 1; color: var(--text); }
+  .task-note { font-size: 11.5px; color: var(--text2); display: block; margin-top: 2px; }
+
+  .dept-persons {
+    display: flex; flex-wrap: wrap; gap: 5px;
+    padding: 0.55rem 0.9rem;
+    border-top: 0.5px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .person-divider {
+    font-size: 10px;
+    color: var(--text3);
+    width: 100%;
+    padding: 2px 0 1px;
+    display: flex; align-items: center; gap: 5px;
+    letter-spacing: 0.04em;
+  }
+
+  .person-divider::after { content:''; flex:1; height: 0.5px; background: var(--border2); }
+
+  .dev-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 0.65rem 0.9rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .dev-tab-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .dev-tab-item.is-done .dev-tab {
+    text-decoration: line-through;
+    opacity: 0.45;
+  }
+
+  .dev-tab {
+    flex: 1;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 7px 0;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .dev-tab.active {
+    background: var(--teal-bg);
+    color: var(--teal-text);
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .dev-tab:not(.active):hover { border-color: var(--border2); opacity: 0.75; }
+
+  .dev-panel { display: none; }
+  .dev-panel.active { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  .chip {
+    display: flex; align-items: center; gap: 4px;
+    background: var(--surface);
+    border: 0.5px solid var(--border2);
+    border-radius: 20px;
+    padding: 2px 9px 2px 5px;
+    font-size: 11.5px;
+    color: var(--text);
+  }
+
+  .avatar {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 600;
+  }
+
+  .chip .team { color: var(--text3); font-size: 10.5px; margin-left: 1px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text3);
+    font-size: 13px;
+    border: 0.5px dashed var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .empty-state p { margin-top: 0.5rem; }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: var(--bg);
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: all 0.25s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">프로젝트 태스크 보드</div>
+      <div class="page-sub">부서별 마감일 자동 계산 · 자연어 프로젝트 추가</div>
+    </div>
+  </div>
+
+  <div class="ai-box">
+    <div class="ai-box-label">프로젝트 추가</div>
+    <div class="ai-input-row">
+      <textarea id="ai-input" placeholder="예: 왓더버거 프로젝트 추가해줘. 기간은 6/6 ~ 7/30까지야." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addProject();}"></textarea>
+      <button class="ai-send-btn" onclick="addProject()">추가 →</button>
+    </div>
+    <div class="ai-status" id="ai-status"></div>
+    <div class="ai-hint">
+      입력 예시:
+      <span>왓더버거 프로젝트 6/6 ~ 7/30</span>
+      <span>BBQ 치킨 7월15일 시작 8월31일 종료</span>
+      <span>맥도날드 2025-07-01 ~ 2025-08-15</span>
+    </div>
+  </div>
+
+  <div class="date-row">
+    <span style="font-size:13px;color:var(--text2)">기준 날짜 (프로젝트 시작일)</span>
+    <input type="date" id="global-date" oninput="renderAll()">
+    <button class="date-clear" onclick="document.getElementById('global-date').value='';renderAll()">초기화</button>
+  </div>
+
+  <div id="projects-container"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEPT_CONFIG = [
+  {
+    id: 'sales', name: '영업팀', dDay: 14, iconColor: 'blue',
+    tasks: [
+      { text: '요구 자료 수집 및 정리', note: 'POS / KIOSK 대수 · 프린트 연결 구조 · 사양 · 기존 프로그램 · H/W 사양' }
+    ],
+    persons: [
+      { name: '박영호', team: '사업개발실', colorKey: 'blue' },
+      { name: '심순혁', team: '사업개발실', colorKey: 'blue' },
+      { name: '김민재', team: '전략영업팀', colorKey: 'blue' },
+      { name: '김영훈', team: '전략영업팀', colorKey: 'blue' },
+    ]
+  },
+  {
+    id: 'dev', name: '개발팀', dDay: 10, iconColor: 'teal',
+    tabs: [
+      {
+        label: '매장 일괄 등록',
+        persons: [
+          { name: '이상환', team: '개발운영팀', colorKey: 'teal' },
+          { name: '김태응', team: 'DE팀', colorKey: 'teal' },
+          { name: '최정용', team: 'BE팀', colorKey: 'teal' },
+        ]
+      },
+      {
+        label: '계약관리팀 요청',
+        persons: [
+          { name: '여지민', team: '계약관리팀', colorKey: 'teal2' },
+          { name: '김시원', team: '계약관리팀', colorKey: 'teal2' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'van', name: '운영팀 (VAN)', dDay: 7, iconColor: 'amber',
+    tasks: [
+      { text: '프로젝트 시작일 D-7 이전 현장 대응 완료', note: '' }
+    ],
+    persons: [
+      { name: '신용인', team: '원격지원팀', colorKey: 'amber' },
+      { name: '조형래', team: '원격지원팀', colorKey: 'amber' },
+      { name: '양길태', team: '원격지원팀', colorKey: 'amber' },
+    ]
+  },
+  {
+    id: 'pi', name: 'PI팀', dDay: 12, iconColor: 'purple',
+    tasks: [
+      { text: '대시보드 제작', note: '' },
+      { text: '설치팀 설치 일자 조율 및 스케줄링', note: '센터별 가용 인원 파악' },
+      { text: '부족 인원 대비 Plan B 수립', note: '' },
+      { text: '폼즈 제작 및 앱스크립트 연동', note: '응답 시트 → 드라이브 폴더 스크립트 구성' },
+      { text: '일정 취합', note: '' },
+    ],
+    persons: []
+  }
+];
+
+const taskChecks = {};
+
+function onTaskCheck(el, key) {
+  taskChecks[key] = el.checked;
+  el.closest('.task-item').classList.toggle('is-done', el.checked);
+  const card = el.closest('.dept-card');
+  const checks = [...card.querySelectorAll('.task-check')];
+  const allDone = checks.length > 0 && checks.every(c => c.checked);
+  card.classList.toggle('all-done', allDone);
+}
+
+function onDevTabCheck(el, key) {
+  taskChecks[key] = el.checked;
+  el.closest('.dev-tab-item').classList.toggle('is-done', el.checked);
+  const card = el.closest('.dept-card');
+  const checks = [...card.querySelectorAll('.task-check')];
+  const allDone = checks.some(c => c.checked);
+  card.classList.toggle('all-done', allDone);
+}
+
+let projects = [
+  { id: 'default', name: '기본 프로젝트', startDate: '', endDate: '' },
+  { id: 'proj_watburger', name: '왓더버거', startDate: '2026-04-27', endDate: '2026-05-29' }
+];
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function parseNaturalDate(text) {
+  const year = new Date().getFullYear();
+  text = text.trim();
+
+  const full = text.match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
+  if (full) return `${full[1]}-${full[2].padStart(2,'0')}-${full[3].padStart(2,'0')}`;
+
+  const korean = text.match(/(\d{1,2})월\s*(\d{1,2})일/);
+  if (korean) return `${year}-${korean[1].padStart(2,'0')}-${korean[2].padStart(2,'0')}`;
+
+  const slash = text.match(/(\d{1,2})[\/.](\d{1,2})/);
+  if (slash) return `${year}-${slash[1].padStart(2,'0')}-${slash[2].padStart(2,'0')}`;
+
+  return '';
+}
+
+function extractProjectInfo(input) {
+  const text = input.trim();
+
+  const rangeSep = /~|부터|에서|부터는|시작.*?종료|시작.*?끝/;
+  const parts = text.split(rangeSep);
+
+  let startDate = '';
+  let endDate = '';
+
+  if (parts.length >= 2) {
+    startDate = parseNaturalDate(parts[0]);
+    endDate = parseNaturalDate(parts[1]);
+  } else {
+    const dateMatches = [];
+    const re = /(\d{4}[.\/-]\d{1,2}[.\/-]\d{1,2}|\d{1,2}월\s*\d{1,2}일|\d{1,2}[\/\.]\d{1,2})/g;
+    let m;
+    while ((m = re.exec(text)) !== null) dateMatches.push(m[0]);
+    if (dateMatches[0]) startDate = parseNaturalDate(dateMatches[0]);
+    if (dateMatches[1]) endDate = parseNaturalDate(dateMatches[1]);
+  }
+
+  const cleaned = text
+    .replace(/(\d{4}[.\/-]\d{1,2}[.\/-]\d{1,2}|\d{1,2}월\s*\d{1,2}일|\d{1,2}[\/\.]\d{1,2})/g, '')
+    .replace(/~|부터|까지|시작|종료|끝|기간은|기간|추가|해줘|했어|야|이야|프로젝트/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const name = cleaned || '새 프로젝트';
+
+  return { name, startDate, endDate };
+}
+
+function addProject() {
+  const input = document.getElementById('ai-input');
+  const statusEl = document.getElementById('ai-status');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const { name, startDate, endDate } = extractProjectInfo(text);
+
+  if (!name) {
+    statusEl.textContent = '프로젝트 이름을 인식하지 못했어요. 다시 입력해주세요.';
+    return;
+  }
+
+  const newProject = {
+    id: 'proj_' + Date.now(),
+    name,
+    startDate,
+    endDate
+  };
+
+  projects.push(newProject);
+  renderAll();
+  input.value = '';
+  statusEl.textContent = '';
+  showToast(`"${name}" 프로젝트 추가됨`);
+}
+
+function calcDeadline(startDateStr, dDay) {
+  if (!startDateStr) return null;
+  const d = new Date(startDateStr);
+  d.setDate(d.getDate() - dDay);
+  return d;
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getDiffText(dueDate) {
+  if (!dueDate) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.ceil((dueDate - today) / 86400000);
+  if (diff < 0) return `<span style="color:var(--red-text);font-weight:500">${Math.abs(diff)}일 초과</span>`;
+  if (diff === 0) return `<span style="color:var(--amber-text);font-weight:500">오늘</span>`;
+  return `<span style="color:var(--text3)">${diff}일 남음</span>`;
+}
+
+function renderChip(person) {
+  const c = person.colorKey || 'blue';
+  return `<div class="chip">
+    <div class="avatar" style="background:var(--${c}-avatar);color:var(--${c}-text)">${person.name.charAt(0)}</div>
+    ${person.name}<span class="team">${person.team}</span>
+  </div>`;
+}
+
+function renderPersons(dept) {
+  if (dept.personGroups) {
+    return dept.personGroups.map(g =>
+      `<div class="person-divider">${g.label}</div>${g.persons.map(renderChip).join('')}`
+    ).join('');
+  }
+  if (!dept.persons || dept.persons.length === 0) return '';
+  return dept.persons.map(renderChip).join('');
+}
+
+function deptSvgPath(id) {
+  const paths = {
+    sales: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+    dev: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+    van: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+    pi: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>'
+  };
+  return paths[id] || paths.pi;
+}
+
+function renderDeptCard(dept, startDate, projectId) {
+  const dueDate = calcDeadline(startDate, dept.dDay);
+  const dueFmt = dueDate ? formatDate(dueDate) : '날짜 선택 필요';
+  const diffHtml = dueDate ? getDiffText(dueDate) : '';
+  const c = dept.iconColor;
+
+  const headerHtml = (allDone) => `<div class="dept-header">
+    <div class="dept-name-wrap">
+      <div class="dept-icon" style="background:var(--${c}-bg);color:var(--${c}-text)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${deptSvgPath(dept.id)}</svg>
+      </div>
+      <span class="dept-name-text">${dept.name}</span>
+      <span class="done-badge">최종 완료</span>
+    </div>
+    <div class="deadline-wrap">
+      <span class="d-badge" style="background:var(--${c}-bg);color:var(--${c}-text)">D-${dept.dDay}</span>
+      <span class="d-date">${dueFmt}</span>
+      <span class="d-remain">${allDone ? '' : diffHtml}</span>
+    </div>
+  </div>`;
+
+  if (dept.tabs) {
+    const tabItems = dept.tabs.map((tab, i) => {
+      const key = `${projectId}::${dept.id}::${i}`;
+      const checked = !!taskChecks[key];
+      return `<div class="dev-tab-item${checked ? ' is-done' : ''}">
+        <input type="checkbox" class="task-check" ${checked ? 'checked' : ''} onchange="onDevTabCheck(this,'${key}')" onclick="event.stopPropagation()">
+        <button class="dev-tab${i===0?' active':''}" onclick="switchDevTab(this,${i})">${tab.label}</button>
+      </div>`;
+    }).join('');
+    const panels = dept.tabs.map((tab, i) =>
+      `<div class="dev-panel${i===0?' active':''}">${tab.persons.map(renderChip).join('')}</div>`
+    ).join('');
+    const allDone = dept.tabs.some((_, i) => !!taskChecks[`${projectId}::${dept.id}::${i}`]);
+    return `<div class="dept-card${allDone ? ' all-done' : ''}">
+      ${headerHtml(allDone)}
+      <div class="dev-tabs">${tabItems}</div>
+      <div class="dept-persons">${panels}</div>
+    </div>`;
+  }
+
+  const tasksHtml = dept.tasks.map((t, i) => {
+    const key = `${projectId}::${dept.id}::${i}`;
+    const checked = !!taskChecks[key];
+    return `<div class="task-item${checked ? ' is-done' : ''}">
+      <input type="checkbox" class="task-check" ${checked ? 'checked' : ''} onchange="onTaskCheck(this,'${key}')">
+      <div class="task-body">${t.text}${t.note ? `<span class="task-note">${t.note}</span>` : ''}</div>
+    </div>`;
+  }).join('');
+
+  const allDone = dept.tasks.length > 0 && dept.tasks.every((_, i) => !!taskChecks[`${projectId}::${dept.id}::${i}`]);
+  const personsHtml = renderPersons(dept);
+
+  return `<div class="dept-card${allDone ? ' all-done' : ''}">
+    ${headerHtml(allDone)}
+    <div class="dept-tasks">${tasksHtml}</div>
+    ${personsHtml ? `<div class="dept-persons">${personsHtml}</div>` : ''}
+  </div>`;
+}
+
+function switchDevTab(btn, idx) {
+  const card = btn.closest('.dept-card');
+  card.querySelectorAll('.dev-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  card.querySelectorAll('.dev-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+
+function renderProject(project) {
+  const startDate = project.startDate || document.getElementById('global-date').value;
+  const periodText = (project.startDate && project.endDate)
+    ? `${project.startDate.replace(/-/g,'.')} ~ ${project.endDate.replace(/-/g,'.')}`
+    : project.startDate ? `${project.startDate.replace(/-/g,'.')} ~` : '';
+
+  const isDefault = project.id === 'default';
+  const deleteBtn = isDefault ? '' : `<button class="project-delete" onclick="deleteProject('${project.id}')">삭제</button>`;
+  const cardsHtml = DEPT_CONFIG.map(dept => renderDeptCard(dept, startDate, project.id)).join('');
+
+  return `<div class="project-section${isDefault ? ' is-default' : ''}" id="proj-${project.id}">
+    <div class="project-header">
+      <div class="project-name">${project.name}</div>
+      ${isDefault ? `<span class="default-badge">기준</span>` : ''}
+      ${periodText ? `<span class="project-period">${periodText}</span>` : ''}
+      ${deleteBtn}
+    </div>
+    <div class="dept-grid">${cardsHtml}</div>
+  </div>`;
+}
+
+function renderAll() {
+  const container = document.getElementById('projects-container');
+  if (projects.length === 0) {
+    container.innerHTML = `<div class="empty-state"><p>아직 프로젝트가 없습니다.<br>위 입력창에 프로젝트를 추가해보세요.</p></div>`;
+    return;
+  }
+  container.innerHTML = projects.map(renderProject).join('');
+}
+
+function deleteProject(id) {
+  projects = projects.filter(p => p.id !== id);
+  renderAll();
+}
+
+renderAll();
+</script>
+</body>
+</html>
