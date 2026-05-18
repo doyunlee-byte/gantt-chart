@@ -581,6 +581,95 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 
   .board-page .board-container{max-width:1440px;margin:0 auto;}
 
+  /* ─── 프로젝트 담당자 관리 ─── */
+  .proj-members-section {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 5px;
+    margin-bottom: 12px; min-height: 26px;
+  }
+  .proj-member-label {
+    font-size: 10.5px; color: var(--text3); font-weight: 600;
+    letter-spacing: 0.05em; white-space: nowrap; margin-right: 2px;
+  }
+  .proj-member-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--surface2); border: 0.5px solid var(--border2);
+    border-radius: 20px; padding: 2px 5px 2px 4px; font-size: 11.5px; color: var(--text);
+  }
+  .proj-member-chip .avatar { width: 16px; height: 16px; font-size: 7px; }
+  .proj-member-chip .chip-team { color: var(--text3); font-size: 10.5px; }
+  .proj-member-del {
+    background: none; border: none; color: var(--text3);
+    font-size: 13px; cursor: pointer; padding: 0 1px; line-height: 1;
+    display: flex; align-items: center; transition: color 0.15s;
+  }
+  .proj-member-del:hover { color: var(--red-text,#e55); }
+  .proj-member-add-btn {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: none; border: 0.5px dashed var(--border2); border-radius: 20px;
+    color: var(--text3); font-size: 11px; font-family: inherit;
+    padding: 2px 9px; cursor: pointer; transition: all 0.15s;
+  }
+  .proj-member-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .proj-member-add-row {
+    display: none; align-items: center; gap: 6px; flex-wrap: wrap; width: 100%; margin-top: 2px;
+  }
+  .proj-member-add-row.show { display: flex; }
+  .pm-input {
+    font-family: inherit; font-size: 12px; color: var(--text);
+    background: var(--surface2); border: 0.5px solid var(--border2);
+    border-radius: 6px; padding: 4px 9px; outline: none; width: 120px;
+  }
+  .pm-input:focus { border-color: var(--accent); }
+  .proj-member-confirm {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 6px; padding: 4px 12px; font-size: 12px;
+    font-family: inherit; cursor: pointer; font-weight: 600;
+  }
+  .proj-member-cancel {
+    background: none; color: var(--text3); border: 0.5px solid var(--border2);
+    border-radius: 6px; padding: 4px 10px; font-size: 12px;
+    font-family: inherit; cursor: pointer;
+  }
+
+  /* ─── 태스크 담당자 ─── */
+  .task-members-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-top: 6px;
+  }
+  .tm-tag {
+    display: inline-flex; align-items: center; gap: 2px;
+    background: var(--surface2); border: 0.5px solid var(--border2);
+    border-radius: 12px; padding: 1px 5px 1px 7px; font-size: 10.5px; color: var(--text2);
+  }
+  .tm-del {
+    background: none; border: none; color: var(--text3); font-size: 12px;
+    cursor: pointer; padding: 0 1px; line-height: 1; transition: color 0.15s;
+  }
+  .tm-del:hover { color: var(--red-text, #e55); }
+  .tm-add-btn {
+    display: inline-flex; align-items: center; gap: 2px;
+    font-family: inherit; font-size: 10.5px; background: none;
+    border: 0.5px dashed var(--border2); border-radius: 12px;
+    color: var(--text3); padding: 1px 7px; cursor: pointer; transition: all 0.15s;
+  }
+  .tm-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tm-input-wrap { display: none; align-items: center; gap: 4px; }
+  .tm-input-wrap.show { display: inline-flex; }
+  .tm-input {
+    font-family: inherit; font-size: 11px; padding: 2px 8px;
+    border: 0.5px solid var(--border2); border-radius: 10px;
+    background: var(--surface2); color: var(--text); outline: none; width: 90px;
+  }
+  .tm-input:focus { border-color: var(--accent); }
+  .tm-confirm {
+    font-family: inherit; font-size: 10.5px; font-weight: 600;
+    padding: 2px 8px; border: none; border-radius: 10px;
+    background: var(--accent); color: #fff; cursor: pointer;
+  }
+  .tm-cancel {
+    background: none; border: none; color: var(--text3);
+    font-size: 13px; cursor: pointer; padding: 0 2px; line-height: 1;
+  }
+
   /* ── 간트 Summary ── */
   #pageSummary { background: var(--bg); }
   .sum-wrap { min-width: max-content; }
@@ -2492,6 +2581,80 @@ function renderMemberChips(membersStr, colorKey) {
   }).join('');
 }
 
+// ─── 태스크 담당자 관리 ───
+const _tmData = {};  // safeKey → {sheetRow, members: string[]}
+
+function tmSafeKey(k) { return k.replace(/[^a-zA-Z0-9가-힣]/g, '_'); }
+
+function parseTMMembers(str) {
+  if (!str || !str.trim()) return [];
+  return str.split(',').map(s => s.trim()).filter(Boolean);
+}
+
+function serializeTMMembers(arr) { return arr.join(', '); }
+
+function renderTaskMembersHtml(sk) {
+  const d = _tmData[sk] || { sheetRow: 0, members: [] };
+  const tags = d.members.map((m, i) =>
+    `<span class="tm-tag">${m}<button class="tm-del" onclick="removeTaskMember('${sk}',${i})">×</button></span>`
+  ).join('');
+  return `<div class="task-members-row" id="tm-${sk}">
+    ${tags}<button class="tm-add-btn" onclick="showTMInput('${sk}')">＋ 담당자</button>
+    <span class="tm-input-wrap" id="tm-inp-${sk}">
+      <input class="tm-input" id="tm-val-${sk}" placeholder="이름"
+        onkeydown="if(event.key==='Enter')confirmAddTM('${sk}')">
+      <button class="tm-confirm" onclick="confirmAddTM('${sk}')">확인</button>
+      <button class="tm-cancel" onclick="hideTMInput('${sk}')">✕</button>
+    </span>
+  </div>`;
+}
+
+function showTMInput(sk) {
+  const w = document.getElementById('tm-inp-' + sk);
+  if (!w) return;
+  w.classList.add('show');
+  const inp = document.getElementById('tm-val-' + sk);
+  if (inp) { inp.value = ''; inp.focus(); }
+}
+
+function hideTMInput(sk) {
+  const w = document.getElementById('tm-inp-' + sk);
+  if (w) w.classList.remove('show');
+  const inp = document.getElementById('tm-val-' + sk);
+  if (inp) inp.value = '';
+}
+
+function confirmAddTM(sk) {
+  const inp = document.getElementById('tm-val-' + sk);
+  const name = inp ? inp.value.trim() : '';
+  if (!name) return;
+  const d = _tmData[sk];
+  if (!d) return;
+  d.members.push(name);
+  hideTMInput(sk);
+  refreshTaskMembers(sk);
+  if (d.sheetRow) postBoardCellUpdate(d.sheetRow, 9, serializeTMMembers(d.members));
+  showBoardToast('"' + name + '" 담당자 추가됨');
+}
+
+function removeTaskMember(sk, idx) {
+  const d = _tmData[sk];
+  if (!d || idx >= d.members.length) return;
+  const name = d.members[idx];
+  d.members.splice(idx, 1);
+  refreshTaskMembers(sk);
+  if (d.sheetRow) postBoardCellUpdate(d.sheetRow, 9, serializeTMMembers(d.members));
+  showBoardToast('"' + name + '" 삭제됨');
+}
+
+function refreshTaskMembers(sk) {
+  const el = document.getElementById('tm-' + sk);
+  if (!el) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = renderTaskMembersHtml(sk);
+  el.replaceWith(tmp.firstElementChild);
+}
+
 // 부서 카드 렌더링 (시트 데이터 기반)
 function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, deptIdx) {
   if (!deptRows.length) return '';
@@ -2578,11 +2741,16 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
     const sheetRow = r[BOARD_COL.SHEET_ROW] || 0;
     if (!task || !task.trim()) return '';
     const k = `${projId}::${deptId}::${i}`;
+    const sk = tmSafeKey(k);
+    _tmData[sk] = { sheetRow, members: parseTMMembers(r[BOARD_COL.MEMBERS] || '') };
     const checked = !!checks[k];
     return `<div class="task-item${checked?' is-done':''}">
       <input type="checkbox" class="task-check" ${checked?'checked':''}
         onchange="onBoardCheck(this,'${k}',${sheetRow})">
-      <div class="task-body">${task}${note?`<span class="task-note">${note}</span>`:''}</div>
+      <div class="task-body">
+        ${task}${note?`<span class="task-note">${note}</span>`:''}
+        ${renderTaskMembersHtml(sk)}
+      </div>
       ${sheetRow?`<button class="task-edit-btn" title="수정">✏</button>`:''}
     </div>`;
   }).join('');
@@ -2590,14 +2758,120 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
   const taskCount = deptRows.filter(r => r[BOARD_COL.TASK] && r[BOARD_COL.TASK].trim()).length;
   const doneCount = deptRows.filter((r, i) => r[BOARD_COL.TASK] && !!checks[`${projId}::${deptId}::${i}`]).length;
   const allDone = taskCount > 0 && doneCount === taskCount;
-  const chipsHtml = renderMemberChips(members, iconColor);
 
   return `<div class="dept-card${allDone?' all-done':''}">
     ${headerHtml(allDone)}
     <div class="dept-tasks" id="tasks-${key}">${tasksHtml}</div>
     ${addUI}
-    ${chipsHtml ? `<div class="dept-persons">${chipsHtml}</div>` : ''}
   </div>`;
+}
+
+// ─── 프로젝트 담당자 관리 ───
+
+const _pmKeyToName = {};  // key → projName 역참조 맵
+
+function getBoardProjMembers() {
+  try { return JSON.parse(localStorage.getItem('boardProjMembers') || '{}'); } catch { return {}; }
+}
+function saveBoardProjMembers(data) {
+  try { localStorage.setItem('boardProjMembers', JSON.stringify(data)); } catch {}
+}
+
+function projMemberKey(projName) {
+  return projName.replace(/[^a-zA-Z0-9가-힣]/g, '_');
+}
+
+function renderProjMembersSection(projName) {
+  const key = projMemberKey(projName);
+  _pmKeyToName[key] = projName;
+
+  const allData = getBoardProjMembers();
+  const members = allData[projName] || [];
+
+  const avatarColors = ['blue','teal','amber','purple','teal2'];
+  const colorMap = {
+    blue:   { bg: 'var(--blue-avatar)',   text: 'var(--blue-text)' },
+    teal:   { bg: 'var(--teal-avatar)',   text: 'var(--teal-text)' },
+    teal2:  { bg: 'var(--teal2-avatar)',  text: 'var(--teal2-text)' },
+    amber:  { bg: 'var(--amber-avatar)',  text: 'var(--amber-text)' },
+    purple: { bg: 'var(--purple-avatar)', text: 'var(--purple-text)' },
+  };
+
+  const chipsHtml = members.map((m, i) => {
+    const c = colorMap[avatarColors[i % avatarColors.length]];
+    return `<span class="proj-member-chip">
+      <span class="avatar" style="background:${c.bg};color:${c.text}">${m.name.charAt(0)}</span>
+      ${m.name}${m.team ? `<span class="chip-team">&nbsp;(${m.team})</span>` : ''}
+      <button class="proj-member-del" onclick="removeProjMember('${key}',${i})" title="삭제">×</button>
+    </span>`;
+  }).join('');
+
+  return `<div class="proj-members-section" id="pm-section-${key}">
+    <span class="proj-member-label">담당자</span>
+    ${chipsHtml}
+    <button class="proj-member-add-btn" onclick="showProjMemberForm('${key}')">＋ 담당자 추가</button>
+    <div class="proj-member-add-row" id="pm-add-${key}">
+      <input class="pm-input" id="pm-name-${key}" placeholder="이름"
+        onkeydown="if(event.key==='Enter')confirmAddProjMember('${key}')">
+      <input class="pm-input" id="pm-team-${key}" placeholder="팀명 (선택)"
+        onkeydown="if(event.key==='Enter')confirmAddProjMember('${key}')">
+      <button class="proj-member-confirm" onclick="confirmAddProjMember('${key}')">확인</button>
+      <button class="proj-member-cancel" onclick="hideProjMemberForm('${key}')">✕</button>
+    </div>
+  </div>`;
+}
+
+function showProjMemberForm(key) {
+  const row = document.getElementById('pm-add-' + key);
+  if (!row) return;
+  row.classList.add('show');
+  const inp = document.getElementById('pm-name-' + key);
+  if (inp) { inp.value = ''; inp.focus(); }
+  const tinp = document.getElementById('pm-team-' + key);
+  if (tinp) tinp.value = '';
+}
+
+function hideProjMemberForm(key) {
+  const row = document.getElementById('pm-add-' + key);
+  if (row) row.classList.remove('show');
+}
+
+function confirmAddProjMember(key) {
+  const projName = _pmKeyToName[key];
+  if (!projName) return;
+  const nameEl = document.getElementById('pm-name-' + key);
+  const teamEl = document.getElementById('pm-team-' + key);
+  const name = nameEl ? nameEl.value.trim() : '';
+  if (!name) return;
+  const team = teamEl ? teamEl.value.trim() : '';
+  const data = getBoardProjMembers();
+  if (!data[projName]) data[projName] = [];
+  data[projName].push({ name, team });
+  saveBoardProjMembers(data);
+  refreshProjMembersSection(key);
+  hideProjMemberForm(key);
+  showBoardToast('"' + name + '" 담당자 추가됨');
+}
+
+function removeProjMember(key, idx) {
+  const projName = _pmKeyToName[key];
+  if (!projName) return;
+  const data = getBoardProjMembers();
+  if (!data[projName]) return;
+  const removed = data[projName].splice(idx, 1);
+  saveBoardProjMembers(data);
+  refreshProjMembersSection(key);
+  if (removed.length) showBoardToast('"' + removed[0].name + '" 삭제됨');
+}
+
+function refreshProjMembersSection(key) {
+  const projName = _pmKeyToName[key];
+  if (!projName) return;
+  const sec = document.getElementById('pm-section-' + key);
+  if (!sec) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = renderProjMembersSection(projName);
+  sec.replaceWith(tmp.firstElementChild);
 }
 
 // 프로젝트 섹션 렌더링
@@ -2629,6 +2903,7 @@ function renderBoardProject(projName, projRows, projIdx) {
       <div class="project-name">${projName}</div>
       ${periodText ? `<span class="project-period">${periodText}</span>` : ''}
     </div>
+    ${renderProjMembersSection(projName)}
     <div class="dept-grid">${cardsHtml}</div>
   </div>`;
 }
