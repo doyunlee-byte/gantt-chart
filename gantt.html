@@ -2962,8 +2962,17 @@ async function loadBoardData() {
     const rows = parseBoardCSV(txt);
     console.log('[Board] parsed rows:', rows.length, '/ first row 프로젝트명:', rows[0] ? rows[0]['프로젝트명'] : '');
     if (!rows || rows.length === 0) throw new Error('empty CSV');
-    boardData = rows.filter(r => r['프로젝트명'] && r['프로젝트명'].trim());
-    console.log('[Board] valid project rows:', boardData.length);
+    const rawRows = rows.filter(r => r['프로젝트명'] && r['프로젝트명'].trim());
+    const seenRows = new Set();
+    boardData = rawRows.filter(r => {
+      const k = r['_sheetRow'] > 0
+        ? `row::${r['_sheetRow']}`
+        : `${r['프로젝트명']}::${r['부서ID']}::${r['태스크']}`;
+      if (seenRows.has(k)) return false;
+      seenRows.add(k);
+      return true;
+    });
+    console.log('[Board] valid project rows:', boardData.length, '/ raw:', rawRows.length);
     if (!boardData.length) throw new Error('프로젝트명 값이 있는 행 없음 (첫 행: ' + Object.values(rows[0] || {}).slice(0,3).join(', ') + ')');
     boardDataLoaded = true;
     boardRenderAll();
@@ -2989,6 +2998,17 @@ function boardRenderAll() {
     </div>`;
     return;
   }
+
+  // 중복 제거 (안전망: 동일 sheetRow 또는 프로젝트+부서+태스크 조합)
+  const _seen = new Set();
+  boardData = boardData.filter(r => {
+    const k = r['_sheetRow'] > 0
+      ? `row::${r['_sheetRow']}`
+      : `${r['프로젝트명']}::${r['부서ID']}::${r['태스크']}`;
+    if (_seen.has(k)) return false;
+    _seen.add(k);
+    return true;
+  });
 
   // 프로젝트별 그룹핑
   const projGroups = {};
@@ -3085,22 +3105,27 @@ function confirmAddTask(key) {
 
   hideTaskAddRow(key);
 
-  // boardData 캐시에 즉시 반영 (탭 전환 후에도 유지)
-  boardData.push({
-    '프로젝트명': meta.projId,
-    '시작일': meta.projStart || '',
-    '마감일': meta.projEnd || '',
-    '부서ID': meta.deptId,
-    '부서명': meta.deptName,
-    'D-day': meta.dDay || '예정',
-    '아이콘색': meta.iconColor || 'blue',
-    '태스크': taskText,
-    '태스크노트': '',
-    '담당자': '',
-    '탭구분': '',
-    '완료': 'FALSE',
-    '_sheetRow': 0,
-  });
+  // boardData 캐시에 즉시 반영 (탭 전환 후에도 유지) - 중복 방지
+  const alreadyInCache = boardData.some(r =>
+    r['프로젝트명'] === meta.projId && r['부서ID'] === meta.deptId && r['태스크'] === taskText
+  );
+  if (!alreadyInCache) {
+    boardData.push({
+      '프로젝트명': meta.projId,
+      '시작일': meta.projStart || '',
+      '마감일': meta.projEnd || '',
+      '부서ID': meta.deptId,
+      '부서명': meta.deptName,
+      'D-day': meta.dDay || '예정',
+      '아이콘색': meta.iconColor || 'blue',
+      '태스크': taskText,
+      '태스크노트': '',
+      '담당자': '',
+      '탭구분': '',
+      '완료': 'FALSE',
+      '_sheetRow': 0,
+    });
+  }
 
   // Google Sheets POST (백그라운드)
   postAddBoardTask({
