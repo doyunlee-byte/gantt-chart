@@ -2729,9 +2729,10 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
 
     const panels = tabKeys.map((tg, i) => {
       const rows = tabGroups[tg];
-      const mem = rows[0][BOARD_COL.MEMBERS] || members;
-      const ck = i === 0 ? iconColor : (iconColor === 'teal' ? 'teal2' : iconColor);
-      return `<div class="dev-panel${i===0?' active':''}">${renderMemberChips(mem, ck)}</div>`;
+      const sheetRow = rows[0][BOARD_COL.SHEET_ROW] || 0;
+      const sk = tmSafeKey(`${projId}::${deptId}::tab::${i}`);
+      _tmData[sk] = { sheetRow, members: parseTMMembers(rows[0][BOARD_COL.MEMBERS] || members || '') };
+      return `<div class="dev-panel${i===0?' active':''}">${renderTaskMembersHtml(sk)}</div>`;
     }).join('');
 
     const allDone = tabKeys.some((_, i) => !!checks[`${projId}::${deptId}::tab::${i}`]);
