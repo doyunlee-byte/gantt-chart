@@ -1174,7 +1174,12 @@ function switchPage(page){
   if(page==='fc'){if(!fcSelectedProjects.size&&PROJECTS.length)fcSelectedProjects.add(PROJECTS[0].id);renderFcPage();}
   if(page==='cap'){
     if(window.innerWidth<=768&&summarySelectedProjs.size>0){fcSelectedProjects.clear();summarySelectedProjs.forEach(id=>fcSelectedProjects.add(id));}
-    if(!fcSelectedProjects.size&&PROJECTS.length)PROJECTS.forEach(p=>fcSelectedProjects.add(p.id));
+    if(!fcSelectedProjects.size&&PROJECTS.length){
+      if(window.innerWidth<=768){
+        try{const saved=localStorage.getItem('mobileSelectedProjects');if(saved){const ids=JSON.parse(saved).filter(id=>PROJECTS.some(p=>p.id===id));if(ids.length)ids.forEach(id=>fcSelectedProjects.add(id));}}catch(e){}
+      }
+      if(!fcSelectedProjects.size)PROJECTS.forEach(p=>fcSelectedProjects.add(p.id));
+    }
     renderCapPage();
   }
   if(page==='board'){loadBoardData();}
@@ -2072,6 +2077,7 @@ function toggleCapMobileChip(pid){
   if(fcSelectedProjects.has(pid)) fcSelectedProjects.delete(pid);
   else fcSelectedProjects.add(pid);
   summarySelectedProjs.clear();fcSelectedProjects.forEach(id=>summarySelectedProjs.add(id));
+  try{localStorage.setItem('mobileSelectedProjects',JSON.stringify([...fcSelectedProjects]));}catch(e){}
   renderCapPage();
 }
 
