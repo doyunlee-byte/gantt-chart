@@ -1088,13 +1088,14 @@ async function fetchCSV(url){
 
 function parseCSV(txt){
   if(!txt)return[];
+  txt = txt.replace(/^﻿/, ''); // UTF-8 BOM 제거
   const lines=txt.trim().split('\n');
-  const hdrs=lines[0].split(',').map(h=>h.replace(/"/g,'').trim());
+  const hdrs=lines[0].split(',').map(h=>h.replace(/[﻿\r"]/g,'').trim());
   return lines.slice(1).map(line=>{
     const vals=[];let cur='',inQ=false;
     for(const c of line){if(c==='"')inQ=!inQ;else if(c===','&&!inQ){vals.push(cur.trim());cur='';}else cur+=c;}
     vals.push(cur.trim());
-    const obj={};hdrs.forEach((h,i)=>obj[h]=(vals[i]||'').replace(/"/g,'').trim());
+    const obj={};hdrs.forEach((h,i)=>obj[h]=(vals[i]||'').replace(/[﻿\r"]/g,'').trim());
     return obj;
   });
 }
