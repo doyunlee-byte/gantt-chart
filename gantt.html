@@ -2925,9 +2925,35 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
   const hasTabs = deptRows.some(r => r[BOARD_COL.TAB_GROUP] && r[BOARD_COL.TAB_GROUP].trim());
 
   const dDayIsPending = dDay === '예정';
+
+  // D-day 남은 일수 계산 (프로젝트 시작일 기준)
+  const remain = (() => {
+    if (dDayIsPending || !projStart) return null;
+    const m = dDay.match(/D[-–]?(\d+)/i);
+    if (!m) return null;
+    const dDayNum = parseInt(m[1]);
+    const deadline = new Date(projStart);
+    deadline.setDate(deadline.getDate() + dDayNum);
+    const today = new Date(); today.setHours(0,0,0,0); deadline.setHours(0,0,0,0);
+    return Math.round((deadline - today) / (1000*60*60*24));
+  })();
+
+  let badgeBg = `var(--${c}-bg)`;
+  let badgeColor = `var(--${c}-text)`;
+  let cardBorderStyle = '';
+  if (remain !== null) {
+    if (remain <= 2) {
+      badgeBg = 'rgba(239,68,68,0.18)'; badgeColor = '#ef4444';
+      cardBorderStyle = 'border: 2px solid #ef4444;';
+    } else if (remain <= 7) {
+      badgeBg = 'rgba(245,158,11,0.18)'; badgeColor = '#f59e0b';
+      cardBorderStyle = 'border: 2px solid #f59e0b;';
+    }
+  }
+
   const dDayBadge = dDayIsPending
     ? `<span class="d-badge" style="background:var(--surface2);color:var(--text3)">예정</span>`
-    : `<span class="d-badge" style="background:var(--${c}-bg);color:var(--${c}-text)">${dDay}</span>`;
+    : `<span class="d-badge" style="background:${badgeBg};color:${badgeColor}">${dDay}</span>`;
 
   const headerHtml = (allDone) => `<div class="dept-header">
     <div class="dept-name-wrap">
@@ -2986,38 +3012,42 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
     }).join('');
 
     const allDone = tabKeys.some((_, i) => !!checks[`${projId}::${deptId}::tab::${i}`]);
-    return `<div class="dept-card${allDone?' all-done':''}">
+    return `<div class="dept-card${allDone?' all-done':''}" style="${cardBorderStyle}">
       ${headerHtml(allDone)}
-      <div class="dev-tabs">${tabItems}</div>
       <div class="dept-persons">${panels}</div>
+      <div class="dev-tabs">${tabItems}</div>
       <div class="dept-tasks" id="tasks-${key}"></div>
       ${addUI}
       ${catSectionHtml}
     </div>`;
   }
 
-  // 헤더+하위항목 카드
-  const tasksHtml = deptRows.map((r, i) => {
+  // 헤더+하위항목 카드: 데이터 초기화만 (태스크 텍스트 표시 없음)
+  deptRows.forEach((r, i) => {
     const task = r[BOARD_COL.TASK];
     const note = r[BOARD_COL.NOTE];
     const sheetRow = r[BOARD_COL.SHEET_ROW] || 0;
-    if (!task || !task.trim()) return '';
+    if (!task || !task.trim()) return;
     const sk = tmSafeKey(`${projId}::${deptId}::${i}`);
     _tmData[sk] = { sheetRow, members: parseTMMembers(r[BOARD_COL.MEMBERS] || '') };
     _siData[sk] = { sheetRow, items: parseSIItems(note || '') };
-    return renderTaskHeaderHtml(sk, task);
-  }).join('');
+  });
 
   const allSIItems = deptRows
     .filter(r => r[BOARD_COL.TASK] && r[BOARD_COL.TASK].trim())
     .flatMap(r => parseSIItems(r[BOARD_COL.NOTE] || ''));
   const allDone = allSIItems.length > 0 && allSIItems.every(item => item.done);
 
-  return `<div class="dept-card${allDone?' all-done':''}">
+  // 카드 레벨 담당자 키 초기화
+  const cardMembersSk = tmSafeKey(`${projId}::${deptId}::card`);
+  _tmData[cardMembersSk] = { sheetRow: first[BOARD_COL.SHEET_ROW] || 0, members: parseTMMembers(members || '') };
+
+  return `<div class="dept-card${allDone?' all-done':''}" style="${cardBorderStyle}">
     ${headerHtml(allDone)}
-    <div class="dept-tasks" id="tasks-${key}">${tasksHtml}</div>
-    ${addUI}
+    <div class="dept-persons">${renderTaskMembersHtml(cardMembersSk)}</div>
     ${catSectionHtml}
+    <div class="dept-tasks" id="tasks-${key}"></div>
+    ${addUI}
   </div>`;
 }
 
