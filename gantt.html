@@ -1999,22 +1999,31 @@ function buildDeadlineTimeline(selP) {
       else dotColor = '#4f7cff';
       dots.push({ date, dateStr: `${date.getMonth()+1}/${date.getDate()}`, color: dotColor });
     });
-    if (dots.length) rows.push({ center: c, dots });
+    if (dots.length) rows.push({ center: c, dots, fixedProjs });
   });
 
   if (!rows.length) return '';
 
   const CHART_W = 280;
-  const ROW_H = 32;
+  const ROW_H = 40;
   const totalMs = maxDate.getTime() - TODAY_ms || 1;
 
   function dtX(d) {
     return Math.max(2, Math.min(CHART_W - 6, (d.getTime() - TODAY_ms) / totalMs * CHART_W));
   }
 
-  const labelsHtml = rows.map(({ center }) =>
-    `<div style="height:${ROW_H}px;display:flex;align-items:center;font-size:8px;font-weight:700;color:#4a5068;overflow:hidden;white-space:nowrap;padding-right:4px;">${center.name.replace('비버','')}</div>`
-  ).join('');
+  const labelsHtml = rows.map(({ center, fixedProjs }) => {
+    const projItems = fixedProjs.map(p =>
+      `<span style="display:inline-flex;align-items:center;gap:2px;">
+        <span style="color:${p.color};font-size:8px;line-height:1;">●</span>
+        <span style="color:#6b7280;font-size:8px;white-space:nowrap;">${p.name}</span>
+      </span>`
+    ).join('');
+    return `<div style="height:${ROW_H}px;display:flex;flex-direction:column;justify-content:center;gap:2px;overflow:hidden;padding-right:6px;">
+      <span style="font-size:8px;font-weight:700;color:#4a5068;white-space:nowrap;">${center.name.replace('비버','')}</span>
+      <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center;">${projItems}</div>
+    </div>`;
+  }).join('');
 
   const chartRowsHtml = rows.map(({ dots }) => {
     const dotsHtml = dots.map(dot => {
@@ -2024,8 +2033,8 @@ function buildDeadlineTimeline(selP) {
         <div style="font-size:6px;color:${dot.color};font-weight:700;white-space:nowrap;margin-top:1px;">${dot.dateStr}</div>
       </div>`;
     }).join('');
-    return `<div style="height:${ROW_H}px;position:relative;border-bottom:1px solid #f5f7fa;">
-      <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:#e5e7eb;margin-top:-5px;"></div>
+    return `<div style="height:${ROW_H}px;position:relative;border-bottom:1px solid #e5e7eb;">
+      <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:#e5e7eb;"></div>
       <div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #ef4444;opacity:0.7;z-index:1;"></div>
       ${dotsHtml}
     </div>`;
@@ -2044,7 +2053,7 @@ function buildDeadlineTimeline(selP) {
   return `<div style="background:#fff;border-radius:12px;padding:8px 10px;box-shadow:0 1px 8px rgba(0,0,0,.08);margin-top:4px;">
     <div style="font-size:9px;font-weight:700;color:#4a5068;letter-spacing:.04em;margin-bottom:4px;">완료 예정일 타임라인</div>
     <div style="display:flex;align-items:stretch;">
-      <div style="flex-shrink:0;width:46px;">${labelsHtml}</div>
+      <div style="flex-shrink:0;width:110px;">${labelsHtml}</div>
       <div style="flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch;">
         <div style="position:relative;min-width:${CHART_W}px;">
           ${chartRowsHtml}
