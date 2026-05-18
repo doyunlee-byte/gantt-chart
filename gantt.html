@@ -399,12 +399,15 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     align-items: center;
   }
 
+  .dept-card.all-done { border: 2px solid #10b981 !important; background: rgba(16,185,129,0.06); }
   .dept-card.all-done .dept-header { background: #152A1D; }
   .dept-card.all-done .done-badge  { display: inline-flex; }
   .dept-card.all-done .d-remain    { display: none; }
+  .dept-card.all-done .d-badge { background: rgba(16,185,129,0.18) !important; color: #10b981 !important; }
 
   .done-badge { background: #1A3D25; color: #7ED99A; }
   :root.light .done-badge { background: #D4EDDA; color: #1A6B35; }
+  :root.light .dept-card.all-done { background: #f0fdf4; }
   :root.light .dept-card.all-done .dept-header { background: #EDF7EF; }
 
   .task-body { flex: 1; color: var(--text); }
@@ -2638,10 +2641,30 @@ function postBoardCellUpdate(sheetRow, col, value) {
   }).catch(e => console.error('[Board] postBoardCellUpdate 에러:', e));
 }
 
+function isCatAllDone(key) {
+  const data = loadBoardCatData();
+  const cats = data[key] || {};
+  const entries = Object.values(cats);
+  if (!entries.length) return false;
+  const allItems = entries.flatMap(cat => cat.items || []);
+  return allItems.length > 0 && allItems.every(item => item.done);
+}
+
 function updateCardDone(card) {
-  const checks = [...card.querySelectorAll('.task-check')];
-  const allDone = checks.length > 0 && checks.every(c => c.checked);
-  card.classList.toggle('all-done', allDone);
+  const wrap = card.querySelector('[id^="cat-wrap-"]');
+  const key = wrap ? wrap.id.slice('cat-wrap-'.length) : null;
+  const done = key ? isCatAllDone(key) : false;
+  card.classList.toggle('all-done', done);
+  const dBadge = card.querySelector('.d-badge');
+  if (dBadge) {
+    if (done) {
+      if (!dBadge.dataset.origText) dBadge.dataset.origText = dBadge.textContent;
+      dBadge.textContent = '완료';
+    } else if (dBadge.dataset.origText !== undefined) {
+      dBadge.textContent = dBadge.dataset.origText;
+      delete dBadge.dataset.origText;
+    }
+  }
 }
 
 function switchBoardDevTab(btn, idx) {
@@ -2955,7 +2978,13 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
     ? `<span class="d-badge" style="background:var(--surface2);color:var(--text3)">예정</span>`
     : `<span class="d-badge" style="background:${badgeBg};color:${badgeColor}">${dDay}</span>`;
 
-  const headerHtml = (allDone) => `<div class="dept-header">
+  const headerHtml = (allDone) => {
+    const badge = allDone
+      ? `<span class="d-badge" style="background:rgba(16,185,129,0.18);color:#10b981">완료</span>`
+      : dDayIsPending
+        ? `<span class="d-badge" style="background:var(--surface2);color:var(--text3)">예정</span>`
+        : `<span class="d-badge" style="background:${badgeBg};color:${badgeColor}">${dDay}</span>`;
+    return `<div class="dept-header">
     <div class="dept-name-wrap">
       <div class="dept-icon" style="background:var(--${c}-bg);color:var(--${c}-text)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${deptSvgPath(deptId)}</svg>
@@ -2963,8 +2992,9 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
       <span class="dept-name-text">${deptName}</span>
       <span class="done-badge">최종 완료</span>
     </div>
-    <div class="deadline-wrap">${dDayBadge}</div>
+    <div class="deadline-wrap">${badge}</div>
   </div>`;
+  };
 
   // 공통 "+ 업무 추가" UI
   const addUI = `<button class="task-add-btn" onclick="showTaskAddRow('${key}')">＋ 업무 추가</button>
@@ -3011,7 +3041,7 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
       return `<div class="dev-panel${i===0?' active':''}">${renderTaskMembersHtml(sk)}</div>`;
     }).join('');
 
-    const allDone = tabKeys.some((_, i) => !!checks[`${projId}::${deptId}::tab::${i}`]);
+    const allDone = isCatAllDone(key);
     return `<div class="dept-card${allDone?' all-done':''}" style="${cardBorderStyle}">
       ${headerHtml(allDone)}
       <div class="dept-persons">${panels}</div>
@@ -3033,10 +3063,7 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
     _siData[sk] = { sheetRow, items: parseSIItems(note || '') };
   });
 
-  const allSIItems = deptRows
-    .filter(r => r[BOARD_COL.TASK] && r[BOARD_COL.TASK].trim())
-    .flatMap(r => parseSIItems(r[BOARD_COL.NOTE] || ''));
-  const allDone = allSIItems.length > 0 && allSIItems.every(item => item.done);
+  const allDone = isCatAllDone(key);
 
   // 카드 레벨 담당자 키 초기화
   const cardMembersSk = tmSafeKey(`${projId}::${deptId}::card`);
@@ -3376,7 +3403,7 @@ function confirmAddTask(key) {
     _tmData[localSk] = { sheetRow: 0, members: [] };
     tasksDiv.insertAdjacentHTML('beforeend', renderTaskHeaderHtml(localSk, taskText));
     const card = tasksDiv.closest('.dept-card');
-    if (card) card.classList.remove('all-done');
+    if (card) updateCardDone(card);
   }
 
   hideTaskAddRow(key);
@@ -4311,6 +4338,8 @@ function onCatItemCheck(key, catName, ii, checked) {
   if (block) {
     const labels = block.querySelectorAll('.card-cat-item');
     if (labels[ii]) labels[ii].classList.toggle('is-done', checked);
+    const card = block.closest('.dept-card');
+    if (card) updateCardDone(card);
   }
 }
 
@@ -4343,6 +4372,8 @@ function refreshCardCatSection(key) {
       <button class="card-cat-add-btn" onclick="toggleCatDropdown('${_escAttr(key)}')">＋ 카테고리 추가</button>
       <div class="card-cat-dropdown" id="cat-dd-${key}">${getCatDropdownItems(key)}</div>
     </div>`;
+  const card = wrap.closest('.dept-card');
+  if (card) updateCardDone(card);
 }
 
 function refreshAllCatDropdowns() {
