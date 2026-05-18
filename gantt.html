@@ -1331,7 +1331,7 @@ function switchPage(page){
     }
     renderCapPage();
   }
-  if(page==='board'){loadBoardData();}
+  if(page==='board'){if(!boardDataLoaded)loadBoardData();else boardRenderAll();}
   if(page==='summary'){
     if(window.innerWidth<=768&&fcSelectedProjects.size>0){summarySelectedProjs.clear();fcSelectedProjects.forEach(id=>summarySelectedProjs.add(id));}
     renderSummaryPage();
@@ -2633,7 +2633,12 @@ function confirmAddTM(sk) {
   d.members.push(name);
   hideTMInput(sk);
   refreshTaskMembers(sk);
-  if (d.sheetRow) postBoardCellUpdate(d.sheetRow, 9, serializeTMMembers(d.members));
+  const serialized = serializeTMMembers(d.members);
+  if (d.sheetRow) {
+    postBoardCellUpdate(d.sheetRow, 9, serialized);
+    const row = boardData.find(r => r['_sheetRow'] === d.sheetRow);
+    if (row) row['담당자'] = serialized;
+  }
   showBoardToast('"' + name + '" 담당자 추가됨');
 }
 
@@ -2643,7 +2648,12 @@ function removeTaskMember(sk, idx) {
   const name = d.members[idx];
   d.members.splice(idx, 1);
   refreshTaskMembers(sk);
-  if (d.sheetRow) postBoardCellUpdate(d.sheetRow, 9, serializeTMMembers(d.members));
+  const serialized = serializeTMMembers(d.members);
+  if (d.sheetRow) {
+    postBoardCellUpdate(d.sheetRow, 9, serialized);
+    const row = boardData.find(r => r['_sheetRow'] === d.sheetRow);
+    if (row) row['담당자'] = serialized;
+  }
   showBoardToast('"' + name + '" 삭제됨');
 }
 
@@ -2910,6 +2920,7 @@ function renderBoardProject(projName, projRows, projIdx) {
 
 // 구글 시트 태스크보드 탭 데이터 로드 & 렌더
 let boardData = [];
+let boardDataLoaded = false;
 
 // 태스크보드 CSV: 1행부터 데이터 (헤더 행 없음), 컬럼 인덱스로 파싱
 const BOARD_COLS = ['프로젝트명','시작일','마감일','부서ID','부서명','D-day','아이콘색','태스크','태스크노트','담당자','탭구분','완료'];
@@ -2954,6 +2965,7 @@ async function loadBoardData() {
     boardData = rows.filter(r => r['프로젝트명'] && r['프로젝트명'].trim());
     console.log('[Board] valid project rows:', boardData.length);
     if (!boardData.length) throw new Error('프로젝트명 값이 있는 행 없음 (첫 행: ' + Object.values(rows[0] || {}).slice(0,3).join(', ') + ')');
+    boardDataLoaded = true;
     boardRenderAll();
   } catch(e) {
     console.error('[Board] loadBoardData 에러:', e);
@@ -3073,7 +3085,24 @@ function confirmAddTask(key) {
 
   hideTaskAddRow(key);
 
-  // Google Sheets POST
+  // boardData 캐시에 즉시 반영 (탭 전환 후에도 유지)
+  boardData.push({
+    '프로젝트명': meta.projId,
+    '시작일': meta.projStart || '',
+    '마감일': meta.projEnd || '',
+    '부서ID': meta.deptId,
+    '부서명': meta.deptName,
+    'D-day': meta.dDay || '예정',
+    '아이콘색': meta.iconColor || 'blue',
+    '태스크': taskText,
+    '태스크노트': '',
+    '담당자': '',
+    '탭구분': '',
+    '완료': 'FALSE',
+    '_sheetRow': 0,
+  });
+
+  // Google Sheets POST (백그라운드)
   postAddBoardTask({
     projName: meta.projId,
     projStart: meta.projStart || '',
