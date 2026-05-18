@@ -542,6 +542,53 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .board-filter-chip.active {
     background: var(--accent); color: #fff; border-color: transparent; font-weight: 600;
   }
+
+  /* ─── 카테고리 라이브러리 ─── */
+  .cat-library { background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; }
+  .cat-library:empty { display: none; }
+  .cat-library-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
+  .cat-library-title { font-size: 13px; font-weight: 700; color: var(--text2); }
+  .cat-library-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cat-card { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 12px; min-width: 160px; max-width: 220px; }
+  .cat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 4px; }
+  .cat-card-name { font-size: 12px; font-weight: 700; color: var(--text); }
+  .cat-item-list { display: flex; flex-direction: column; gap: 3px; }
+  .cat-item-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text2); gap: 4px; }
+  .cat-item-row span { flex: 1; }
+  .cat-item-del { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 12px; line-height: 1; padding: 1px 3px; opacity: 0; transition: opacity .15s; }
+  .cat-item-row:hover .cat-item-del { opacity: 1; }
+  .cat-item-del:hover { color: var(--red-text, #e05c6b); }
+  .cat-add-item-row { display: flex; gap: 4px; margin-top: 8px; }
+  .cat-add-item-input { flex: 1; min-width: 0; padding: 3px 7px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface); color: var(--text); font-size: 11px; font-family: inherit; outline: none; }
+  .cat-add-item-input:focus { border-color: var(--accent); }
+  .cat-add-item-btn { background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 3px 8px; cursor: pointer; font-size: 12px; flex-shrink: 0; }
+  .cat-del-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 13px; padding: 0 2px; line-height: 1; flex-shrink: 0; }
+  .cat-del-btn:hover { color: var(--red-text, #e05c6b); }
+  .add-cat-btn { font-size: 12px; padding: 5px 12px; border-radius: 8px; border: 1px dashed var(--border2); background: transparent; color: var(--text3); cursor: pointer; white-space: nowrap; transition: all .15s; font-family: inherit; flex-shrink: 0; }
+  .add-cat-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .cat-add-form-wrap { display: none; align-items: center; gap: 4px; }
+  .cat-add-form-input { padding: 4px 9px; border-radius: 7px; border: 1px solid var(--border2); background: var(--surface); color: var(--text); font-size: 12px; font-family: inherit; outline: none; min-width: 130px; }
+  .cat-add-form-input:focus { border-color: var(--accent); }
+
+  /* ─── 카드 내 카테고리 섹션 ─── */
+  .dept-cat-wrap { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+  .card-cat-block { background: var(--surface2); border-radius: 8px; padding: 8px 10px; }
+  .card-cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+  .card-cat-name { font-size: 11px; font-weight: 700; color: var(--text2); }
+  .card-cat-rm { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 13px; padding: 0 2px; line-height: 1; }
+  .card-cat-rm:hover { color: var(--red-text, #e05c6b); }
+  .card-cat-items { display: flex; flex-direction: column; gap: 3px; }
+  .card-cat-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); cursor: pointer; padding: 2px 0; line-height: 1.4; }
+  .card-cat-item input[type=checkbox] { width: 13px; height: 13px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+  .card-cat-item.is-done span { text-decoration: line-through; opacity: .5; }
+  .card-cat-dd-wrap { position: relative; }
+  .card-cat-add-btn { font-size: 11px; padding: 4px 10px; border-radius: 7px; border: 1px dashed var(--border); background: transparent; color: var(--text3); cursor: pointer; width: 100%; margin-top: 2px; transition: all .15s; font-family: inherit; text-align: center; }
+  .card-cat-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .card-cat-dropdown { display: none; position: absolute; bottom: calc(100% + 4px); left: 0; right: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; z-index: 200; padding: 4px; box-shadow: 0 4px 20px rgba(0,0,0,.2); }
+  .card-cat-dropdown.show { display: block; }
+  .card-cat-dd-item { padding: 6px 12px; font-size: 12px; color: var(--text2); cursor: pointer; border-radius: 6px; }
+  .card-cat-dd-item:hover { background: var(--surface); color: var(--accent); }
+
   /* ─── 태스크 추가 UI ─── */
   .task-add-btn {
     display: flex; align-items: center; gap: 5px; width: 100%;
@@ -1171,6 +1218,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
           <button class="ai-send-btn" onclick="loadBoardData()" style="font-size:12px;padding:6px 14px;">🔄 새로고침</button>
         </div>
         <div id="board-filter-bar" class="board-filter-bar"></div>
+        <div id="cat-library-section" class="cat-library"></div>
         <div id="projects-container"></div>
       </div>
     </div>
@@ -2901,6 +2949,14 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
     <button class="task-add-cancel" onclick="hideTaskAddRow('${key}')">✕</button>
   </div>`;
 
+  const catSectionHtml = `<div class="dept-cat-wrap" id="cat-wrap-${key}">
+    ${renderCardCatBlocks(key)}
+    <div class="card-cat-dd-wrap">
+      <button class="card-cat-add-btn" onclick="toggleCatDropdown('${key}')">＋ 카테고리 추가</button>
+      <div class="card-cat-dropdown" id="cat-dd-${key}">${getCatDropdownItems(key)}</div>
+    </div>
+  </div>`;
+
   if (hasTabs) {
     const tabGroups = {};
     deptRows.forEach(r => {
@@ -2936,6 +2992,7 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
       <div class="dept-persons">${panels}</div>
       <div class="dept-tasks" id="tasks-${key}"></div>
       ${addUI}
+      ${catSectionHtml}
     </div>`;
   }
 
@@ -2960,6 +3017,7 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
     ${headerHtml(allDone)}
     <div class="dept-tasks" id="tasks-${key}">${tasksHtml}</div>
     ${addUI}
+    ${catSectionHtml}
   </div>`;
 }
 
@@ -3179,6 +3237,7 @@ async function loadBoardData() {
 function boardRenderAll() {
   const container = document.getElementById('projects-container');
   boardAddMeta = {};
+  renderCatLibrary();
 
   if (!boardData.length) {
     renderBoardFilterBar([]);
@@ -3997,6 +4056,272 @@ function renderSummaryPage() {
 .task-item:hover .task-edit-btn { opacity:.7; }
 .task-item:hover .task-edit-btn:hover { opacity:1; color:var(--accent); }
 </style>
+
+<!-- ══════════════════════════════════════════════
+     카테고리 라이브러리 시스템
+════════════════════════════════════════════════ -->
+<script>
+// ─── 기본 카테고리 라이브러리 ───
+const DEFAULT_CAT_LIB = {
+  categories: [
+    { id: 'cat_store',    name: '매장정보', items: ['사업자번호','점주성함','TID','연락처','주소'] },
+    { id: 'cat_install',  name: '설치정보', items: ['기기수량','설치일','설치담당자'] },
+    { id: 'cat_contract', name: '계약정보', items: ['계약서','VAN사','계약일'] },
+  ]
+};
+
+function loadCatLib() {
+  try {
+    const raw = localStorage.getItem('catLib');
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return JSON.parse(JSON.stringify(DEFAULT_CAT_LIB));
+}
+function saveCatLib(lib) {
+  try { localStorage.setItem('catLib', JSON.stringify(lib)); } catch {}
+}
+function loadBoardCatData() {
+  try { return JSON.parse(localStorage.getItem('boardCatData') || '{}'); } catch { return {}; }
+}
+function saveBoardCatData(data) {
+  try { localStorage.setItem('boardCatData', JSON.stringify(data)); } catch {}
+}
+function postCatDataToSheet(cardKey, cardData) {
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
+    body: JSON.stringify({ action: 'saveCatData', cardKey, data: cardData }),
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+  }).catch(() => {});
+}
+
+// ─── 카테고리 라이브러리 UI ───
+function renderCatLibrary() {
+  const section = document.getElementById('cat-library-section');
+  if (!section) return;
+  const lib = loadCatLib();
+
+  const gridHtml = lib.categories.map((cat, ci) => {
+    const itemsHtml = cat.items.map((item, ii) =>
+      `<div class="cat-item-row">
+        <span>${item}</span>
+        <button class="cat-item-del" onclick="deleteCatItem(${ci},${ii})" title="삭제">×</button>
+      </div>`
+    ).join('');
+    return `<div class="cat-card">
+      <div class="cat-card-header">
+        <span class="cat-card-name">${cat.name}</span>
+        <button class="cat-del-btn" onclick="deleteCategory(${ci})" title="카테고리 삭제">🗑</button>
+      </div>
+      <div class="cat-item-list">${itemsHtml}</div>
+      <div class="cat-add-item-row">
+        <input class="cat-add-item-input" id="cat-item-inp-${ci}" placeholder="항목 추가..."
+          onkeydown="if(event.key==='Enter')addCatItem(${ci})">
+        <button class="cat-add-item-btn" onclick="addCatItem(${ci})">＋</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  section.innerHTML = `
+    <div class="cat-library-header">
+      <span class="cat-library-title">📁 카테고리 라이브러리</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div class="cat-add-form-wrap" id="cat-add-form-wrap">
+          <input class="cat-add-form-input" id="cat-add-name-input" placeholder="카테고리명..."
+            onkeydown="if(event.key==='Enter')confirmAddCat();else if(event.key==='Escape')hideAddCatForm()">
+          <button class="cat-add-item-btn" onclick="confirmAddCat()">확인</button>
+          <button class="cat-item-del" style="opacity:1" onclick="hideAddCatForm()">✕</button>
+        </div>
+        <button class="add-cat-btn" id="cat-add-trigger-btn" onclick="showAddCatForm()">＋ 카테고리 추가</button>
+      </div>
+    </div>
+    <div class="cat-library-grid">${gridHtml}</div>`;
+}
+
+function showAddCatForm() {
+  const form = document.getElementById('cat-add-form-wrap');
+  const btn  = document.getElementById('cat-add-trigger-btn');
+  if (form) form.style.display = 'flex';
+  if (btn)  btn.style.display  = 'none';
+  const inp = document.getElementById('cat-add-name-input');
+  if (inp) { inp.value = ''; inp.focus(); }
+}
+function hideAddCatForm() {
+  const form = document.getElementById('cat-add-form-wrap');
+  const btn  = document.getElementById('cat-add-trigger-btn');
+  if (form) form.style.display = 'none';
+  if (btn)  btn.style.display  = '';
+}
+function confirmAddCat() {
+  const inp  = document.getElementById('cat-add-name-input');
+  const name = inp ? inp.value.trim() : '';
+  if (!name) return;
+  const lib = loadCatLib();
+  lib.categories.push({ id: 'cat_' + Date.now(), name, items: [] });
+  saveCatLib(lib);
+  renderCatLibrary();
+  refreshAllCatDropdowns();
+  showBoardToast('"' + name + '" 카테고리 추가됨');
+}
+function deleteCategory(ci) {
+  const lib = loadCatLib();
+  const catName = lib.categories[ci] ? lib.categories[ci].name : '';
+  if (!catName) return;
+  if (!confirm('"' + catName + '" 카테고리를 삭제할까요?')) return;
+  lib.categories.splice(ci, 1);
+  saveCatLib(lib);
+  renderCatLibrary();
+  refreshAllCatDropdowns();
+  showBoardToast('"' + catName + '" 삭제됨');
+}
+function addCatItem(ci) {
+  const inp  = document.getElementById('cat-item-inp-' + ci);
+  const text = inp ? inp.value.trim() : '';
+  if (!text) return;
+  const lib = loadCatLib();
+  if (!lib.categories[ci]) return;
+  lib.categories[ci].items.push(text);
+  saveCatLib(lib);
+  renderCatLibrary();
+  refreshAllCatDropdowns();
+  const inp2 = document.getElementById('cat-item-inp-' + ci);
+  if (inp2) { inp2.value = ''; inp2.focus(); }
+}
+function deleteCatItem(ci, ii) {
+  const lib = loadCatLib();
+  if (!lib.categories[ci]) return;
+  lib.categories[ci].items.splice(ii, 1);
+  saveCatLib(lib);
+  renderCatLibrary();
+}
+
+// ─── 카드 내 카테고리 블록 렌더 헬퍼 ───
+function _escAttr(s) { return String(s).replace(/'/g, '\\x27'); }
+
+function renderCardCatBlocks(key) {
+  const data     = loadBoardCatData();
+  const cardCats = data[key] || {};
+  return Object.entries(cardCats).map(([catName, catState]) => {
+    const safeId   = catName.replace(/[^a-zA-Z0-9가-힣]/g, '_');
+    const items    = catState.items || [];
+    const itemsHtml = items.map((item, ii) =>
+      `<label class="card-cat-item${item.done ? ' is-done' : ''}">
+        <input type="checkbox" ${item.done ? 'checked' : ''}
+          onchange="onCatItemCheck('${_escAttr(key)}','${_escAttr(catName)}',${ii},this.checked)">
+        <span>${item.name}</span>
+      </label>`
+    ).join('');
+    return `<div class="card-cat-block" id="card-cat-${key}-${safeId}">
+      <div class="card-cat-header">
+        <span class="card-cat-name">${catName}</span>
+        <button class="card-cat-rm" onclick="removeCardCat('${_escAttr(key)}','${_escAttr(catName)}')">✕</button>
+      </div>
+      <div class="card-cat-items">${itemsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function getCatDropdownItems(key) {
+  const lib      = loadCatLib();
+  const data     = loadBoardCatData();
+  const cardCats = data[key] || {};
+  const avail    = lib.categories.filter(cat => !cardCats[cat.name]);
+  if (!avail.length) return '<div style="padding:6px 12px;font-size:11px;color:var(--text3);">사용 가능한 카테고리 없음</div>';
+  return avail.map(cat =>
+    `<div class="card-cat-dd-item" onclick="addCardCat('${_escAttr(key)}','${_escAttr(cat.name)}')">${cat.name}</div>`
+  ).join('');
+}
+
+// ─── 카드 카테고리 동작 ───
+function toggleCatDropdown(key) {
+  const dd = document.getElementById('cat-dd-' + key);
+  if (!dd) return;
+  dd.innerHTML = getCatDropdownItems(key);
+  dd.classList.toggle('show');
+  if (dd.classList.contains('show')) {
+    setTimeout(() => {
+      const handler = (e) => {
+        if (!dd.contains(e.target)) { dd.classList.remove('show'); document.removeEventListener('click', handler); }
+      };
+      document.addEventListener('click', handler);
+    }, 0);
+  }
+}
+
+function addCardCat(key, catName) {
+  const lib = loadCatLib();
+  const cat = lib.categories.find(c => c.name === catName);
+  if (!cat) return;
+  const data = loadBoardCatData();
+  if (!data[key]) data[key] = {};
+  if (data[key][catName]) { const dd = document.getElementById('cat-dd-'+key); if(dd) dd.classList.remove('show'); return; }
+  data[key][catName] = { items: cat.items.map(name => ({ name, done: false })) };
+  saveBoardCatData(data);
+  postCatDataToSheet(key, data[key]);
+  refreshCardCatSection(key);
+  showBoardToast('"' + catName + '" 카테고리 추가됨');
+}
+
+function removeCardCat(key, catName) {
+  const data = loadBoardCatData();
+  if (data[key]) delete data[key][catName];
+  saveBoardCatData(data);
+  postCatDataToSheet(key, data[key] || {});
+  refreshCardCatSection(key);
+  showBoardToast('"' + catName + '" 제거됨');
+}
+
+function onCatItemCheck(key, catName, ii, checked) {
+  const data = loadBoardCatData();
+  if (!data[key] || !data[key][catName] || !data[key][catName].items[ii]) return;
+  data[key][catName].items[ii].done = checked;
+  saveBoardCatData(data);
+  postCatDataToSheet(key, data[key]);
+  const safeId = catName.replace(/[^a-zA-Z0-9가-힣]/g,'_');
+  const block  = document.getElementById('card-cat-' + key + '-' + safeId);
+  if (block) {
+    const labels = block.querySelectorAll('.card-cat-item');
+    if (labels[ii]) labels[ii].classList.toggle('is-done', checked);
+  }
+}
+
+function refreshCardCatSection(key) {
+  const wrap = document.getElementById('cat-wrap-' + key);
+  if (!wrap) return;
+  const data     = loadBoardCatData();
+  const cardCats = data[key] || {};
+  const blocksHtml = Object.entries(cardCats).map(([catName, catState]) => {
+    const safeId    = catName.replace(/[^a-zA-Z0-9가-힣]/g,'_');
+    const items     = catState.items || [];
+    const itemsHtml = items.map((item, ii) =>
+      `<label class="card-cat-item${item.done ? ' is-done' : ''}">
+        <input type="checkbox" ${item.done ? 'checked' : ''}
+          onchange="onCatItemCheck('${_escAttr(key)}','${_escAttr(catName)}',${ii},this.checked)">
+        <span>${item.name}</span>
+      </label>`
+    ).join('');
+    return `<div class="card-cat-block" id="card-cat-${key}-${safeId}">
+      <div class="card-cat-header">
+        <span class="card-cat-name">${catName}</span>
+        <button class="card-cat-rm" onclick="removeCardCat('${_escAttr(key)}','${_escAttr(catName)}')">✕</button>
+      </div>
+      <div class="card-cat-items">${itemsHtml}</div>
+    </div>`;
+  }).join('');
+
+  wrap.innerHTML = `${blocksHtml}
+    <div class="card-cat-dd-wrap">
+      <button class="card-cat-add-btn" onclick="toggleCatDropdown('${_escAttr(key)}')">＋ 카테고리 추가</button>
+      <div class="card-cat-dropdown" id="cat-dd-${key}">${getCatDropdownItems(key)}</div>
+    </div>`;
+}
+
+function refreshAllCatDropdowns() {
+  document.querySelectorAll('[id^="cat-wrap-"]').forEach(wrap => {
+    const key = wrap.id.replace('cat-wrap-', '');
+    refreshCardCatSection(key);
+  });
+}
+</script>
 
 <script>
 let _boardModalMode = 'add';
