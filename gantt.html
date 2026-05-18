@@ -2963,16 +2963,19 @@ async function loadBoardData() {
     console.log('[Board] parsed rows:', rows.length, '/ first row 프로젝트명:', rows[0] ? rows[0]['프로젝트명'] : '');
     if (!rows || rows.length === 0) throw new Error('empty CSV');
     const rawRows = rows.filter(r => r['프로젝트명'] && r['프로젝트명'].trim());
+    // 진단: 프로젝트별 raw 행 수 출력
+    const _diagCount = {};
+    rawRows.forEach(r => { const p = r['프로젝트명']; _diagCount[p] = (_diagCount[p]||0)+1; });
+    console.log('[Board] raw rows per project:', JSON.stringify(_diagCount));
+    // 중복 제거: sheetRow가 달라도 동일 프로젝트+부서+태스크면 하나만 유지
     const seenRows = new Set();
     boardData = rawRows.filter(r => {
-      const k = r['_sheetRow'] > 0
-        ? `row::${r['_sheetRow']}`
-        : `${r['프로젝트명']}::${r['부서ID']}::${r['태스크']}`;
+      const k = `${r['프로젝트명']}::${r['부서ID']}::${r['태스크']}`;
       if (seenRows.has(k)) return false;
       seenRows.add(k);
       return true;
     });
-    console.log('[Board] valid project rows:', boardData.length, '/ raw:', rawRows.length);
+    console.log('[Board] after dedup:', boardData.length, '/ raw:', rawRows.length);
     if (!boardData.length) throw new Error('프로젝트명 값이 있는 행 없음 (첫 행: ' + Object.values(rows[0] || {}).slice(0,3).join(', ') + ')');
     boardDataLoaded = true;
     boardRenderAll();
@@ -2999,12 +3002,10 @@ function boardRenderAll() {
     return;
   }
 
-  // 중복 제거 (안전망: 동일 sheetRow 또는 프로젝트+부서+태스크 조합)
+  // 중복 제거 (안전망: 프로젝트+부서+태스크 복합키, sheetRow 무관)
   const _seen = new Set();
   boardData = boardData.filter(r => {
-    const k = r['_sheetRow'] > 0
-      ? `row::${r['_sheetRow']}`
-      : `${r['프로젝트명']}::${r['부서ID']}::${r['태스크']}`;
+    const k = `${r['프로젝트명']}::${r['부서ID']}::${r['태스크']}`;
     if (_seen.has(k)) return false;
     _seen.add(k);
     return true;
