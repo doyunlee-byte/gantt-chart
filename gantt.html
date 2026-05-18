@@ -523,6 +523,62 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* ─── 보드 필터바 ─── */
+  .board-filter-bar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 0.6rem 1rem; margin-bottom: 1rem;
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .board-filter-bar:empty { display: none; }
+  .board-filter-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+  .board-filter-chip {
+    display: inline-flex; align-items: center; font-size: 12px; font-weight: 500;
+    font-family: inherit; padding: 3px 12px; border-radius: 20px;
+    border: 0.5px solid var(--border2); background: var(--surface2);
+    color: var(--text2); cursor: pointer; transition: all 0.15s; line-height: 1.5;
+  }
+  .board-filter-chip:hover { opacity: 0.75; }
+  .board-filter-chip.active {
+    background: var(--accent); color: #fff; border-color: transparent; font-weight: 600;
+  }
+  /* ─── 태스크 추가 UI ─── */
+  .task-add-btn {
+    display: flex; align-items: center; gap: 5px; width: 100%;
+    padding: 6px 0.9rem; border: none; background: none;
+    color: var(--text3); font-size: 12px; font-family: inherit;
+    cursor: pointer; text-align: left;
+    border-top: 0.5px solid var(--border); transition: color 0.15s;
+  }
+  .task-add-btn:hover { color: var(--accent); }
+  .task-add-row {
+    display: none; padding: 6px 0.9rem;
+    gap: 6px; border-top: 0.5px solid var(--border); align-items: center;
+  }
+  .task-add-row.show { display: flex; }
+  .task-add-input {
+    flex: 1; font-family: inherit; font-size: 12px; color: var(--text);
+    background: var(--surface2); border: 0.5px solid var(--border2);
+    border-radius: 6px; padding: 5px 9px; outline: none;
+  }
+  .task-add-input:focus { border-color: var(--accent); }
+  .task-add-confirm {
+    background: var(--accent); color: #fff; border: none; border-radius: 6px;
+    padding: 5px 12px; font-size: 12px; font-weight: 600;
+    font-family: inherit; cursor: pointer; white-space: nowrap;
+  }
+  .task-add-cancel {
+    background: none; color: var(--text3); border: none;
+    padding: 5px 4px; font-size: 14px; font-family: inherit;
+    cursor: pointer; line-height: 1;
+  }
+  .task-edit-btn {
+    background: none; border: none; color: var(--text3);
+    font-size: 11px; cursor: pointer; padding: 0 2px;
+    flex-shrink: 0; opacity: 0.5; transition: opacity 0.15s;
+  }
+  .task-edit-btn:hover { opacity: 1; }
+
   .board-page .board-container{max-width:1440px;margin:0 auto;}
 
   /* ── 간트 Summary ── */
@@ -971,13 +1027,11 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
         <div class="page-header">
           <div>
             <div class="page-title">📋 프로젝트 태스크 보드</div>
-            <div class="page-sub">구글 시트 연동 · 종합탭에 프로젝트 추가 시 자동 반영</div>
+            <div class="page-sub">팀별 업무 추가 · 완료 체크 → Google Sheets 자동 저장</div>
           </div>
-          <div style="display:flex;gap:8px;">
-            <button class="ai-send-btn" onclick="openAddBoardTask()" style="font-size:12px;padding:6px 14px;background:var(--accent);color:#fff;border-color:transparent;">✚ 추가</button>
-            <button class="ai-send-btn" onclick="loadBoardData()" style="font-size:12px;padding:6px 14px;">🔄 새로고침</button>
-          </div>
+          <button class="ai-send-btn" onclick="loadBoardData()" style="font-size:12px;padding:6px 14px;">🔄 새로고침</button>
         </div>
+        <div id="board-filter-bar" class="board-filter-bar"></div>
         <div id="projects-container"></div>
       </div>
     </div>
@@ -2439,21 +2493,22 @@ function renderMemberChips(membersStr, colorKey) {
 }
 
 // 부서 카드 렌더링 (시트 데이터 기반)
-function renderBoardDeptCard(deptRows, projId) {
+function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, deptIdx) {
   if (!deptRows.length) return '';
   const first    = deptRows[0];
   const deptId   = first[BOARD_COL.DEPT_ID];
   const deptName = first[BOARD_COL.DEPT_NAME];
-  const dDay     = first[BOARD_COL.DDAY];   // "D-14 (05/15)" 또는 "예정"
+  const dDay     = first[BOARD_COL.DDAY];
   const iconColor = first[BOARD_COL.ICON];
   const members  = first[BOARD_COL.MEMBERS];
   const c        = iconColor;
   const checks   = getBoardChecks();
 
-  // 탭구분 있는 행들 → 개발팀 스타일 (탭 버튼)
+  const key = 'bk_' + projIdx + '_' + deptIdx;
+  boardAddMeta[key] = { projId, deptId, deptName, iconColor, dDay, projStart, projEnd };
+
   const hasTabs = deptRows.some(r => r[BOARD_COL.TAB_GROUP] && r[BOARD_COL.TAB_GROUP].trim());
 
-  // D-day 배지 색상
   const dDayIsPending = dDay === '예정';
   const dDayBadge = dDayIsPending
     ? `<span class="d-badge" style="background:var(--surface2);color:var(--text3)">예정</span>`
@@ -2467,13 +2522,19 @@ function renderBoardDeptCard(deptRows, projId) {
       <span class="dept-name-text">${deptName}</span>
       <span class="done-badge">최종 완료</span>
     </div>
-    <div class="deadline-wrap">
-      ${dDayBadge}
-    </div>
+    <div class="deadline-wrap">${dDayBadge}</div>
+  </div>`;
+
+  // 공통 "+ 업무 추가" UI
+  const addUI = `<button class="task-add-btn" onclick="showTaskAddRow('${key}')">＋ 업무 추가</button>
+  <div class="task-add-row" id="add-row-${key}">
+    <input class="task-add-input" placeholder="업무 내용 입력..." id="add-input-${key}"
+      onkeydown="if(event.key==='Enter')confirmAddTask('${key}')">
+    <button class="task-add-confirm" onclick="confirmAddTask('${key}')">확인</button>
+    <button class="task-add-cancel" onclick="hideTaskAddRow('${key}')">✕</button>
   </div>`;
 
   if (hasTabs) {
-    // 탭구분별로 그룹핑
     const tabGroups = {};
     deptRows.forEach(r => {
       const tg = r[BOARD_COL.TAB_GROUP] || '기타';
@@ -2483,17 +2544,16 @@ function renderBoardDeptCard(deptRows, projId) {
     const tabKeys = Object.keys(tabGroups);
 
     const tabItems = tabKeys.map((tg, i) => {
-      const key = `${projId}::${deptId}::tab::${i}`;
-      const checked = !!checks[key];
+      const k = `${projId}::${deptId}::tab::${i}`;
+      const checked = !!checks[k];
       const tabSheetRows = tabGroups[tg].map(r => r[BOARD_COL.SHEET_ROW]).filter(Boolean);
       return `<div class="dev-tab-item${checked ? ' is-done' : ''}">
         <input type="checkbox" class="task-check" ${checked ? 'checked' : ''}
-          onchange="onBoardDevTabCheck(this,'${key}',[${tabSheetRows.join(',')}])" onclick="event.stopPropagation()">
+          onchange="onBoardDevTabCheck(this,'${k}',[${tabSheetRows.join(',')}])" onclick="event.stopPropagation()">
         <button class="dev-tab${i===0?' active':''}" onclick="switchBoardDevTab(this,${i})">${tg}</button>
       </div>`;
     }).join('');
 
-    // 탭별 담당자 패널
     const panels = tabKeys.map((tg, i) => {
       const rows = tabGroups[tg];
       const mem = rows[0][BOARD_COL.MEMBERS] || members;
@@ -2506,6 +2566,8 @@ function renderBoardDeptCard(deptRows, projId) {
       ${headerHtml(allDone)}
       <div class="dev-tabs">${tabItems}</div>
       <div class="dept-persons">${panels}</div>
+      <div class="dept-tasks" id="tasks-${key}"></div>
+      ${addUI}
     </div>`;
   }
 
@@ -2515,13 +2577,13 @@ function renderBoardDeptCard(deptRows, projId) {
     const note = r[BOARD_COL.NOTE];
     const sheetRow = r[BOARD_COL.SHEET_ROW] || 0;
     if (!task || !task.trim()) return '';
-    const key = `${projId}::${deptId}::${i}`;
-    const checked = !!checks[key];
+    const k = `${projId}::${deptId}::${i}`;
+    const checked = !!checks[k];
     return `<div class="task-item${checked?' is-done':''}">
       <input type="checkbox" class="task-check" ${checked?'checked':''}
-        onchange="onBoardCheck(this,'${key}',${sheetRow})">
+        onchange="onBoardCheck(this,'${k}',${sheetRow})">
       <div class="task-body">${task}${note?`<span class="task-note">${note}</span>`:''}</div>
-      ${sheetRow?`<button class="task-edit-btn" onclick="openEditBoardTask(${sheetRow})" title="수정">✏</button>`:''}
+      ${sheetRow?`<button class="task-edit-btn" title="수정">✏</button>`:''}
     </div>`;
   }).join('');
 
@@ -2532,13 +2594,14 @@ function renderBoardDeptCard(deptRows, projId) {
 
   return `<div class="dept-card${allDone?' all-done':''}">
     ${headerHtml(allDone)}
-    ${tasksHtml ? `<div class="dept-tasks">${tasksHtml}</div>` : ''}
+    <div class="dept-tasks" id="tasks-${key}">${tasksHtml}</div>
+    ${addUI}
     ${chipsHtml ? `<div class="dept-persons">${chipsHtml}</div>` : ''}
   </div>`;
 }
 
 // 프로젝트 섹션 렌더링
-function renderBoardProject(projName, projRows) {
+function renderBoardProject(projName, projRows, projIdx) {
   const first = projRows[0];
   const startDate = first[BOARD_COL.START] || '';
   const endDate   = first[BOARD_COL.END]   || '';
@@ -2555,9 +2618,10 @@ function renderBoardProject(projName, projRows) {
   });
 
   const DEPT_ORDER = ['sales', 'dev', 'van', 'pi'];
+  let deptIdx = 0;
   const cardsHtml = DEPT_ORDER
     .filter(did => deptGroups[did])
-    .map(did => renderBoardDeptCard(deptGroups[did], projName))
+    .map(did => renderBoardDeptCard(deptGroups[did], projName, startDate, endDate, projIdx, deptIdx++))
     .join('');
 
   return `<div class="project-section" id="board-proj-${projName.replace(/\s/g,'_')}">
@@ -2628,7 +2692,10 @@ async function loadBoardData() {
 
 function boardRenderAll() {
   const container = document.getElementById('projects-container');
+  boardAddMeta = {};
+
   if (!boardData.length) {
+    renderBoardFilterBar([]);
     container.innerHTML = `<div class="empty-state">
       <p>📋 태스크보드 탭에 데이터가 없습니다.<br>
       종합탭에 프로젝트를 추가하면 자동으로 생성됩니다.</p>
@@ -2641,7 +2708,6 @@ function boardRenderAll() {
   boardData.forEach(r => {
     const pname = r['프로젝트명'].trim();
     if (!projGroups[pname]) projGroups[pname] = [];
-    // 배열 형태로 변환
     projGroups[pname].push([
       r['프로젝트명'] || '',
       r['시작일'] || '',
@@ -2659,9 +2725,110 @@ function boardRenderAll() {
     ]);
   });
 
-  container.innerHTML = Object.entries(projGroups)
-    .map(([name, rows]) => renderBoardProject(name, rows))
+  const projNames = Object.keys(projGroups);
+  renderBoardFilterBar(projNames);
+
+  const visible = boardSelectedProjs.size > 0
+    ? projNames.filter(n => boardSelectedProjs.has(n))
+    : projNames;
+
+  container.innerHTML = visible
+    .map((name, idx) => renderBoardProject(name, projGroups[name], idx))
     .join('');
+}
+
+// ─── 보드 필터 / 추가 UI 헬퍼 ───
+
+let boardFilterNames = [];
+let boardAddMeta = {};
+const boardSelectedProjs = new Set();
+
+function toggleBoardFilter(idx) {
+  const name = boardFilterNames[idx];
+  if (!name) return;
+  if (boardSelectedProjs.has(name)) boardSelectedProjs.delete(name);
+  else boardSelectedProjs.add(name);
+  boardRenderAll();
+}
+
+function renderBoardFilterBar(projNames) {
+  boardFilterNames = projNames;
+  const bar = document.getElementById('board-filter-bar');
+  if (!bar) return;
+  if (projNames.length <= 1) { bar.innerHTML = ''; return; }
+  const chips = projNames.map((n, i) => {
+    const active = boardSelectedProjs.has(n);
+    return `<button class="board-filter-chip${active?' active':''}" onclick="toggleBoardFilter(${i})">${n}</button>`;
+  }).join('');
+  bar.innerHTML = `<span class="board-filter-label">프로젝트</span>${chips}`;
+}
+
+function showTaskAddRow(key) {
+  const row = document.getElementById('add-row-' + key);
+  if (!row) return;
+  row.classList.add('show');
+  const input = document.getElementById('add-input-' + key);
+  if (input) { input.value = ''; input.focus(); }
+}
+
+function hideTaskAddRow(key) {
+  const row = document.getElementById('add-row-' + key);
+  if (row) row.classList.remove('show');
+}
+
+function confirmAddTask(key) {
+  const meta = boardAddMeta[key];
+  if (!meta) return;
+  const input = document.getElementById('add-input-' + key);
+  const taskText = input ? input.value.trim() : '';
+  if (!taskText) return;
+
+  // DOM에 즉시 추가
+  const tasksDiv = document.getElementById('tasks-' + key);
+  if (tasksDiv) {
+    const localKey = meta.projId + '::' + meta.deptId + '::local_' + Date.now();
+    const newHtml = `<div class="task-item">
+      <input type="checkbox" class="task-check" onchange="onBoardCheck(this,'${localKey}',0)">
+      <div class="task-body">${taskText.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>`;
+    tasksDiv.insertAdjacentHTML('beforeend', newHtml);
+    const card = tasksDiv.closest('.dept-card');
+    if (card) card.classList.remove('all-done');
+  }
+
+  hideTaskAddRow(key);
+
+  // Google Sheets POST
+  postAddBoardTask({
+    projName: meta.projId,
+    projStart: meta.projStart || '',
+    projEnd: meta.projEnd || '',
+    deptId: meta.deptId,
+    deptName: meta.deptName,
+    dDay: meta.dDay || '예정',
+    iconColor: meta.iconColor || 'blue',
+    task: taskText,
+    note: '',
+  });
+
+  showBoardToast('"' + taskText + '" 추가됨');
+}
+
+function postAddBoardTask(data) {
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({ action: 'addBoardTask', ...data }),
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+  }).catch(e => console.error('[Board] addBoardTask 에러:', e));
+}
+
+function showBoardToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
 // 페이지 전환 시 데이터 로드

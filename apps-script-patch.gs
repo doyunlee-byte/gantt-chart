@@ -31,8 +31,12 @@
 // ── 2. 파일 하단에 아래 함수들 전체 붙여넣기 ─────────────────────
 
 /**
- * POST 핸들러 — saveSettings 처리
- * fetch(..., { method:'POST', body: JSON.stringify({action,cls,fix,pcs}) })
+ * POST 핸들러
+ *
+ * 지원 action:
+ *  - saveSettings    : 포캐스팅 설정 저장
+ *  - updateBoardCell : 태스크보드 셀 값 업데이트 (완료 체크)
+ *  - addBoardTask    : 태스크보드에 새 행 추가
  */
 function doPost(e) {
   try {
@@ -45,10 +49,62 @@ function doPost(e) {
       return _jsonResponse({ ok: true });
     }
 
+    if (action === 'updateBoardCell') {
+      _updateBoardCell(body.row, body.col, body.value);
+      return _jsonResponse({ ok: true });
+    }
+
+    if (action === 'addBoardTask') {
+      const newRow = _addBoardTaskRow(body);
+      return _jsonResponse({ ok: true, sheetRow: newRow });
+    }
+
     return _jsonResponse({ error: 'unknown action: ' + action });
   } catch (err) {
     return _jsonResponse({ error: err.message });
   }
+}
+
+/**
+ * 태스크보드 시트의 특정 셀을 업데이트합니다.
+ * @param {number} row  - 시트 행 번호 (1-based)
+ * @param {number} col  - 시트 열 번호 (1-based)
+ * @param {string} value - 'TRUE' | 'FALSE' | 기타 문자열
+ */
+function _updateBoardCell(row, col, value) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName('태스크보드');
+  if (!sh) return;
+  const cellValue = value === 'TRUE' ? true : (value === 'FALSE' ? false : value);
+  sh.getRange(row, col).setValue(cellValue);
+}
+
+/**
+ * 태스크보드 시트에 새 태스크 행을 추가합니다.
+ * 컬럼 순서: 프로젝트명, 시작일, 마감일, 부서ID, 부서명, D-day, 아이콘색, 태스크, 태스크노트, 담당자, 탭구분, 완료
+ *
+ * @param {Object} body - { projName, projStart, projEnd, deptId, deptName, dDay, iconColor, task, note }
+ * @returns {number} 추가된 행 번호
+ */
+function _addBoardTaskRow(body) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName('태스크보드');
+  if (!sh) return 0;
+  sh.appendRow([
+    body.projName  || '',
+    body.projStart || '',
+    body.projEnd   || '',
+    body.deptId    || '',
+    body.deptName  || '',
+    body.dDay      || '예정',
+    body.iconColor || 'blue',
+    body.task      || '',
+    body.note      || '',
+    body.members   || '',
+    body.tabGroup  || '',
+    false
+  ]);
+  return sh.getLastRow();
 }
 
 /**
