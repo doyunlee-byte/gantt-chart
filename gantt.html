@@ -1723,7 +1723,12 @@ async function saveToSheet(){
     showToast('☁️ 시트 저장 완료');
     _setSyncBadge('ok');
   } catch(e) {
-    console.warn('시트 저장 실패 (로컬 유지):', e);
+    console.error('[saveToSheet] 저장 실패 상세:', {
+      name: e.name,
+      message: e.message,
+      stack: e.stack,
+      url: APPS_SCRIPT_URL,
+    });
     showToast('⚠️ 시트 저장 실패 — 로컬에만 저장됨');
     _setSyncBadge('error');
   }
