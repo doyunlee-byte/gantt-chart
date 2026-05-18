@@ -1993,11 +1993,10 @@ function buildDeadlineTimeline(selP) {
       const date = st.fcDate || p.projEnd;
       if (!date) return;
       if (date > maxDate) maxDate = new Date(date);
-      let dotColor;
-      if (date < TODAY || st.label.includes('위험')) dotColor = '#ef4444';
-      else if (st.label.includes('주의')) dotColor = '#f59e0b';
-      else dotColor = '#4f7cff';
-      dots.push({ date, dateStr: `${date.getMonth()+1}/${date.getDate()}`, color: dotColor });
+      let strokeColor = null;
+      if (date < TODAY || st.label.includes('위험')) strokeColor = '#ef4444';
+      else if (st.label.includes('주의')) strokeColor = '#f59e0b';
+      dots.push({ date, dateStr: `${date.getMonth()+1}/${date.getDate()}`, color: p.color, strokeColor });
     });
     if (dots.length) rows.push({ center: c, dots, fixedProjs });
   });
@@ -2029,7 +2028,7 @@ function buildDeadlineTimeline(selP) {
     const dotsHtml = dots.map(dot => {
       const x = dtX(dot.date);
       return `<div style="position:absolute;left:${x}px;top:0;height:${ROW_H}px;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:translateX(-50%);z-index:2;">
-        <div style="font-size:10px;color:${dot.color};line-height:1;">●</div>
+        <div style="width:9px;height:9px;border-radius:50%;background:${dot.color};${dot.strokeColor?`border:1.5px solid ${dot.strokeColor};`:''}box-sizing:border-box;flex-shrink:0;"></div>
         <div style="font-size:6px;color:${dot.color};font-weight:700;white-space:nowrap;margin-top:1px;">${dot.dateStr}</div>
       </div>`;
     }).join('');
@@ -2062,9 +2061,9 @@ function buildDeadlineTimeline(selP) {
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:5px;padding-top:4px;border-top:1px solid #f0f2f8;align-items:center;">
-      <span style="font-size:8px;color:#9096b0;display:flex;align-items:center;gap:3px;"><span style="color:#ef4444;font-size:9px;">●</span>위험</span>
-      <span style="font-size:8px;color:#9096b0;display:flex;align-items:center;gap:3px;"><span style="color:#f59e0b;font-size:9px;">●</span>주의</span>
-      <span style="font-size:8px;color:#9096b0;display:flex;align-items:center;gap:3px;"><span style="color:#4f7cff;font-size:9px;">●</span>정상</span>
+      <span style="font-size:8px;color:#9096b0;display:flex;align-items:center;gap:3px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c4c8d8;border:1.5px solid #ef4444;box-sizing:border-box;"></span>위험</span>
+      <span style="font-size:8px;color:#9096b0;display:flex;align-items:center;gap:3px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c4c8d8;border:1.5px solid #f59e0b;box-sizing:border-box;"></span>주의</span>
+      <span style="font-size:8px;color:#9096b0;display:flex;align-items:center;gap:3px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c4c8d8;box-sizing:border-box;"></span>정상</span>
     </div>
   </div>`;
 }
