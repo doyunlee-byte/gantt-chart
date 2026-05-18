@@ -2552,6 +2552,30 @@ function renderBoardProject(projName, projRows) {
 // 구글 시트 태스크보드 탭 데이터 로드 & 렌더
 let boardData = [];
 
+// 태스크보드 CSV: 1행부터 데이터 (헤더 행 없음), 컬럼 인덱스로 파싱
+const BOARD_COLS = ['프로젝트명','시작일','마감일','부서ID','부서명','D-day','아이콘색','태스크','태스크노트','담당자','탭구분','완료'];
+function parseBoardCSV(txt) {
+  if (!txt) return [];
+  txt = txt.replace(/^﻿/, '');
+  const lines = txt.trim().split('\n');
+  const result = [];
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const vals = [];
+    let cur = '', inQ = false;
+    for (const c of line) {
+      if (c === '"') inQ = !inQ;
+      else if (c === ',' && !inQ) { vals.push(cur.trim()); cur = ''; }
+      else cur += c;
+    }
+    vals.push(cur.trim());
+    const obj = {};
+    BOARD_COLS.forEach((key, i) => { obj[key] = (vals[i] || '').replace(/[﻿\r"]/g, '').trim(); });
+    result.push(obj);
+  }
+  return result;
+}
+
 async function loadBoardData() {
   const container = document.getElementById('projects-container');
   container.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text3);font-size:13px;">📋 데이터 불러오는 중...</div>`;
@@ -2562,18 +2586,12 @@ async function loadBoardData() {
     const txt = await fetchCSV(boardUrl);
     console.log('[Board] response length:', txt ? txt.length : 0, '/ preview:', txt ? txt.slice(0, 100) : '');
     if (!txt || txt.trim().startsWith('<')) throw new Error('CSV 데이터를 불러올 수 없습니다: ' + (txt ? txt.slice(0, 120) : 'empty'));
-    const rows = parseCSV(txt);
-    console.log('[Board] parsed rows:', rows.length, '/ headers:', rows[0] ? Object.keys(rows[0]) : []);
+    const rows = parseBoardCSV(txt);
+    console.log('[Board] parsed rows:', rows.length, '/ first row 프로젝트명:', rows[0] ? rows[0]['프로젝트명'] : '');
     if (!rows || rows.length === 0) throw new Error('empty CSV');
-    // 프로젝트명 컬럼 키를 실제 헤더에서 탐색 (trim 불일치 방어)
-    const projKey = rows.length > 0 ? (Object.keys(rows[0]).find(k => k === '프로젝트명') || Object.keys(rows[0]).find(k => k.includes('프로젝트명')) || '프로젝트명') : '프로젝트명';
-    console.log('[Board] projKey resolved:', projKey);
-    boardData = rows.filter(r => r[projKey] && r[projKey].trim()).map(r => {
-      if (projKey !== '프로젝트명') { r['프로젝트명'] = r[projKey]; }
-      return r;
-    });
+    boardData = rows.filter(r => r['프로젝트명'] && r['프로젝트명'].trim());
     console.log('[Board] valid project rows:', boardData.length);
-    if (!boardData.length) throw new Error('no rows with 프로젝트명 (헤더: ' + Object.keys(rows[0] || {}).join(', ') + ')');
+    if (!boardData.length) throw new Error('프로젝트명 값이 있는 행 없음 (첫 행: ' + Object.values(rows[0] || {}).slice(0,3).join(', ') + ')');
     boardRenderAll();
   } catch(e) {
     console.error('[Board] loadBoardData 에러:', e);
