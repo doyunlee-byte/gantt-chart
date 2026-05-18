@@ -1706,21 +1706,20 @@ function saveSettings(){
 
 async function saveToSheet(){
   try{
-    // POST body 방식 — URL 길이 제한 없음
+    // no-cors: GAS POST는 redirect로 CORS 헤더가 사라지므로 응답을 읽지 않음
+    // throw 없이 완료되면 시트에 전달된 것으로 간주
     const payload = JSON.stringify({
       action: 'saveSettings',
       cls: centerLevelSettings,
       fix: fcFixMap,
       pcs: projCenterSettings
     });
-    const res = await fetch(APPS_SCRIPT_URL, {
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: payload,
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      redirect: 'follow'
     });
-    const j = await res.json().catch(() => ({}));
-    if (!j.ok) throw new Error(j.error || '응답 오류');
     showToast('☁️ 시트 저장 완료');
     _setSyncBadge('ok');
   } catch(e) {
