@@ -1005,8 +1005,9 @@ const RAW_CSVS = {
   '왓더버거': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTryPQXfM3PqFsJ5jjXq4Fd3crnxaYQcmWLhjpgj2lXp9yjDIO36pJYdCdCMCVfs_2u8XAd3-RPUhIL/pub?gid=1774731730&single=true&output=csv',
   '와플대학': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTryPQXfM3PqFsJ5jjXq4Fd3crnxaYQcmWLhjpgj2lXp9yjDIO36pJYdCdCMCVfs_2u8XAd3-RPUhIL/pub?gid=422747828&single=true&output=csv',
   '화이트펜슬':'https://docs.google.com/spreadsheets/d/e/2PACX-1vTryPQXfM3PqFsJ5jjXq4Fd3crnxaYQcmWLhjpgj2lXp9yjDIO36pJYdCdCMCVfs_2u8XAd3-RPUhIL/pub?gid=773914619&single=true&output=csv',
+  '태스크보드':'https://docs.google.com/spreadsheets/d/e/2PACX-1vTryPQXfM3PqFsJ5jjXq4Fd3crnxaYQcmWLhjpgj2lXp9yjDIO36pJYdCdCMCVfs_2u8XAd3-RPUhIL/pub?gid=1618651644&single=true&output=csv',
 };
-const GID_TAB = {'0':'종합','1234030367':'역량분석','1302096212':'빽다방','1804432973':'토스캠','1774731730':'왓더버거','422747828':'와플대학','773914619':'화이트펜슬'};
+const GID_TAB = {'0':'종합','1234030367':'역량분석','1302096212':'빽다방','1804432973':'토스캠','1774731730':'왓더버거','422747828':'와플대학','773914619':'화이트펜슬','1618651644':'태스크보드'};
 
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 let BASE_RATE = 1.6;
@@ -1091,12 +1092,12 @@ function parseCSV(txt){
   if(!txt)return[];
   txt = txt.replace(/^﻿/, ''); // UTF-8 BOM 제거
   const lines=txt.trim().split('\n');
-  const hdrs=lines[0].split(',').map(h=>h.replace(/[﻿\r"]/g,'').trim());
+  const hdrs=lines[0].split(',').map(h=>h.replace(/[﻿​‌‍‎‏\r"]/g,'').trim());
   return lines.slice(1).map(line=>{
     const vals=[];let cur='',inQ=false;
     for(const c of line){if(c==='"')inQ=!inQ;else if(c===','&&!inQ){vals.push(cur.trim());cur='';}else cur+=c;}
     vals.push(cur.trim());
-    const obj={};hdrs.forEach((h,i)=>obj[h]=(vals[i]||'').replace(/[﻿\r"]/g,'').trim());
+    const obj={};hdrs.forEach((h,i)=>obj[h]=(vals[i]||'').replace(/[﻿​\r"]/g,'').trim());
     return obj;
   });
 }
@@ -2556,20 +2557,23 @@ async function loadBoardData() {
   container.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text3);font-size:13px;">📋 데이터 불러오는 중...</div>`;
 
   try {
-    const url = `${APPS_SCRIPT_URL}?tab=${encodeURIComponent(BOARD_SHEET_NAME)}`;
-    console.log('[Board] fetching:', url);
-    const res = await fetch(url);
-    console.log('[Board] response status:', res.status, res.ok);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const txt = await res.text();
-    console.log('[Board] response length:', txt.length, '/ preview:', txt.slice(0, 100));
-    if (!txt || txt.trim().startsWith('<')) throw new Error('Apps Script returned HTML, not CSV: ' + txt.slice(0, 120));
+    const boardUrl = RAW_CSVS['태스크보드'];
+    console.log('[Board] fetching via fetchCSV:', boardUrl);
+    const txt = await fetchCSV(boardUrl);
+    console.log('[Board] response length:', txt ? txt.length : 0, '/ preview:', txt ? txt.slice(0, 100) : '');
+    if (!txt || txt.trim().startsWith('<')) throw new Error('CSV 데이터를 불러올 수 없습니다: ' + (txt ? txt.slice(0, 120) : 'empty'));
     const rows = parseCSV(txt);
     console.log('[Board] parsed rows:', rows.length, '/ headers:', rows[0] ? Object.keys(rows[0]) : []);
     if (!rows || rows.length === 0) throw new Error('empty CSV');
-    boardData = rows.filter(r => r['프로젝트명'] && r['프로젝트명'].trim());
+    // 프로젝트명 컬럼 키를 실제 헤더에서 탐색 (trim 불일치 방어)
+    const projKey = rows.length > 0 ? (Object.keys(rows[0]).find(k => k === '프로젝트명') || Object.keys(rows[0]).find(k => k.includes('프로젝트명')) || '프로젝트명') : '프로젝트명';
+    console.log('[Board] projKey resolved:', projKey);
+    boardData = rows.filter(r => r[projKey] && r[projKey].trim()).map(r => {
+      if (projKey !== '프로젝트명') { r['프로젝트명'] = r[projKey]; }
+      return r;
+    });
     console.log('[Board] valid project rows:', boardData.length);
-    if (!boardData.length) throw new Error('no rows with 프로젝트명');
+    if (!boardData.length) throw new Error('no rows with 프로젝트명 (헤더: ' + Object.keys(rows[0] || {}).join(', ') + ')');
     boardRenderAll();
   } catch(e) {
     console.error('[Board] loadBoardData 에러:', e);
