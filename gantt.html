@@ -973,7 +973,10 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
             <div class="page-title">📋 프로젝트 태스크 보드</div>
             <div class="page-sub">구글 시트 연동 · 종합탭에 프로젝트 추가 시 자동 반영</div>
           </div>
-          <button class="ai-send-btn" onclick="loadBoardData()" style="font-size:12px;padding:6px 14px;">🔄 새로고침</button>
+          <div style="display:flex;gap:8px;">
+            <button class="ai-send-btn" onclick="openAddBoardTask()" style="font-size:12px;padding:6px 14px;background:var(--accent);color:#fff;border-color:transparent;">✚ 추가</button>
+            <button class="ai-send-btn" onclick="loadBoardData()" style="font-size:12px;padding:6px 14px;">🔄 새로고침</button>
+          </div>
         </div>
         <div id="projects-container"></div>
       </div>
@@ -2342,7 +2345,8 @@ loadData();
 const BOARD_SHEET_NAME = '태스크보드';
 const BOARD_COL = {
   PROJ:0, START:1, END:2, DEPT_ID:3, DEPT_NAME:4, DDAY:5,
-  ICON:6, TASK:7, NOTE:8, MEMBERS:9, TAB_GROUP:10, DONE:11
+  ICON:6, TASK:7, NOTE:8, MEMBERS:9, TAB_GROUP:10, DONE:11,
+  SHEET_ROW:12
 };
 
 // 아이콘 SVG 경로
@@ -2364,20 +2368,33 @@ function saveBoardChecks(checks) {
   try { localStorage.setItem('boardChecks', JSON.stringify(checks)); } catch(e) {}
 }
 
-function onBoardCheck(el, key) {
+function onBoardCheck(el, key, sheetRow) {
   const checks = getBoardChecks();
   checks[key] = el.checked;
   saveBoardChecks(checks);
   el.closest('.task-item').classList.toggle('is-done', el.checked);
   updateCardDone(el.closest('.dept-card'));
+  if (sheetRow) postBoardCellUpdate(sheetRow, 12, el.checked ? 'TRUE' : 'FALSE');
 }
 
-function onBoardDevTabCheck(el, key) {
+function onBoardDevTabCheck(el, key, sheetRows) {
   const checks = getBoardChecks();
   checks[key] = el.checked;
   saveBoardChecks(checks);
   el.closest('.dev-tab-item').classList.toggle('is-done', el.checked);
   updateCardDone(el.closest('.dept-card'));
+  if (sheetRows && sheetRows.length) {
+    sheetRows.forEach(row => postBoardCellUpdate(row, 12, el.checked ? 'TRUE' : 'FALSE'));
+  }
+}
+
+function postBoardCellUpdate(sheetRow, col, value) {
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({ action: 'updateBoardCell', row: sheetRow, col, value }),
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+  }).catch(e => console.error('[Board] postBoardCellUpdate 에러:', e));
 }
 
 function updateCardDone(card) {
@@ -2468,9 +2485,10 @@ function renderBoardDeptCard(deptRows, projId) {
     const tabItems = tabKeys.map((tg, i) => {
       const key = `${projId}::${deptId}::tab::${i}`;
       const checked = !!checks[key];
+      const tabSheetRows = tabGroups[tg].map(r => r[BOARD_COL.SHEET_ROW]).filter(Boolean);
       return `<div class="dev-tab-item${checked ? ' is-done' : ''}">
         <input type="checkbox" class="task-check" ${checked ? 'checked' : ''}
-          onchange="onBoardDevTabCheck(this,'${key}')" onclick="event.stopPropagation()">
+          onchange="onBoardDevTabCheck(this,'${key}',[${tabSheetRows.join(',')}])" onclick="event.stopPropagation()">
         <button class="dev-tab${i===0?' active':''}" onclick="switchBoardDevTab(this,${i})">${tg}</button>
       </div>`;
     }).join('');
@@ -2495,13 +2513,15 @@ function renderBoardDeptCard(deptRows, projId) {
   const tasksHtml = deptRows.map((r, i) => {
     const task = r[BOARD_COL.TASK];
     const note = r[BOARD_COL.NOTE];
+    const sheetRow = r[BOARD_COL.SHEET_ROW] || 0;
     if (!task || !task.trim()) return '';
     const key = `${projId}::${deptId}::${i}`;
     const checked = !!checks[key];
     return `<div class="task-item${checked?' is-done':''}">
       <input type="checkbox" class="task-check" ${checked?'checked':''}
-        onchange="onBoardCheck(this,'${key}')">
+        onchange="onBoardCheck(this,'${key}',${sheetRow})">
       <div class="task-body">${task}${note?`<span class="task-note">${note}</span>`:''}</div>
+      ${sheetRow?`<button class="task-edit-btn" onclick="openEditBoardTask(${sheetRow})" title="수정">✏</button>`:''}
     </div>`;
   }).join('');
 
@@ -2559,8 +2579,10 @@ function parseBoardCSV(txt) {
   txt = txt.replace(/^﻿/, '');
   const lines = txt.trim().split('\n');
   const result = [];
-  for (const line of lines) {
+  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+    const line = lines[lineIdx];
     if (!line.trim()) continue;
+    const sheetRow = lineIdx + 1; // 1-based 시트 행 번호
     const vals = [];
     let cur = '', inQ = false;
     for (const c of line) {
@@ -2571,6 +2593,7 @@ function parseBoardCSV(txt) {
     vals.push(cur.trim());
     const obj = {};
     BOARD_COLS.forEach((key, i) => { obj[key] = (vals[i] || '').replace(/[﻿\r"]/g, '').trim(); });
+    obj['_sheetRow'] = sheetRow;
     result.push(obj);
   }
   return result;
@@ -2632,6 +2655,7 @@ function boardRenderAll() {
       r['담당자'] || '',
       r['탭구분'] || '',
       r['완료'] || 'FALSE',
+      r['_sheetRow'] || 0,
     ]);
   });
 
@@ -3224,5 +3248,152 @@ function renderSummaryPage() {
 }
 </script>
 <div class="toast" id="toast"></div>
+
+<!-- 태스크보드 추가/수정 모달 -->
+<div id="boardModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);overflow-y:auto;padding:20px;box-sizing:border-box;" onclick="if(event.target===this)closeBoardModal()">
+  <div style="max-width:480px;margin:0 auto;background:var(--surface);border-radius:14px;padding:22px;box-shadow:0 8px 40px rgba(0,0,0,.35);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <div id="boardModalTitle" style="font-size:15px;font-weight:700;color:var(--text);">태스크 추가</div>
+      <button onclick="closeBoardModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;line-height:1;padding:0 2px;">✕</button>
+    </div>
+    <div style="display:grid;gap:11px;">
+      <div>
+        <label class="bm-label">프로젝트명</label>
+        <input id="bm_proj" class="bm-input" placeholder="예: 빽다방">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div><label class="bm-label">시작일</label><input id="bm_start" class="bm-input" type="date"></div>
+        <div><label class="bm-label">마감일</label><input id="bm_end" class="bm-input" type="date"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label class="bm-label">부서ID</label>
+          <select id="bm_dept_id" class="bm-input">
+            <option value="sales">sales</option>
+            <option value="dev">dev</option>
+            <option value="van">van</option>
+            <option value="pi">pi</option>
+          </select>
+        </div>
+        <div><label class="bm-label">부서명</label><input id="bm_dept_name" class="bm-input" placeholder="예: 영업관리팀"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div><label class="bm-label">D-day</label><input id="bm_dday" class="bm-input" placeholder="예정"></div>
+        <div>
+          <label class="bm-label">아이콘색</label>
+          <select id="bm_icon" class="bm-input">
+            <option value="blue">blue</option>
+            <option value="teal">teal</option>
+            <option value="amber">amber</option>
+            <option value="purple">purple</option>
+          </select>
+        </div>
+      </div>
+      <div><label class="bm-label">태스크 <span style="color:#e05;font-size:10px;">*필수</span></label><input id="bm_task" class="bm-input" placeholder="태스크 내용 입력"></div>
+      <div><label class="bm-label">태스크노트</label><input id="bm_note" class="bm-input" placeholder="(선택)"></div>
+      <div><label class="bm-label">담당자</label><input id="bm_members" class="bm-input" placeholder="홍길동(팀명), 김철수(팀명)"></div>
+      <div><label class="bm-label">탭구분</label><input id="bm_tab" class="bm-input" placeholder="(개발팀 탭 구분용, 선택)"></div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2);">
+        <input type="checkbox" id="bm_done" style="width:15px;height:15px;accent-color:var(--accent);">
+        완료
+      </label>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end;">
+      <button onclick="closeBoardModal()" style="padding:8px 18px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:13px;">취소</button>
+      <button onclick="saveBoardModal()" style="padding:8px 18px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-size:13px;font-weight:600;">저장</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.bm-label { font-size:11px; color:var(--text3); display:block; margin-bottom:3px; font-weight:500; }
+.bm-input { width:100%; padding:7px 10px; border-radius:7px; border:1px solid var(--border2); background:var(--surface2); color:var(--text); font-size:13px; box-sizing:border-box; outline:none; }
+.bm-input:focus { border-color:var(--accent); }
+.task-edit-btn { background:none; border:none; color:var(--text3); cursor:pointer; font-size:11px; padding:2px 5px; opacity:0; transition:opacity .15s; flex-shrink:0; line-height:1; }
+.task-item:hover .task-edit-btn { opacity:.7; }
+.task-item:hover .task-edit-btn:hover { opacity:1; color:var(--accent); }
+</style>
+
+<script>
+let _boardModalMode = 'add';
+let _boardModalSheetRow = 0;
+
+function openAddBoardTask() {
+  _boardModalMode = 'add';
+  _boardModalSheetRow = 0;
+  document.getElementById('boardModalTitle').textContent = '태스크 추가';
+  ['bm_proj','bm_dept_name','bm_dday','bm_task','bm_note','bm_members','bm_tab'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('bm_start').value = '';
+  document.getElementById('bm_end').value = '';
+  document.getElementById('bm_dept_id').value = 'sales';
+  document.getElementById('bm_icon').value = 'blue';
+  document.getElementById('bm_done').checked = false;
+  document.getElementById('boardModal').style.display = 'block';
+}
+
+function openEditBoardTask(sheetRow) {
+  const row = boardData.find(r => r['_sheetRow'] === sheetRow);
+  if (!row) { showToast('행 데이터를 찾을 수 없습니다'); return; }
+  _boardModalMode = 'edit';
+  _boardModalSheetRow = sheetRow;
+  document.getElementById('boardModalTitle').textContent = '태스크 수정';
+  document.getElementById('bm_proj').value     = row['프로젝트명'] || '';
+  document.getElementById('bm_start').value    = row['시작일'] || '';
+  document.getElementById('bm_end').value      = row['마감일'] || '';
+  document.getElementById('bm_dept_id').value  = row['부서ID'] || 'sales';
+  document.getElementById('bm_dept_name').value= row['부서명'] || '';
+  document.getElementById('bm_dday').value     = row['D-day'] || '';
+  document.getElementById('bm_icon').value     = row['아이콘색'] || 'blue';
+  document.getElementById('bm_task').value     = row['태스크'] || '';
+  document.getElementById('bm_note').value     = row['태스크노트'] || '';
+  document.getElementById('bm_members').value  = row['담당자'] || '';
+  document.getElementById('bm_tab').value      = row['탭구분'] || '';
+  document.getElementById('bm_done').checked   = row['완료'] === 'TRUE';
+  document.getElementById('boardModal').style.display = 'block';
+}
+
+function closeBoardModal() {
+  document.getElementById('boardModal').style.display = 'none';
+}
+
+async function saveBoardModal() {
+  const data = [
+    document.getElementById('bm_proj').value.trim(),
+    document.getElementById('bm_start').value.trim(),
+    document.getElementById('bm_end').value.trim(),
+    document.getElementById('bm_dept_id').value.trim(),
+    document.getElementById('bm_dept_name').value.trim(),
+    document.getElementById('bm_dday').value.trim(),
+    document.getElementById('bm_icon').value.trim(),
+    document.getElementById('bm_task').value.trim(),
+    document.getElementById('bm_note').value.trim(),
+    document.getElementById('bm_members').value.trim(),
+    document.getElementById('bm_tab').value.trim(),
+    document.getElementById('bm_done').checked ? 'TRUE' : 'FALSE',
+  ];
+  if (!data[0]) { showToast('프로젝트명을 입력해주세요'); return; }
+  if (!data[7]) { showToast('태스크 내용을 입력해주세요'); return; }
+
+  const payload = _boardModalMode === 'edit'
+    ? { action: 'updateBoardRow', row: _boardModalSheetRow, data }
+    : { action: 'appendBoardRow', data };
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    });
+    showToast(_boardModalMode === 'edit' ? '✏️ 태스크 수정됨' : '✅ 태스크 추가됨');
+    closeBoardModal();
+    setTimeout(() => loadBoardData(), 1200);
+  } catch(e) {
+    showToast('저장 실패: ' + e.message);
+  }
+}
+</script>
 </body>
 </html>
