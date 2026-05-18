@@ -360,7 +360,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .d-date { font-size: 11px; color: var(--text3); }
   .d-remain { font-size: 11px; font-weight: 500; }
 
-  .dept-tasks { padding: 0.6rem 0.9rem; }
+  .dept-tasks { padding: 4px 0 0; }
 
   .task-item {
     display: flex; gap: 8px;
@@ -669,6 +669,56 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     background: none; border: none; color: var(--text3);
     font-size: 13px; cursor: pointer; padding: 0 2px; line-height: 1;
   }
+
+  /* ─── 태스크 헤더 / 하위 항목 ─── */
+  .task-header { border-bottom: 0.5px solid var(--border); }
+  .task-header:last-child { border-bottom: none; }
+  .task-header-row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 0.9rem 6px;
+  }
+  .th-toggle {
+    background: none; border: none; color: var(--text3);
+    font-size: 11px; cursor: pointer; padding: 0; line-height: 1;
+    transition: transform 0.18s; flex-shrink: 0;
+  }
+  .th-toggle.collapsed { transform: rotate(-90deg); }
+  .th-name { flex: 1; font-weight: 600; font-size: 12.5px; color: var(--text); }
+  .th-add-item {
+    background: none; border: 0.5px dashed var(--border2); border-radius: 10px;
+    color: var(--text3); font-size: 10.5px; font-family: inherit;
+    padding: 2px 8px; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+  }
+  .th-add-item:hover { border-color: var(--accent); color: var(--accent); }
+  .si-list { padding: 0 0.9rem 4px 2.2rem; }
+  .si-list.hidden { display: none; }
+  .si-item { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 12px; }
+  .si-item.is-done .si-text {
+    text-decoration: line-through; color: var(--text3); text-decoration-color: var(--text3);
+  }
+  .si-text { flex: 1; color: var(--text); line-height: 1.4; }
+  .si-del {
+    background: none; border: none; color: var(--text3); font-size: 13px;
+    cursor: pointer; padding: 0 2px; opacity: 0; transition: opacity 0.15s; line-height: 1; flex-shrink: 0;
+  }
+  .si-item:hover .si-del { opacity: 1; }
+  .si-input-wrap { display: none; align-items: center; gap: 5px; padding: 3px 0; }
+  .si-input-wrap.show { display: flex; }
+  .si-input {
+    flex: 1; font-family: inherit; font-size: 12px; color: var(--text);
+    background: var(--surface2); border: 0.5px solid var(--border2);
+    border-radius: 6px; padding: 4px 8px; outline: none;
+  }
+  .si-input:focus { border-color: var(--accent); }
+  .si-confirm {
+    background: var(--accent); color: #fff; border: none; border-radius: 6px;
+    padding: 4px 10px; font-size: 11.5px; font-weight: 600; font-family: inherit; cursor: pointer; white-space: nowrap;
+  }
+  .si-cancel {
+    background: none; color: var(--text3); border: none;
+    padding: 4px 3px; font-size: 14px; cursor: pointer; line-height: 1;
+  }
+  .task-header .task-members-row { padding: 2px 0.9rem 8px; margin-top: 0; }
 
   /* ── 간트 Summary ── */
   #pageSummary { background: var(--bg); }
@@ -2583,6 +2633,8 @@ function renderMemberChips(membersStr, colorKey) {
 
 // ─── 태스크 담당자 관리 ───
 const _tmData = {};  // safeKey → {sheetRow, members: string[]}
+const _siData = {};  // safeKey → {sheetRow, items: [{text, done}, ...]}
+const _siCollapsed = {};  // safeKey → boolean
 
 function tmSafeKey(k) { return k.replace(/[^a-zA-Z0-9가-힣]/g, '_'); }
 
@@ -2592,6 +2644,16 @@ function parseTMMembers(str) {
 }
 
 function serializeTMMembers(arr) { return arr.join(', '); }
+
+function parseSIItems(noteStr) {
+  if (!noteStr || !noteStr.trim()) return [];
+  try {
+    const parsed = JSON.parse(noteStr);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {}
+  return [{ text: noteStr.trim(), done: false }];
+}
+function serializeSIItems(items) { return JSON.stringify(items); }
 
 function renderTaskMembersHtml(sk) {
   const d = _tmData[sk] || { sheetRow: 0, members: [] };
@@ -2665,6 +2727,138 @@ function refreshTaskMembers(sk) {
   el.replaceWith(tmp.firstElementChild);
 }
 
+// ─── 태스크 하위 항목 관리 ───
+function renderSIItemsHtml(sk) {
+  const d = _siData[sk] || { sheetRow: 0, items: [] };
+  return d.items.map((item, i) =>
+    `<div class="si-item${item.done ? ' is-done' : ''}">
+      <input type="checkbox" class="task-check" ${item.done ? 'checked' : ''}
+        onchange="onSubItemCheck('${sk}',${i},this.checked)">
+      <span class="si-text">${item.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+      <button class="si-del" onclick="removeSubItem('${sk}',${i})">×</button>
+    </div>`
+  ).join('');
+}
+
+function renderTaskHeaderHtml(sk, headerText) {
+  const collapsed = _siCollapsed[sk] || false;
+  return `<div class="task-header">
+    <div class="task-header-row">
+      <button class="th-toggle${collapsed ? ' collapsed' : ''}" onclick="toggleTaskHeader('${sk}')">▾</button>
+      <span class="th-name">${headerText.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+      <button class="th-add-item" onclick="showSIInput('${sk}')">＋ 항목</button>
+    </div>
+    <div class="si-list${collapsed ? ' hidden' : ''}" id="si-list-${sk}">
+      ${renderSIItemsHtml(sk)}
+      <div class="si-input-wrap" id="si-inp-${sk}">
+        <input class="si-input" id="si-val-${sk}" placeholder="항목 입력..."
+          onkeydown="onSIInputKeydown(event,'${sk}')">
+        <button class="si-confirm" onclick="confirmAddSI('${sk}')">확인</button>
+        <button class="si-cancel" onclick="hideSIInput('${sk}')">✕</button>
+      </div>
+    </div>
+    ${renderTaskMembersHtml(sk)}
+  </div>`;
+}
+
+function toggleTaskHeader(sk) {
+  _siCollapsed[sk] = !(_siCollapsed[sk] || false);
+  const list = document.getElementById('si-list-' + sk);
+  if (list) list.classList.toggle('hidden', _siCollapsed[sk]);
+  const hdr = list ? list.closest('.task-header') : null;
+  const btn = hdr ? hdr.querySelector('.th-toggle') : null;
+  if (btn) btn.classList.toggle('collapsed', _siCollapsed[sk]);
+}
+
+function showSIInput(sk) {
+  _siCollapsed[sk] = false;
+  const list = document.getElementById('si-list-' + sk);
+  if (list) list.classList.remove('hidden');
+  const hdr = list ? list.closest('.task-header') : null;
+  const btn = hdr ? hdr.querySelector('.th-toggle') : null;
+  if (btn) btn.classList.remove('collapsed');
+  const w = document.getElementById('si-inp-' + sk);
+  if (w) w.classList.add('show');
+  const inp = document.getElementById('si-val-' + sk);
+  if (inp) { inp.value = ''; inp.focus(); }
+}
+
+function hideSIInput(sk) {
+  const w = document.getElementById('si-inp-' + sk);
+  if (w) w.classList.remove('show');
+  const inp = document.getElementById('si-val-' + sk);
+  if (inp) inp.value = '';
+}
+
+function onSIInputKeydown(e, sk) {
+  if (e.key === 'Enter') { e.preventDefault(); confirmAddSI(sk); }
+  else if (e.key === 'Escape') { hideSIInput(sk); }
+}
+
+function confirmAddSI(sk) {
+  const inp = document.getElementById('si-val-' + sk);
+  const text = inp ? inp.value.trim() : '';
+  if (!text) return;
+  const d = _siData[sk];
+  if (!d) return;
+  d.items.push({ text, done: false });
+  if (inp) inp.value = '';
+  refreshSIList(sk);
+  if (d.sheetRow) {
+    postBoardCellUpdate(d.sheetRow, 8, serializeSIItems(d.items));
+    const row = boardData.find(r => r['_sheetRow'] === d.sheetRow);
+    if (row) row['태스크노트'] = serializeSIItems(d.items);
+  }
+  showBoardToast('"' + text + '" 항목 추가됨');
+}
+
+function removeSubItem(sk, idx) {
+  const d = _siData[sk];
+  if (!d || idx >= d.items.length) return;
+  const text = d.items[idx].text;
+  d.items.splice(idx, 1);
+  refreshSIList(sk);
+  if (d.sheetRow) {
+    postBoardCellUpdate(d.sheetRow, 8, serializeSIItems(d.items));
+    const row = boardData.find(r => r['_sheetRow'] === d.sheetRow);
+    if (row) row['태스크노트'] = serializeSIItems(d.items);
+  }
+  showBoardToast('"' + text + '" 삭제됨');
+}
+
+function onSubItemCheck(sk, idx, checked) {
+  const d = _siData[sk];
+  if (!d || idx >= d.items.length) return;
+  d.items[idx].done = checked;
+  const list = document.getElementById('si-list-' + sk);
+  if (list) {
+    const items = list.querySelectorAll('.si-item');
+    if (items[idx]) items[idx].classList.toggle('is-done', checked);
+  }
+  if (d.sheetRow) {
+    postBoardCellUpdate(d.sheetRow, 8, serializeSIItems(d.items));
+    const row = boardData.find(r => r['_sheetRow'] === d.sheetRow);
+    if (row) row['태스크노트'] = serializeSIItems(d.items);
+  }
+  if (list) updateCardDone(list.closest('.dept-card'));
+}
+
+function refreshSIList(sk) {
+  const list = document.getElementById('si-list-' + sk);
+  if (!list) return;
+  const inputWrap = document.getElementById('si-inp-' + sk);
+  [...list.children].forEach(child => { if (child !== inputWrap) list.removeChild(child); });
+  const itemsHtml = renderSIItemsHtml(sk);
+  if (inputWrap) {
+    inputWrap.insertAdjacentHTML('beforebegin', itemsHtml);
+    inputWrap.classList.add('show');
+    const inp = document.getElementById('si-val-' + sk);
+    if (inp) inp.focus();
+  } else {
+    list.insertAdjacentHTML('afterbegin', itemsHtml);
+  }
+}
+
 // 부서 카드 렌더링 (시트 데이터 기반)
 function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, deptIdx) {
   if (!deptRows.length) return '';
@@ -2701,7 +2895,7 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
   // 공통 "+ 업무 추가" UI
   const addUI = `<button class="task-add-btn" onclick="showTaskAddRow('${key}')">＋ 업무 추가</button>
   <div class="task-add-row" id="add-row-${key}">
-    <input class="task-add-input" placeholder="업무 내용 입력..." id="add-input-${key}"
+    <input class="task-add-input" placeholder="헤더명 입력..." id="add-input-${key}"
       onkeydown="if(event.key==='Enter')confirmAddTask('${key}')">
     <button class="task-add-confirm" onclick="confirmAddTask('${key}')">확인</button>
     <button class="task-add-cancel" onclick="hideTaskAddRow('${key}')">✕</button>
@@ -2745,30 +2939,22 @@ function renderBoardDeptCard(deptRows, projId, projStart, projEnd, projIdx, dept
     </div>`;
   }
 
-  // 일반 태스크 카드
+  // 헤더+하위항목 카드
   const tasksHtml = deptRows.map((r, i) => {
     const task = r[BOARD_COL.TASK];
     const note = r[BOARD_COL.NOTE];
     const sheetRow = r[BOARD_COL.SHEET_ROW] || 0;
     if (!task || !task.trim()) return '';
-    const k = `${projId}::${deptId}::${i}`;
-    const sk = tmSafeKey(k);
+    const sk = tmSafeKey(`${projId}::${deptId}::${i}`);
     _tmData[sk] = { sheetRow, members: parseTMMembers(r[BOARD_COL.MEMBERS] || '') };
-    const checked = !!checks[k];
-    return `<div class="task-item${checked?' is-done':''}">
-      <input type="checkbox" class="task-check" ${checked?'checked':''}
-        onchange="onBoardCheck(this,'${k}',${sheetRow})">
-      <div class="task-body">
-        ${task}${note?`<span class="task-note">${note}</span>`:''}
-        ${renderTaskMembersHtml(sk)}
-      </div>
-      ${sheetRow?`<button class="task-edit-btn" title="수정">✏</button>`:''}
-    </div>`;
+    _siData[sk] = { sheetRow, items: parseSIItems(note || '') };
+    return renderTaskHeaderHtml(sk, task);
   }).join('');
 
-  const taskCount = deptRows.filter(r => r[BOARD_COL.TASK] && r[BOARD_COL.TASK].trim()).length;
-  const doneCount = deptRows.filter((r, i) => r[BOARD_COL.TASK] && !!checks[`${projId}::${deptId}::${i}`]).length;
-  const allDone = taskCount > 0 && doneCount === taskCount;
+  const allSIItems = deptRows
+    .filter(r => r[BOARD_COL.TASK] && r[BOARD_COL.TASK].trim())
+    .flatMap(r => parseSIItems(r[BOARD_COL.NOTE] || ''));
+  const allDone = allSIItems.length > 0 && allSIItems.every(item => item.done);
 
   return `<div class="dept-card${allDone?' all-done':''}">
     ${headerHtml(allDone)}
@@ -3092,20 +3278,20 @@ function confirmAddTask(key) {
   const taskText = input ? input.value.trim() : '';
   if (!taskText) return;
 
-  // DOM에 즉시 추가
+  // DOM에 즉시 추가 (헤더+하위항목 구조)
   const tasksDiv = document.getElementById('tasks-' + key);
+  const localKey = meta.projId + '::' + meta.deptId + '::local_' + Date.now();
+  const localSk = tmSafeKey(localKey);
   if (tasksDiv) {
-    const localKey = meta.projId + '::' + meta.deptId + '::local_' + Date.now();
-    const newHtml = `<div class="task-item">
-      <input type="checkbox" class="task-check" onchange="onBoardCheck(this,'${localKey}',0)">
-      <div class="task-body">${taskText.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-    </div>`;
-    tasksDiv.insertAdjacentHTML('beforeend', newHtml);
+    _siData[localSk] = { sheetRow: 0, items: [] };
+    _tmData[localSk] = { sheetRow: 0, members: [] };
+    tasksDiv.insertAdjacentHTML('beforeend', renderTaskHeaderHtml(localSk, taskText));
     const card = tasksDiv.closest('.dept-card');
     if (card) card.classList.remove('all-done');
   }
 
   hideTaskAddRow(key);
+  showSIInput(localSk);
 
   // boardData 캐시에 즉시 반영 (탭 전환 후에도 유지) - 중복 방지
   const alreadyInCache = boardData.some(r =>
