@@ -1111,16 +1111,15 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 
 /* ── 주간보고 슬라이드 ─────────────────────────── */
 #pageWeekly {
-  background: #eef0f6;
+  background: #dde3ed;
   overflow: auto;
   align-items: center;
-  justify-content: flex-start;
-  padding: 14px 16px;
+  justify-content: center;
+  padding: 20px 16px;
   gap: 8px;
 }
 .wr-toolbar {
-  width: 100%;
-  max-width: 1280px;
+  width: 1280px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -1143,134 +1142,104 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 .wr-capture-btn:hover { background: #4f7cff; color: #fff; }
 .wr-slide {
-  width: 100%;
-  max-width: 1280px;
-  aspect-ratio: 16 / 9;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 20px rgba(0,0,0,.12);
+  width: 1280px;
+  height: 720px;
+  background: #f0f4f8;
+  border-radius: 12px;
+  box-shadow: 0 6px 32px rgba(0,0,0,.18);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 14px 18px 10px;
-  box-sizing: border-box;
   flex-shrink: 0;
 }
 .wr-slide:fullscreen,
 .wr-slide:-webkit-full-screen {
-  max-width: 100vw;
-  aspect-ratio: unset;
-  width: 100vw;
-  height: 100vh;
-  border-radius: 0;
-  padding: 20px 28px 14px;
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
 }
-.wr-header {
+.wr-hdr {
+  height: 44px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 7px;
+  padding: 0 16px;
+  gap: 12px;
   flex-shrink: 0;
 }
-.wr-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 7px;
-  flex-shrink: 0;
-}
+.wr-hl { display:flex;align-items:center;gap:8px;flex-shrink:0; }
+.wr-hc { flex:1;display:flex;align-items:center;gap:4px;overflow:hidden;min-width:0; }
+.wr-hr { display:flex;align-items:center;gap:6px;flex-shrink:0; }
 .wr-body {
-  display: flex;
-  gap: 10px;
   flex: 1;
-  min-height: 0;
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
   overflow: hidden;
 }
-.wr-left {
-  flex: 0 0 60%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px;
-  align-content: start;
+.wr-col-l {
+  flex: 0 0 calc(33% - 3px);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
-.wr-right {
+.wr-col-m {
+  flex: 0 0 calc(34% - 4px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+}
+.wr-col-r {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-height: 0;
   overflow: hidden;
 }
-.wr-center-card {
-  background: #fff;
-  border-radius: 7px;
+.wr-panel {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.07);
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0,0,0,.07);
   display: flex;
   flex-direction: column;
 }
-.wr-card-head {
-  padding: 5px 8px;
+.wr-pt {
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 7px 10px 3px;
+  flex-shrink: 0;
+}
+.wr-cc {
+  background: #fff;
+  border-radius: 7px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.wr-cch {
+  padding: 5px 7px 4px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
 }
-.wr-card-body {
-  padding: 3px 8px 5px;
+.wr-ccb {
+  padding: 2px 7px 5px;
   flex: 1;
   overflow: hidden;
-}
-.wr-kpi-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px;
-  flex-shrink: 0;
-}
-.wr-kpi-card {
-  background: #fff;
-  border-radius: 7px;
-  padding: 7px 9px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.07);
-}
-.wr-proj-box {
-  background: #fff;
-  border-radius: 7px;
-  padding: 8px 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.07);
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.wr-proj-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px 12px;
-  overflow: hidden;
-}
-.wr-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 6px;
-  padding-top: 5px;
-  border-top: 1px solid #eef0f8;
-  flex-shrink: 0;
 }
 @media print {
   .wr-toolbar { display: none !important; }
-  #pageWeekly { background: #fff !important; padding: 0 !important; }
-  .wr-slide {
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    height: 100vh !important;
-    aspect-ratio: unset !important;
-    page-break-inside: avoid;
-  }
+  #pageWeekly { background: #f0f4f8 !important; padding: 0 !important; }
+  .wr-slide { box-shadow: none !important; border-radius: 0 !important; }
 }
 
 </style>
@@ -4622,181 +4591,276 @@ function toggleWeeklyChip(pid){
 function renderWeeklyPage(){
   const slide = document.getElementById('weeklySlide');
   if(!slide) return;
+  if(!PROJECTS.length){
+    slide.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:13px;">데이터 로딩 중...</div>';
+    return;
+  }
 
-  // 선택 프로젝트 없으면 전체 선택
   if(!fcSelectedProjects.size && PROJECTS.length) PROJECTS.forEach(p=>fcSelectedProjects.add(p.id));
   const selP = PROJECTS.filter(p=>fcSelectedProjects.has(p.id));
-
-  // ── KPI 계산
-  const allT = selP.flatMap(p=>p.tasks);
-  const tot  = allT.reduce((s,t)=>s+t.total,0);
-  const don  = allT.reduce((s,t)=>s+t.done,0);
-  const pct  = tot>0?Math.round(don/tot*100):0;
-  const inProg  = allT.filter(t=>t.status!=='완료').length;
-  const doneCount = allT.filter(t=>t.status==='완료').length;
-  const delayed = allT.filter(t=>{
-    if(t.status==='완료') return false;
-    const rem=Math.max(0,t.total-t.done);
-    if(!rem||!t.deadline) return false;
-    return addWorkDays(TODAY,Math.ceil(rem/(BASE_RATE*3)))>t.deadline;
-  }).length;
 
   const now = new Date();
   const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
 
-  // ── 프로젝트 칩
-  const chipHtml = PROJECTS.map(p=>{
+  // 주차 범위
+  const todayDay = TODAY.getDay();
+  const thisMonday = new Date(TODAY); thisMonday.setDate(TODAY.getDate()-(todayDay===0?6:todayDay-1));
+  const thisSunday = new Date(thisMonday); thisSunday.setDate(thisMonday.getDate()+6);
+  const lastMonday = new Date(thisMonday); lastMonday.setDate(thisMonday.getDate()-7);
+  const lastSunday = new Date(thisMonday); lastSunday.setDate(thisMonday.getDate()-1);
+  function wrInRange(ds,f,t){const d=new Date(ds);d.setHours(0,0,0,0);return d>=f&&d<=t;}
+
+  // 로컬 헬퍼
+  function wrPct(p){const tot=p.tasks.reduce((s,t)=>s+(t.total||0),0),don=p.tasks.reduce((s,t)=>s+(t.done||0),0);return{total:tot,done:don,pct:tot>0?Math.round(don/tot*100):0};}
+  function wrRisk(p){
+    if(!p.projEnd) return null;
+    const{pct}=wrPct(p);
+    const dl=Math.ceil((p.projEnd-TODAY)/86400000);
+    const totD=p.projStart?Math.ceil((p.projEnd-p.projStart)/86400000):0;
+    const el=totD>0?(totD-dl)/totD:0;
+    if(dl<0&&pct<100) return'overdue';
+    if(dl<=7&&pct<80) return'danger';
+    if(el>0.6&&pct<el*80) return'warning';
+    return'ok';
+  }
+
+  // KPI
+  const allT=selP.flatMap(p=>p.tasks);
+  const kTot=allT.reduce((s,t)=>s+(t.total||0),0);
+  const kDon=allT.reduce((s,t)=>s+(t.done||0),0);
+  const kPct=kTot>0?Math.round(kDon/kTot*100):0;
+  const kProg=allT.filter(t=>t.status!=='완료').length;
+  const kDone=PROJECTS.filter(p=>wrPct(p).pct===100).length;
+  const kRisk=PROJECTS.filter(p=>['danger','overdue'].includes(wrRisk(p))).length;
+
+  // 헤더 칩
+  const chipHtml=PROJECTS.map(p=>{
     const on=fcSelectedProjects.has(p.id);
-    const s=on?`background:${p.color}18;border:1.5px solid ${p.color};color:${p.color};`
-               :'background:#f0f2f8;border:1.5px solid #e0e4ef;color:#9096b0;';
-    return `<button onclick="toggleWeeklyChip('${p.id}')" style="${s}display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;"><span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>${p.name}</button>`;
+    return `<button onclick="toggleWeeklyChip('${p.id}')" style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1.5px solid ${on?p.color:'#e2e8f0'};background:${on?p.color+'15':'#f8fafc'};color:${on?p.color:'#94a3b8'};"><span style="width:4px;height:4px;border-radius:50%;background:${p.color};display:inline-block;"></span>${p.name}</button>`;
   }).join('');
 
-  // ── 센터 카드
-  let centerCardsHtml='';
+  // 센터 카드 (좌측 열)
+  let ccHtml='';
   CENTERS.forEach(c=>{
     const cls=getCLS(c.name);
-    const shortName=c.name.replace('비버','');
-    const fixedProjs=selP.filter(p=>fcFixMap[p.id+'_'+c.name]);
-    const isFixed=fixedProjs.length>0;
-    const modeLabel=cls.mode==='parallel'?'병행':'순차';
-    const modeColor=cls.mode==='parallel'?'#4f7cff':'#059669';
-    const modeBg=cls.mode==='parallel'?'#eef2ff':'#f0fdf4';
-
-    let worst={label:'미배정',color:'#9096b0',border:'#e5e7eb',headBg:'#f9fafb'};
-    fixedProjs.forEach(p=>{
+    const sn=c.name.replace('비버','');
+    const fixP=selP.filter(p=>fcFixMap[p.id+'_'+c.name]);
+    const isFixed=fixP.length>0;
+    const dailyCap=fixP.reduce((s,p)=>s+(getPCS(p.id,c.name).realDaily||0),0);
+    const ml=cls.mode==='parallel'?'병행':'순차';
+    const mc=cls.mode==='parallel'?'#4f7cff':'#059669';
+    const mb=cls.mode==='parallel'?'#eef2ff':'#f0fdf4';
+    let worst={label:'미배정',color:'#94a3b8',border:'#e2e8f0',hBg:'#f8fafc'};
+    fixP.forEach(p=>{
       const st=calcProjStatus(p,c);
-      if(st.label.includes('위험')) worst={label:'🔴 위험',color:'#dc2626',border:'#dc2626',headBg:'#fef2f2'};
-      else if(st.label.includes('주의')&&!worst.label.includes('위험')) worst={label:'⚡ 주의',color:'#f59e0b',border:'#f59e0b',headBg:'#fffbeb'};
-      else if((st.label.includes('충분')||st.label==='완료')&&worst.label==='미배정') worst={label:'✅ 충분',color:'#059669',border:'#059669',headBg:'#f0fdf4'};
+      if(st.label.includes('위험')) worst={label:'🔴 위험',color:'#dc2626',border:'#dc2626',hBg:'#fef2f2'};
+      else if(st.label.includes('주의')&&!worst.label.includes('위험')) worst={label:'⚡ 주의',color:'#f59e0b',border:'#f59e0b',hBg:'#fffbeb'};
+      else if((st.label.includes('충분')||st.label==='완료')&&worst.label==='미배정') worst={label:'✅ 충분',color:'#059669',border:'#059669',hBg:'#f0fdf4'};
     });
-    const dailyCap=fixedProjs.reduce((s,p)=>s+(getPCS(p.id,c.name).realDaily||0),0);
-
-    let projRowsHtml='';
-    if(!selP.length){
-      projRowsHtml='<div style="font-size:8px;color:#9096b0;padding:4px 0;">선택된 프로젝트 없음</div>';
+    let rows='';
+    if(!isFixed){
+      rows='<div style="font-size:8px;color:#cbd5e1;padding:3px 0;font-style:italic;">미배정</div>';
     } else {
-      selP.forEach(p=>{
+      fixP.forEach(p=>{
         const s=getPCS(p.id,c.name);
         const st=calcProjStatus(p,c);
-        const fixed=!!fcFixMap[p.id+'_'+c.name];
-        const cDone=Object.values(CENTER_DAILY[p.name]?.[c.name]||{}).reduce((a,b)=>a+b,0);
-        const cRem=getCRem(c.name,p);
-        const cTot=cDone+cRem;
-        const cpct=cTot>0?Math.round(cDone/cTot*100):0;
-        const fcDateStr=st.fcDate?`${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}`:'-';
-        if(!fixed){
-          projRowsHtml+=`<div style="display:flex;align-items:center;gap:4px;padding:3px 0;border-top:1px solid #f0f2f8;">
-            <span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
-            <span style="font-size:8px;color:#c0c6d8;flex:1;">${p.name}</span>
-            <span style="font-size:7px;color:#c0c6d8;font-style:italic;">미배정</span></div>`;
-        } else {
-          projRowsHtml+=`<div style="padding:3px 0;border-top:1px solid #f0f2f8;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
-              <div style="display:flex;align-items:center;gap:3px;min-width:0;flex:1;overflow:hidden;">
-                <span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
-                <span style="font-size:9px;font-weight:700;color:#1a1d2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
-                <span style="font-size:7px;color:#9096b0;white-space:nowrap;flex-shrink:0;">${s.realPersonnel}명·${s.realDaily}건/일</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:4px;">
-                <span style="font-size:7px;color:#9096b0;">예상 <strong style="color:${st.color};">${fcDateStr}</strong></span>
-                <span style="font-size:7px;font-weight:700;color:${st.color};white-space:nowrap;">${st.label}</span>
-              </div>
+        const cDone=Object.values((CENTER_DAILY[p.name]||{})[c.name]||{}).reduce((a,b)=>a+b,0);
+        const cTot=cDone+getCRem(c.name,p);
+        const cp=cTot>0?Math.round(cDone/cTot*100):0;
+        const fd=st.fcDate?`${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}`:'-';
+        rows+=`<div style="padding:2px 0;border-top:1px solid #f1f5f9;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1px;">
+            <div style="display:flex;align-items:center;gap:2px;min-width:0;overflow:hidden;flex:1;">
+              <span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
+              <span style="font-size:9px;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68px;">${p.name}</span>
+              <span style="font-size:7.5px;color:#94a3b8;white-space:nowrap;flex-shrink:0;">${s.realPersonnel}명·${s.realDaily}/일</span>
             </div>
-            <div style="height:3px;background:#eef0f8;border-radius:2px;overflow:hidden;">
-              <div style="height:100%;width:${cpct}%;background:${p.color};border-radius:2px;"></div>
-            </div>
-            <div style="font-size:7px;color:${p.color};font-weight:700;text-align:right;margin-top:1px;">${cpct}%</div></div>`;
-        }
+            <span style="font-size:7.5px;color:${st.color};font-weight:700;white-space:nowrap;flex-shrink:0;margin-left:2px;">${fd}</span>
+          </div>
+          <div style="height:3px;background:#f1f5f9;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:${p.color};border-radius:2px;"></div></div>
+          <div style="font-size:7px;color:${p.color};font-weight:700;text-align:right;">${cp}%</div>
+        </div>`;
       });
     }
-
-    centerCardsHtml+=`<div class="wr-center-card" style="border:1.5px solid ${worst.border};">
-      <div class="wr-card-head" style="background:${worst.headBg};">
-        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-          <span style="width:6px;height:6px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block;"></span>
-          <span style="font-size:11px;font-weight:800;color:#1a1d2e;">${shortName}</span>
-          <span style="font-size:8px;font-weight:600;color:#4a5068;background:#f1f5f9;padding:1px 5px;border-radius:3px;">총 ${cls.totalPersonnel}명</span>
-          ${isFixed?`<span style="font-size:7px;font-weight:700;color:#fff;background:#059669;padding:1px 4px;border-radius:3px;">FIXED·${dailyCap}건/일</span>`:''}
-          <span style="font-size:7px;font-weight:700;color:${modeColor};background:${modeBg};padding:1px 4px;border-radius:3px;">${modeLabel}</span>
+    ccHtml+=`<div class="wr-cc" style="border-color:${worst.border};">
+      <div class="wr-cch" style="background:${worst.hBg};">
+        <div style="display:flex;align-items:center;gap:3px;flex-wrap:nowrap;min-width:0;overflow:hidden;">
+          <span style="width:7px;height:7px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:11px;font-weight:800;color:#0f172a;">${sn}</span>
+          <span style="font-size:8px;color:#64748b;background:#f1f5f9;padding:1px 4px;border-radius:3px;white-space:nowrap;">${cls.totalPersonnel}명</span>
+          ${isFixed?`<span style="font-size:7px;font-weight:700;color:#fff;background:#059669;padding:1px 4px;border-radius:3px;white-space:nowrap;">FIXED·${dailyCap}/일</span>`:''}
+          <span style="font-size:7px;font-weight:700;color:${mc};background:${mb};padding:1px 4px;border-radius:3px;white-space:nowrap;">${ml}</span>
         </div>
-        <span style="font-size:9px;font-weight:700;color:${worst.color};white-space:nowrap;">${worst.label}</span>
+        <span style="font-size:9px;font-weight:700;color:${worst.color};white-space:nowrap;flex-shrink:0;">${worst.label}</span>
       </div>
-      <div class="wr-card-body">${projRowsHtml}</div>
+      <div class="wr-ccb">${rows}</div>
     </div>`;
   });
 
-  // ── KPI 카드
-  const kpiHtml=`<div class="wr-kpi-grid">
-    <div class="wr-kpi-card" style="border-top:3px solid #4f7cff;">
-      <div style="font-size:8px;font-weight:600;color:#9096b0;margin-bottom:2px;">전체 진척률</div>
-      <div style="font-size:22px;font-weight:800;color:#1a1d2e;line-height:1;">${pct}<span style="font-size:12px;">%</span></div>
-      <div style="height:3px;background:#eef0f8;border-radius:2px;margin:4px 0 2px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:#4f7cff;border-radius:2px;"></div></div>
-      <div style="font-size:7px;color:#9096b0;">${don.toLocaleString()} / ${tot.toLocaleString()} 매장</div>
-    </div>
-    <div class="wr-kpi-card" style="border-top:3px solid #059669;">
-      <div style="font-size:8px;font-weight:600;color:#9096b0;margin-bottom:2px;">완료</div>
-      <div style="font-size:22px;font-weight:800;color:#059669;line-height:1;">${doneCount}</div>
-      <div style="font-size:7px;color:#9096b0;margin-top:6px;">태스크 기준</div>
-    </div>
-    <div class="wr-kpi-card" style="border-top:3px solid #f59e0b;">
-      <div style="font-size:8px;font-weight:600;color:#9096b0;margin-bottom:2px;">진행중</div>
-      <div style="font-size:22px;font-weight:800;color:#f59e0b;line-height:1;">${inProg}</div>
-      <div style="font-size:7px;color:#9096b0;margin-top:6px;">태스크 기준</div>
-    </div>
-    <div class="wr-kpi-card" style="border-top:3px solid ${delayed>0?'#dc2626':'#059669'};">
-      <div style="font-size:8px;font-weight:600;color:#9096b0;margin-bottom:2px;">마감 위험</div>
-      <div style="font-size:22px;font-weight:800;color:${delayed>0?'#dc2626':'#059669'};line-height:1;">${delayed}</div>
-      <div style="font-size:7px;color:${delayed>0?'#dc2626':'#9096b0'};margin-top:6px;">${delayed>0?'주의 필요':'정상'}</div>
-    </div>
-  </div>`;
+  // 주간 실적 비교 차트 (중앙 위)
+  const weekData={};
+  CENTERS.forEach(c=>{
+    let tw=0,lw=0;
+    selP.forEach(gp=>{
+      const cd=(CENTER_DAILY[gp.name]||{})[c.name]||{};
+      Object.entries(cd).forEach(([ds,cnt])=>{
+        if(wrInRange(ds,thisMonday,thisSunday)) tw+=cnt;
+        if(wrInRange(ds,lastMonday,lastSunday)) lw+=cnt;
+      });
+    });
+    weekData[c.name]={tw,lw,color:c.color};
+  });
+  const wColor=selP.length===1?(selP[0]?.color||'#6366f1'):'#818cf8';
 
-  // ── 프로젝트 진척도
-  const projProgressHtml=`<div class="wr-proj-box">
-    <div style="font-size:9px;font-weight:700;color:#4a5068;letter-spacing:.04em;margin-bottom:6px;flex-shrink:0;">프로젝트 진척도</div>
-    <div class="wr-proj-grid">
-      ${selP.map(p=>{
-        const t2=p.tasks.reduce((s,t)=>s+t.total,0);
-        const d2=p.tasks.reduce((s,t)=>s+t.done,0);
-        const p2=t2>0?Math.round(d2/t2*100):0;
-        const rem=p.tasks.reduce((s,t)=>s+Math.max(0,t.total-t.done),0);
-        return`<div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
-            <div style="display:flex;align-items:center;gap:3px;min-width:0;overflow:hidden;">
-              <span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
-              <span style="font-size:8px;font-weight:600;color:#4a5068;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
-            </div>
-            <span style="font-size:9px;font-weight:700;color:${p2===100?'#059669':'#1a1d2e'};flex-shrink:0;margin-left:4px;">${p2}%</span>
-          </div>
-          <div style="height:4px;background:#eef0f8;border-radius:2px;overflow:hidden;">
-            <div style="height:100%;width:${p2}%;background:${p.color};border-radius:2px;"></div>
-          </div>
-          <div style="font-size:7px;color:#9096b0;margin-top:1px;">잔여 ${rem.toLocaleString()}매장</div>
-        </div>`;
-      }).join('')}
-    </div>
-  </div>`;
+  function buildWrLineChart(ch){
+    const W=380,pL=26,pR=10,pT=18,pB=22,gW=W-pL-pR,gH=ch-pT-pB;
+    const maxV=Math.max(1,...Object.values(weekData).flatMap(d=>[d.tw,d.lw]));
+    const step=gW/Math.max(1,CENTERS.length-1);
+    const xy=(i,v)=>({x:pL+i*step,y:pT+gH-(v/maxV)*gH});
+    let s='';
+    [0,0.5,1].forEach(r=>{
+      const y=pT+gH-r*gH;
+      s+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(0,0,0,.07)" stroke-width="${r===0?1.5:0.6}"/>`;
+      if(r>0) s+=`<text x="${pL-4}" y="${y+3}" text-anchor="end" font-size="8" fill="#94a3b8">${Math.round(maxV*r)}</text>`;
+    });
+    const lP=CENTERS.map((c,i)=>xy(i,weekData[c.name]?.lw||0));
+    const tP=CENTERS.map((c,i)=>xy(i,weekData[c.name]?.tw||0));
+    s+=`<path d="${smoothPath(tP)} L ${tP[tP.length-1].x} ${pT+gH} L ${pL} ${pT+gH} Z" fill="${wColor}" fill-opacity="0.1"/>`;
+    s+=`<path d="${smoothPath(lP)}" fill="none" stroke="${wColor}" stroke-width="1.5" stroke-opacity="0.45" stroke-dasharray="4,3"/>`;
+    s+=`<path d="${smoothPath(tP)}" fill="none" stroke="${wColor}" stroke-width="2.5"/>`;
+    CENTERS.forEach((c,i)=>{
+      const lp=lP[i],tp=tP[i];
+      const lv=weekData[c.name]?.lw||0,tv=weekData[c.name]?.tw||0;
+      s+=`<circle cx="${lp.x}" cy="${lp.y}" r="3" fill="#fff" stroke="${wColor}" stroke-width="1.5" opacity="0.6"/>`;
+      if(lv>0) s+=`<text x="${lp.x}" y="${lp.y-7}" text-anchor="middle" font-size="8" fill="#94a3b8">${lv}</text>`;
+      const dc=selP.length===1?c.color:wColor;
+      s+=`<circle cx="${tp.x}" cy="${tp.y}" r="4" fill="${dc}" stroke="#fff" stroke-width="1.5"/>`;
+      if(tv>0) s+=`<text x="${tp.x}" y="${tp.y-8}" text-anchor="middle" font-size="9" font-weight="700" fill="${dc}">${tv}</text>`;
+      s+=`<text x="${tp.x}" y="${ch-2}" text-anchor="middle" font-size="9" font-weight="600" fill="${c.color}">${c.name.replace('비버','')}</text>`;
+    });
+    const ly=pT-7;
+    s+=`<line x1="${pL}" y1="${ly}" x2="${pL+14}" y2="${ly}" stroke="${wColor}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>`;
+    s+=`<text x="${pL+17}" y="${ly+3}" font-size="8" fill="#94a3b8">전주</text>`;
+    s+=`<line x1="${pL+42}" y1="${ly}" x2="${pL+56}" y2="${ly}" stroke="${wColor}" stroke-width="2"/>`;
+    s+=`<text x="${pL+59}" y="${ly+3}" font-size="8" fill="#94a3b8">금주</text>`;
+    return `<svg width="100%" height="${ch}" viewBox="0 0 ${W} ${ch}" preserveAspectRatio="none">${s}</svg>`;
+  }
+
+  // 예상 마감 간트 차트 (중앙 아래)
+  function buildDeadlineGantt(h){
+    const pjList=PROJECTS.filter(p=>p.projEnd);
+    if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:${h}px;font-size:10px;color:#94a3b8;">마감일 데이터 없음</div>`;
+    const W=380,pL=54,pR=32,pT=10,pB=14;
+    const allSt=pjList.map(p=>(p.projStart||TODAY).getTime());
+    const allEn=pjList.map(p=>p.projEnd.getTime());
+    const minD=new Date(Math.min(...allSt,TODAY.getTime()));
+    const maxD=new Date(Math.max(...allEn)); maxD.setDate(maxD.getDate()+10);
+    const span=Math.max(1,maxD-minD);
+    const gW=W-pL-pR;
+    const rowH=Math.max(14,Math.floor((h-pT-pB)/Math.max(1,pjList.length)));
+    const gH=rowH*pjList.length;
+    function xOf(d){return pL+(d.getTime?d.getTime()-minD.getTime():(d-minD.getTime()))/span*gW;}
+    let s='';
+    const tx=xOf(TODAY);
+    s+=`<line x1="${tx}" y1="${pT-3}" x2="${tx}" y2="${pT+gH+3}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>`;
+    s+=`<text x="${tx}" y="${pT-4}" text-anchor="middle" font-size="7.5" fill="#ef4444" font-weight="700">오늘</text>`;
+    pjList.forEach((p,i)=>{
+      const{pct:pp}=wrPct(p);
+      const y=pT+i*rowH,bY=y+rowH*0.18,bH=rowH*0.58;
+      const sx=xOf(p.projStart||TODAY),ex=xOf(p.projEnd),bW=Math.max(4,ex-sx);
+      s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="3" fill="${p.color}1a"/>`;
+      if(pp>0) s+=`<rect x="${sx}" y="${bY}" width="${bW*pp/100}" height="${bH}" rx="3" fill="${p.color}99"/>`;
+      const nm=p.name.length>7?p.name.slice(0,6)+'…':p.name;
+      s+=`<text x="${pL-3}" y="${y+rowH*0.66}" text-anchor="end" font-size="8.5" font-weight="600" fill="#334155">${nm}</text>`;
+      const risk=wrRisk(p);
+      const rc=risk==='overdue'||risk==='danger'?'#ef4444':risk==='warning'?'#f59e0b':'#10b981';
+      const dlStr=`${p.projEnd.getMonth()+1}/${p.projEnd.getDate()}`;
+      s+=`<text x="${ex+3}" y="${bY+bH*0.8}" font-size="7.5" fill="${rc}">${dlStr}</text>`;
+      s+=`<text x="${W-pR+2}" y="${y+rowH*0.66}" font-size="8" font-weight="700" fill="${pp>=100?'#059669':'#475569'}">${pp}%</text>`;
+    });
+    s+=`<line x1="${pL}" y1="${pT+gH+2}" x2="${W-pR}" y2="${pT+gH+2}" stroke="rgba(0,0,0,.08)" stroke-width="0.8"/>`;
+    return `<svg width="100%" height="${h}" viewBox="0 0 ${W} ${h}">${s}</svg>`;
+  }
+
+  // KPI 카드 (우측 위)
+  const RL_WR={overdue:{t:'마감초과',c:'#ef4444'},danger:{t:'마감위험',c:'#ef4444'},warning:{t:'주의',c:'#f59e0b'},ok:{t:'정상',c:'#10b981'}};
+  const kpiHtml=[
+    {label:'전체 진척률',value:`${kPct}%`,sub:`${kDon.toLocaleString()} / ${kTot.toLocaleString()} 매장`,color:'#4f7cff'},
+    {label:'진행중',value:`${kProg}`,sub:'미완료 태스크',color:'#f59e0b'},
+    {label:'마감 위험',value:`${kRisk}`,sub:kRisk>0?'즉시 조치':'정상',color:kRisk>0?'#ef4444':'#10b981'},
+    {label:'완료',value:`${kDone}`,sub:'프로젝트 기준',color:'#10b981'},
+  ].map(k=>`<div style="background:#f8fafc;border-radius:6px;padding:8px 10px;border:1px solid #e2e8f0;border-top:3px solid ${k.color};">
+    <div style="font-size:8.5px;font-weight:600;color:#64748b;margin-bottom:3px;">${k.label}</div>
+    <div style="font-size:20px;font-weight:800;color:${k.color};line-height:1;">${k.value}</div>
+    <div style="font-size:7.5px;color:#94a3b8;margin-top:4px;">${k.sub}</div>
+  </div>`).join('');
+
+  // 프로젝트 전체 현황 (우측 아래)
+  const projListHtml=PROJECTS.map(p=>{
+    const{total:pt,done:pd,pct:pp}=wrPct(p);
+    const risk=wrRisk(p);
+    const rl=risk?RL_WR[risk]:null;
+    const hasDates=p.projStart&&p.projEnd;
+    const badge=!hasDates
+      ?`<span style="font-size:7px;font-weight:700;color:#94a3b8;background:#f1f5f9;padding:1px 5px;border-radius:3px;">예정</span>`
+      :pp===100
+      ?`<span style="font-size:7px;font-weight:700;color:#059669;background:#dcfce7;padding:1px 5px;border-radius:3px;">완료</span>`
+      :rl&&risk!=='ok'
+      ?`<span style="font-size:7px;font-weight:700;color:${rl.c};background:${rl.c}18;padding:1px 5px;border-radius:3px;">${rl.t}</span>`
+      :`<span style="font-size:7px;font-weight:700;color:#3b82f6;background:#eff6ff;padding:1px 5px;border-radius:3px;">진행중</span>`;
+    return `<div style="padding:5px 0;border-bottom:1px solid #f1f5f9;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+        <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;">
+          <span style="width:6px;height:6px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:10px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+          ${badge}
+        </div>
+        <span style="font-size:10px;font-weight:700;color:${pp===100?'#059669':p.color};flex-shrink:0;margin-left:6px;">${pp}%</span>
+      </div>
+      <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pp}%;background:${p.color};border-radius:3px;"></div>
+      </div>
+      <div style="font-size:8px;color:#94a3b8;margin-top:2px;">${pd.toLocaleString()} / ${pt.toLocaleString()} 완료</div>
+    </div>`;
+  }).join('');
 
   slide.innerHTML=`
-    <div class="wr-header">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:14px;font-weight:800;color:#1a1d2e;letter-spacing:-.3px;">📊 Project Gantt Chart</span>
-        <span style="font-size:10px;color:#9096b0;font-weight:500;border-left:1px solid #e0e4ef;padding-left:8px;">주간보고</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:10px;font-weight:600;color:#4a5068;">${dateStr} 기준</span>
-        <span class="sync-dot" style="width:6px;height:6px;"></span>
-      </div>
+<div class="wr-hdr">
+  <div class="wr-hl">
+    <span style="font-size:13px;font-weight:800;color:#0f172a;letter-spacing:-.3px;">📊 ProjectGantt</span>
+    <span style="font-size:9px;font-weight:700;color:#fff;background:#4f7cff;padding:2px 7px;border-radius:4px;white-space:nowrap;">주간보고</span>
+  </div>
+  <div class="wr-hc">${chipHtml}</div>
+  <div class="wr-hr">
+    <span style="font-size:10px;font-weight:600;color:#475569;">${dateStr}</span>
+    <span class="sync-dot" style="width:6px;height:6px;"></span>
+  </div>
+</div>
+<div class="wr-body">
+  <div class="wr-col-l">
+    <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:5px;height:100%;">${ccHtml}</div>
+  </div>
+  <div class="wr-col-m">
+    <div class="wr-panel" style="flex:1;min-height:0;">
+      <div class="wr-pt">센터별 주간 실적 비교</div>
+      <div style="height:295px;padding:2px 8px 6px;">${buildWrLineChart(283)}</div>
     </div>
-    <div class="wr-chips">${chipHtml}</div>
-    <div class="wr-body">
-      <div class="wr-left">${centerCardsHtml}</div>
-      <div class="wr-right">${kpiHtml}${projProgressHtml}</div>
+    <div class="wr-panel" style="flex:1;min-height:0;">
+      <div class="wr-pt">프로젝트 예상 마감 일정</div>
+      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildDeadlineGantt(295)}</div>
     </div>
-    <div class="wr-footer">
-      <span style="font-size:8px;color:#c0c6d8;">ProjectGantt · Google Sheets 실시간 연동</span>
-      <span style="font-size:8px;color:#c0c6d8;">Beaver Works Inc. © ${now.getFullYear()}</span>
-    </div>`;
+  </div>
+  <div class="wr-col-r">
+    <div class="wr-panel" style="flex-shrink:0;">
+      <div class="wr-pt">KPI</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 8px 8px;">${kpiHtml}</div>
+    </div>
+    <div class="wr-panel" style="flex:1;min-height:0;">
+      <div class="wr-pt">프로젝트 전체 현황</div>
+      <div style="flex:1;overflow-y:auto;padding:0 8px 8px;">${projListHtml}</div>
+    </div>
+  </div>
+</div>`;
 }
 
 async function saveBoardModal() {
