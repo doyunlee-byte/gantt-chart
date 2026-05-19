@@ -1144,7 +1144,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 .wr-slide {
   width: 1280px;
   height: 720px;
-  background: #f0f4f8;
+  background: #f5f7fb;
   border-radius: 12px;
   box-shadow: 0 6px 32px rgba(0,0,0,.18);
   overflow: hidden;
@@ -4602,6 +4602,13 @@ function renderWeeklyPage(){
   const now = new Date();
   const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
 
+  // ISO 주차 계산
+  const weekNum = (() => {
+    const d = new Date(TODAY); d.setDate(d.getDate()+3-(d.getDay()+6)%7);
+    const w1 = new Date(d.getFullYear(),0,4);
+    return 1+Math.round(((d-w1)/86400000-3+(w1.getDay()+6)%7)/7);
+  })();
+
   // 주차 범위
   const todayDay = TODAY.getDay();
   const thisMonday = new Date(TODAY); thisMonday.setDate(TODAY.getDate()-(todayDay===0?6:todayDay-1));
@@ -4610,7 +4617,6 @@ function renderWeeklyPage(){
   const lastSunday = new Date(thisMonday); lastSunday.setDate(thisMonday.getDate()-1);
   function wrInRange(ds,f,t){const d=new Date(ds);d.setHours(0,0,0,0);return d>=f&&d<=t;}
 
-  // 로컬 헬퍼
   function wrPct(p){const tot=p.tasks.reduce((s,t)=>s+(t.total||0),0),don=p.tasks.reduce((s,t)=>s+(t.done||0),0);return{total:tot,done:don,pct:tot>0?Math.round(don/tot*100):0};}
   function wrRisk(p){
     if(!p.projEnd) return null;
@@ -4624,7 +4630,7 @@ function renderWeeklyPage(){
     return'ok';
   }
 
-  // KPI
+  // KPI 계산
   const allT=selP.flatMap(p=>p.tasks);
   const kTot=allT.reduce((s,t)=>s+(t.total||0),0);
   const kDon=allT.reduce((s,t)=>s+(t.done||0),0);
@@ -4633,10 +4639,16 @@ function renderWeeklyPage(){
   const kDone=PROJECTS.filter(p=>wrPct(p).pct===100).length;
   const kRisk=PROJECTS.filter(p=>['danger','overdue'].includes(wrRisk(p))).length;
 
-  // 헤더 칩
+  // 이번주 총 처리량
+  const kTW=CENTERS.reduce((s,c)=>s+selP.reduce((ss,gp)=>{
+    const cd=(CENTER_DAILY[gp.name]||{})[c.name]||{};
+    return ss+Object.entries(cd).reduce((sss,[ds,cnt])=>sss+(wrInRange(ds,thisMonday,thisSunday)?cnt:0),0);
+  },0),0);
+
+  // 헤더 프로젝트 칩
   const chipHtml=PROJECTS.map(p=>{
     const on=fcSelectedProjects.has(p.id);
-    return `<button onclick="toggleWeeklyChip('${p.id}')" style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1.5px solid ${on?p.color:'#e2e8f0'};background:${on?p.color+'15':'#f8fafc'};color:${on?p.color:'#94a3b8'};"><span style="width:4px;height:4px;border-radius:50%;background:${p.color};display:inline-block;"></span>${p.name}</button>`;
+    return `<button onclick="toggleWeeklyChip('${p.id}')" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1.5px solid ${on?p.color:'#e2e8f0'};background:${on?p.color+'18':'#f8fafc'};color:${on?p.color:'#94a3b8'};"><span style="width:5px;height:5px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}</button>`;
   }).join('');
 
   // 센터 카드 (좌측 열)
@@ -4649,17 +4661,16 @@ function renderWeeklyPage(){
     const dailyCap=fixP.reduce((s,p)=>s+(getPCS(p.id,c.name).realDaily||0),0);
     const ml=cls.mode==='parallel'?'병행':'순차';
     const mc=cls.mode==='parallel'?'#4f7cff':'#059669';
-    const mb=cls.mode==='parallel'?'#eef2ff':'#f0fdf4';
-    let worst={label:'미배정',color:'#94a3b8',border:'#e2e8f0',hBg:'#f8fafc'};
+    let worst={label:'미배정',color:'#94a3b8',border:'#e8edf4',hBg:'#f8fafc',strip:'#e2e8f0'};
     fixP.forEach(p=>{
       const st=calcProjStatus(p,c);
-      if(st.label.includes('위험')) worst={label:'🔴 위험',color:'#dc2626',border:'#dc2626',hBg:'#fef2f2'};
-      else if(st.label.includes('주의')&&!worst.label.includes('위험')) worst={label:'⚡ 주의',color:'#f59e0b',border:'#f59e0b',hBg:'#fffbeb'};
-      else if((st.label.includes('충분')||st.label==='완료')&&worst.label==='미배정') worst={label:'✅ 충분',color:'#059669',border:'#059669',hBg:'#f0fdf4'};
+      if(st.label.includes('위험')) worst={label:'🔴 위험',color:'#dc2626',border:'#fecaca',hBg:'#fff8f8',strip:'#ef4444'};
+      else if(st.label.includes('주의')&&!worst.label.includes('위험')) worst={label:'⚡ 주의',color:'#d97706',border:'#fde68a',hBg:'#fffcf0',strip:'#f59e0b'};
+      else if((st.label.includes('충분')||st.label==='완료')&&worst.label==='미배정') worst={label:'✅ 충분',color:'#059669',border:'#bbf7d0',hBg:'#f0fdf9',strip:'#10b981'};
     });
     let rows='';
     if(!isFixed){
-      rows='<div style="font-size:8px;color:#cbd5e1;padding:3px 0;font-style:italic;">미배정</div>';
+      rows='<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:4px 0;"><span style="font-size:9px;color:#cbd5e1;font-style:italic;">배정 없음</span></div>';
     } else {
       fixP.forEach(p=>{
         const s=getPCS(p.id,c.name);
@@ -4668,36 +4679,39 @@ function renderWeeklyPage(){
         const cTot=cDone+getCRem(c.name,p);
         const cp=cTot>0?Math.round(cDone/cTot*100):0;
         const fd=st.fcDate?`${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}`:'-';
-        rows+=`<div style="padding:2px 0;border-top:1px solid #f1f5f9;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1px;">
-            <div style="display:flex;align-items:center;gap:2px;min-width:0;overflow:hidden;flex:1;">
-              <span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
-              <span style="font-size:9px;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68px;">${p.name}</span>
-              <span style="font-size:7.5px;color:#94a3b8;white-space:nowrap;flex-shrink:0;">${s.realPersonnel}명·${s.realDaily}/일</span>
+        rows+=`<div style="padding:3px 0;border-top:1px solid #f1f5f9;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+            <div style="display:flex;align-items:center;gap:3px;min-width:0;flex:1;overflow:hidden;">
+              <span style="width:5px;height:5px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
+              <span style="font-size:9.5px;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
             </div>
-            <span style="font-size:7.5px;color:${st.color};font-weight:700;white-space:nowrap;flex-shrink:0;margin-left:2px;">${fd}</span>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:3px;">
+              <span style="font-size:7.5px;color:#94a3b8;">${s.realPersonnel}명</span>
+              <span style="font-size:8.5px;color:${st.color};font-weight:700;white-space:nowrap;">${fd}</span>
+            </div>
           </div>
-          <div style="height:3px;background:#f1f5f9;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:${p.color};border-radius:2px;"></div></div>
-          <div style="font-size:7px;color:${p.color};font-weight:700;text-align:right;">${cp}%</div>
+          <div style="height:4px;background:#eef2f8;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:${p.color};border-radius:2px;"></div></div>
+          <div style="font-size:7.5px;color:${p.color};font-weight:700;text-align:right;margin-top:1px;">${cp}%</div>
         </div>`;
       });
     }
-    ccHtml+=`<div class="wr-cc" style="border-color:${worst.border};">
-      <div class="wr-cch" style="background:${worst.hBg};">
-        <div style="display:flex;align-items:center;gap:3px;flex-wrap:nowrap;min-width:0;overflow:hidden;">
-          <span style="width:7px;height:7px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block;"></span>
-          <span style="font-size:11px;font-weight:800;color:#0f172a;">${sn}</span>
-          <span style="font-size:8px;color:#64748b;background:#f1f5f9;padding:1px 4px;border-radius:3px;white-space:nowrap;">${cls.totalPersonnel}명</span>
-          ${isFixed?`<span style="font-size:7px;font-weight:700;color:#fff;background:#059669;padding:1px 4px;border-radius:3px;white-space:nowrap;">FIXED·${dailyCap}/일</span>`:''}
-          <span style="font-size:7px;font-weight:700;color:${mc};background:${mb};padding:1px 4px;border-radius:3px;white-space:nowrap;">${ml}</span>
+    ccHtml+=`<div class="wr-cc" style="border-color:${worst.border};display:flex;flex-direction:column;">
+      <div style="height:3px;background:${worst.strip};flex-shrink:0;"></div>
+      <div class="wr-cch" style="background:${worst.hBg};padding:5px 8px 4px;">
+        <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;flex:1;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${c.color};flex-shrink:0;box-shadow:0 0 0 2px ${c.color}30;"></span>
+          <span style="font-size:12px;font-weight:800;color:#0f172a;letter-spacing:-.3px;">${sn}</span>
+          <span style="font-size:7.5px;color:#64748b;background:#f1f5f9;padding:1px 4px;border-radius:3px;white-space:nowrap;">${cls.totalPersonnel}명</span>
+          <span style="font-size:7.5px;font-weight:600;color:${mc};white-space:nowrap;">${ml}</span>
+          ${isFixed?`<span style="font-size:7px;font-weight:700;color:#fff;background:#059669;padding:1px 4px;border-radius:3px;white-space:nowrap;">${dailyCap}/일</span>`:''}
         </div>
-        <span style="font-size:9px;font-weight:700;color:${worst.color};white-space:nowrap;flex-shrink:0;">${worst.label}</span>
+        <span style="font-size:8.5px;font-weight:700;color:${worst.color};white-space:nowrap;flex-shrink:0;">${worst.label}</span>
       </div>
-      <div class="wr-ccb">${rows}</div>
+      <div class="wr-ccb" style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:0 8px 5px;">${rows}</div>
     </div>`;
   });
 
-  // 주간 실적 비교 차트 (중앙 위)
+  // 주간 실적 비교 (막대 차트)
   const weekData={};
   CENTERS.forEach(c=>{
     let tw=0,lw=0;
@@ -4712,73 +4726,73 @@ function renderWeeklyPage(){
   });
   const wColor=selP.length===1?(selP[0]?.color||'#6366f1'):'#818cf8';
 
-  function buildWrLineChart(ch){
-    const W=380,pL=26,pR=10,pT=18,pB=22,gW=W-pL-pR,gH=ch-pT-pB;
+  function buildWrBarChart(ch){
+    const W=400,pL=22,pR=8,pT=26,pB=22,gW=W-pL-pR,gH=ch-pT-pB;
     const maxV=Math.max(1,...Object.values(weekData).flatMap(d=>[d.tw,d.lw]));
-    const step=gW/Math.max(1,CENTERS.length-1);
-    const xy=(i,v)=>({x:pL+i*step,y:pT+gH-(v/maxV)*gH});
+    const n=CENTERS.length;
+    const groupW=gW/n;
+    const bW=Math.min(16,(groupW-10)/2);
     let s='';
     [0,0.5,1].forEach(r=>{
       const y=pT+gH-r*gH;
-      s+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(0,0,0,.07)" stroke-width="${r===0?1.5:0.6}"/>`;
-      if(r>0) s+=`<text x="${pL-4}" y="${y+3}" text-anchor="end" font-size="8" fill="#94a3b8">${Math.round(maxV*r)}</text>`;
+      s+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(0,0,0,.06)" stroke-width="${r===0?1:0.5}"/>`;
+      if(r>0) s+=`<text x="${pL-4}" y="${y+3}" text-anchor="end" font-size="7.5" fill="#cbd5e1">${Math.round(maxV*r)}</text>`;
     });
-    const lP=CENTERS.map((c,i)=>xy(i,weekData[c.name]?.lw||0));
-    const tP=CENTERS.map((c,i)=>xy(i,weekData[c.name]?.tw||0));
-    s+=`<path d="${smoothPath(tP)} L ${tP[tP.length-1].x} ${pT+gH} L ${pL} ${pT+gH} Z" fill="${wColor}" fill-opacity="0.1"/>`;
-    s+=`<path d="${smoothPath(lP)}" fill="none" stroke="${wColor}" stroke-width="1.5" stroke-opacity="0.45" stroke-dasharray="4,3"/>`;
-    s+=`<path d="${smoothPath(tP)}" fill="none" stroke="${wColor}" stroke-width="2.5"/>`;
     CENTERS.forEach((c,i)=>{
-      const lp=lP[i],tp=tP[i];
-      const lv=weekData[c.name]?.lw||0,tv=weekData[c.name]?.tw||0;
-      s+=`<circle cx="${lp.x}" cy="${lp.y}" r="3" fill="#fff" stroke="${wColor}" stroke-width="1.5" opacity="0.6"/>`;
-      if(lv>0) s+=`<text x="${lp.x}" y="${lp.y-7}" text-anchor="middle" font-size="8" fill="#94a3b8">${lv}</text>`;
-      const dc=selP.length===1?c.color:wColor;
-      s+=`<circle cx="${tp.x}" cy="${tp.y}" r="4" fill="${dc}" stroke="#fff" stroke-width="1.5"/>`;
-      if(tv>0) s+=`<text x="${tp.x}" y="${tp.y-8}" text-anchor="middle" font-size="9" font-weight="700" fill="${dc}">${tv}</text>`;
-      s+=`<text x="${tp.x}" y="${ch-2}" text-anchor="middle" font-size="9" font-weight="600" fill="${c.color}">${c.name.replace('비버','')}</text>`;
+      const lw=weekData[c.name]?.lw||0;
+      const tw=weekData[c.name]?.tw||0;
+      const cx=pL+i*groupW+groupW/2;
+      const lx=cx-bW-1, tx=cx+1;
+      const lh=(lw/maxV)*gH, th=(tw/maxV)*gH;
+      s+=`<rect x="${lx}" y="${pT+gH-Math.max(lh,1)}" width="${bW}" height="${Math.max(lh,1)}" rx="2" fill="#e2e8f0"/>`;
+      if(lw>0) s+=`<text x="${lx+bW/2}" y="${pT+gH-lh-4}" text-anchor="middle" font-size="8" fill="#94a3b8">${lw}</text>`;
+      s+=`<rect x="${tx}" y="${pT+gH-Math.max(th,1)}" width="${bW}" height="${Math.max(th,1)}" rx="2" fill="${c.color}"/>`;
+      if(tw>0) s+=`<text x="${tx+bW/2}" y="${pT+gH-th-4}" text-anchor="middle" font-size="9" font-weight="700" fill="${c.color}">${tw}</text>`;
+      s+=`<text x="${cx}" y="${pT+gH+14}" text-anchor="middle" font-size="9.5" font-weight="600" fill="${c.color}">${c.name.replace('비버','')}</text>`;
     });
-    const ly=pT-7;
-    s+=`<line x1="${pL}" y1="${ly}" x2="${pL+14}" y2="${ly}" stroke="${wColor}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>`;
-    s+=`<text x="${pL+17}" y="${ly+3}" font-size="8" fill="#94a3b8">전주</text>`;
-    s+=`<line x1="${pL+42}" y1="${ly}" x2="${pL+56}" y2="${ly}" stroke="${wColor}" stroke-width="2"/>`;
-    s+=`<text x="${pL+59}" y="${ly+3}" font-size="8" fill="#94a3b8">금주</text>`;
-    return `<svg width="100%" height="${ch}" viewBox="0 0 ${W} ${ch}" preserveAspectRatio="none">${s}</svg>`;
+    const ly=pT-13;
+    s+=`<rect x="${pL}" y="${ly-4}" width="10" height="5" rx="1" fill="#e2e8f0"/>`;
+    s+=`<text x="${pL+13}" y="${ly+1}" font-size="7.5" fill="#94a3b8">전주</text>`;
+    s+=`<rect x="${pL+38}" y="${ly-4}" width="10" height="5" rx="1" fill="${wColor}"/>`;
+    s+=`<text x="${pL+51}" y="${ly+1}" font-size="7.5" fill="#94a3b8">금주</text>`;
+    return `<svg width="100%" height="${ch}" viewBox="0 0 ${W} ${ch}">${s}</svg>`;
   }
 
   // 예상 마감 간트 차트 (중앙 아래)
   function buildDeadlineGantt(h){
     const pjList=PROJECTS.filter(p=>p.projEnd);
     if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:${h}px;font-size:10px;color:#94a3b8;">마감일 데이터 없음</div>`;
-    const W=380,pL=54,pR=32,pT=10,pB=14;
+    const W=400,pL=58,pR=36,pT=14,pB=12;
     const allSt=pjList.map(p=>(p.projStart||TODAY).getTime());
     const allEn=pjList.map(p=>p.projEnd.getTime());
     const minD=new Date(Math.min(...allSt,TODAY.getTime()));
     const maxD=new Date(Math.max(...allEn)); maxD.setDate(maxD.getDate()+10);
     const span=Math.max(1,maxD-minD);
     const gW=W-pL-pR;
-    const rowH=Math.max(14,Math.floor((h-pT-pB)/Math.max(1,pjList.length)));
+    const rowH=Math.max(16,Math.floor((h-pT-pB)/Math.max(1,pjList.length)));
     const gH=rowH*pjList.length;
     function xOf(d){return pL+(d.getTime?d.getTime()-minD.getTime():(d-minD.getTime()))/span*gW;}
     let s='';
+    pjList.forEach((_,i)=>{
+      if(i%2===0) s+=`<rect x="${pL}" y="${pT+i*rowH}" width="${gW}" height="${rowH}" fill="rgba(0,0,0,.015)"/>`;
+    });
     const tx=xOf(TODAY);
-    s+=`<line x1="${tx}" y1="${pT-3}" x2="${tx}" y2="${pT+gH+3}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>`;
-    s+=`<text x="${tx}" y="${pT-4}" text-anchor="middle" font-size="7.5" fill="#ef4444" font-weight="700">오늘</text>`;
+    s+=`<rect x="${tx-0.75}" y="${pT}" width="1.5" height="${gH}" fill="#ef4444" opacity="0.6"/>`;
+    s+=`<text x="${tx}" y="${pT-4}" text-anchor="middle" font-size="7.5" fill="#ef4444" font-weight="700">TODAY</text>`;
     pjList.forEach((p,i)=>{
       const{pct:pp}=wrPct(p);
-      const y=pT+i*rowH,bY=y+rowH*0.18,bH=rowH*0.58;
-      const sx=xOf(p.projStart||TODAY),ex=xOf(p.projEnd),bW=Math.max(4,ex-sx);
-      s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="3" fill="${p.color}1a"/>`;
-      if(pp>0) s+=`<rect x="${sx}" y="${bY}" width="${bW*pp/100}" height="${bH}" rx="3" fill="${p.color}99"/>`;
-      const nm=p.name.length>7?p.name.slice(0,6)+'…':p.name;
-      s+=`<text x="${pL-3}" y="${y+rowH*0.66}" text-anchor="end" font-size="8.5" font-weight="600" fill="#334155">${nm}</text>`;
+      const y=pT+i*rowH, bY=y+rowH*0.2, bH=rowH*0.55;
+      const sx=xOf(p.projStart||TODAY), ex=xOf(p.projEnd), bW=Math.max(4,ex-sx);
+      s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="3" fill="${p.color}18"/>`;
+      if(pp>0) s+=`<rect x="${sx}" y="${bY}" width="${bW*pp/100}" height="${bH}" rx="3" fill="${p.color}bb"/>`;
+      const nm=p.name.length>8?p.name.slice(0,7)+'…':p.name;
+      s+=`<text x="${pL-4}" y="${y+rowH*0.7}" text-anchor="end" font-size="9" font-weight="600" fill="#334155">${nm}</text>`;
       const risk=wrRisk(p);
       const rc=risk==='overdue'||risk==='danger'?'#ef4444':risk==='warning'?'#f59e0b':'#10b981';
       const dlStr=`${p.projEnd.getMonth()+1}/${p.projEnd.getDate()}`;
-      s+=`<text x="${ex+3}" y="${bY+bH*0.8}" font-size="7.5" fill="${rc}">${dlStr}</text>`;
-      s+=`<text x="${W-pR+2}" y="${y+rowH*0.66}" font-size="8" font-weight="700" fill="${pp>=100?'#059669':'#475569'}">${pp}%</text>`;
+      s+=`<text x="${ex+4}" y="${bY+bH*0.8}" font-size="7.5" fill="${rc}" font-weight="600">${dlStr}</text>`;
+      s+=`<text x="${W-pR+3}" y="${y+rowH*0.7}" font-size="8.5" font-weight="700" fill="${pp>=100?'#059669':p.color}">${pp}%</text>`;
     });
-    s+=`<line x1="${pL}" y1="${pT+gH+2}" x2="${W-pR}" y2="${pT+gH+2}" stroke="rgba(0,0,0,.08)" stroke-width="0.8"/>`;
     return `<svg width="100%" height="${h}" viewBox="0 0 ${W} ${h}">${s}</svg>`;
   }
 
@@ -4786,13 +4800,13 @@ function renderWeeklyPage(){
   const RL_WR={overdue:{t:'마감초과',c:'#ef4444'},danger:{t:'마감위험',c:'#ef4444'},warning:{t:'주의',c:'#f59e0b'},ok:{t:'정상',c:'#10b981'}};
   const kpiHtml=[
     {label:'전체 진척률',value:`${kPct}%`,sub:`${kDon.toLocaleString()} / ${kTot.toLocaleString()} 매장`,color:'#4f7cff'},
-    {label:'진행중',value:`${kProg}`,sub:'미완료 태스크',color:'#f59e0b'},
-    {label:'마감 위험',value:`${kRisk}`,sub:kRisk>0?'즉시 조치':'정상',color:kRisk>0?'#ef4444':'#10b981'},
-    {label:'완료',value:`${kDone}`,sub:'프로젝트 기준',color:'#10b981'},
-  ].map(k=>`<div style="background:#f8fafc;border-radius:6px;padding:8px 10px;border:1px solid #e2e8f0;border-top:3px solid ${k.color};">
-    <div style="font-size:8.5px;font-weight:600;color:#64748b;margin-bottom:3px;">${k.label}</div>
-    <div style="font-size:20px;font-weight:800;color:${k.color};line-height:1;">${k.value}</div>
-    <div style="font-size:7.5px;color:#94a3b8;margin-top:4px;">${k.sub}</div>
+    {label:'이번 주 처리',value:`${kTW}`,sub:'매장 완료',color:'#8b5cf6'},
+    {label:'마감 위험',value:`${kRisk}`,sub:kRisk>0?'즉시 조치':'이상 없음',color:kRisk>0?'#ef4444':'#10b981'},
+    {label:'완료 프로젝트',value:`${kDone}/${PROJECTS.length}`,sub:'프로젝트',color:'#10b981'},
+  ].map(k=>`<div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #e8edf4;border-left:3px solid ${k.color};box-shadow:0 1px 4px rgba(0,0,0,.05);">
+    <div style="font-size:8.5px;font-weight:600;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">${k.label}</div>
+    <div style="font-size:28px;font-weight:800;color:${k.color};line-height:1;letter-spacing:-.5px;">${k.value}</div>
+    <div style="font-size:8px;color:#94a3b8;margin-top:5px;">${k.sub}</div>
   </div>`).join('');
 
   // 프로젝트 전체 현황 (우측 아래)
@@ -4801,21 +4815,24 @@ function renderWeeklyPage(){
     const risk=wrRisk(p);
     const rl=risk?RL_WR[risk]:null;
     const hasDates=p.projStart&&p.projEnd;
-    const badge=!hasDates
-      ?`<span style="font-size:7px;font-weight:700;color:#94a3b8;background:#f1f5f9;padding:1px 5px;border-radius:3px;">예정</span>`
-      :pp===100
-      ?`<span style="font-size:7px;font-weight:700;color:#059669;background:#dcfce7;padding:1px 5px;border-radius:3px;">완료</span>`
-      :rl&&risk!=='ok'
-      ?`<span style="font-size:7px;font-weight:700;color:${rl.c};background:${rl.c}18;padding:1px 5px;border-radius:3px;">${rl.t}</span>`
-      :`<span style="font-size:7px;font-weight:700;color:#3b82f6;background:#eff6ff;padding:1px 5px;border-radius:3px;">진행중</span>`;
-    return `<div style="padding:5px 0;border-bottom:1px solid #f1f5f9;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
-        <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;">
-          <span style="width:6px;height:6px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
-          <span style="font-size:10px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
-          ${badge}
+    let badgeColor='#94a3b8',badgeBg='#f1f5f9',badgeText='예정';
+    if(pp===100){badgeColor='#059669';badgeBg='#dcfce7';badgeText='완료';}
+    else if(hasDates&&rl&&risk!=='ok'){badgeColor=rl.c;badgeBg=rl.c+'18';badgeText=rl.t;}
+    else if(hasDates){badgeColor='#3b82f6';badgeBg='#eff6ff';badgeText='진행중';}
+    const dl=p.projEnd?Math.ceil((p.projEnd-TODAY)/86400000):null;
+    const dlStr=dl!==null?(dl<0?`D+${Math.abs(dl)}`:(dl===0?'D-Day':`D-${dl}`)): '';
+    const dlColor=dl!==null?(dl<0?'#ef4444':dl<=7?'#f59e0b':'#94a3b8'):'transparent';
+    return `<div style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:5px;min-width:0;flex:1;overflow:hidden;">
+          <span style="width:7px;height:7px;border-radius:50%;background:${p.color};flex-shrink:0;box-shadow:0 0 0 2px ${p.color}30;"></span>
+          <span style="font-size:10.5px;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+          <span style="font-size:7.5px;font-weight:700;color:${badgeColor};background:${badgeBg};padding:1px 5px;border-radius:3px;flex-shrink:0;">${badgeText}</span>
         </div>
-        <span style="font-size:10px;font-weight:700;color:${pp===100?'#059669':p.color};flex-shrink:0;margin-left:6px;">${pp}%</span>
+        <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;margin-left:6px;">
+          ${dlStr?`<span style="font-size:8px;font-weight:700;color:${dlColor};">${dlStr}</span>`:''}
+          <span style="font-size:11px;font-weight:800;color:${pp===100?'#059669':p.color};">${pp}%</span>
+        </div>
       </div>
       <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;">
         <div style="height:100%;width:${pp}%;background:${p.color};border-radius:3px;"></div>
@@ -4827,8 +4844,9 @@ function renderWeeklyPage(){
   slide.innerHTML=`
 <div class="wr-hdr">
   <div class="wr-hl">
-    <span style="font-size:13px;font-weight:800;color:#0f172a;letter-spacing:-.3px;">📊 ProjectGantt</span>
-    <span style="font-size:9px;font-weight:700;color:#fff;background:#4f7cff;padding:2px 7px;border-radius:4px;white-space:nowrap;">주간보고</span>
+    <span style="font-size:14px;font-weight:800;color:#0f172a;letter-spacing:-.4px;">ProjectGantt</span>
+    <span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f7cff,#6366f1);padding:2px 8px;border-radius:5px;white-space:nowrap;">주간보고</span>
+    <span style="font-size:9px;font-weight:600;color:#64748b;background:#f1f5f9;padding:2px 7px;border-radius:4px;white-space:nowrap;">${TODAY.getFullYear()}년 ${weekNum}주차</span>
   </div>
   <div class="wr-hc">${chipHtml}</div>
   <div class="wr-hr">
@@ -4838,25 +4856,25 @@ function renderWeeklyPage(){
 </div>
 <div class="wr-body">
   <div class="wr-col-l">
-    <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:5px;height:100%;">${ccHtml}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:6px;height:100%;">${ccHtml}</div>
   </div>
   <div class="wr-col-m">
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">센터별 주간 실적 비교</div>
-      <div style="height:295px;padding:2px 8px 6px;">${buildWrLineChart(283)}</div>
+      <div style="height:272px;padding:2px 8px 6px;">${buildWrBarChart(260)}</div>
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
-      <div class="wr-pt">프로젝트 예상 마감 일정</div>
-      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildDeadlineGantt(295)}</div>
+      <div class="wr-pt">프로젝트 마감 일정</div>
+      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildDeadlineGantt(278)}</div>
     </div>
   </div>
   <div class="wr-col-r">
     <div class="wr-panel" style="flex-shrink:0;">
-      <div class="wr-pt">KPI</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 8px 8px;">${kpiHtml}</div>
+      <div class="wr-pt">KPI 현황</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 8px 8px;">${kpiHtml}</div>
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
-      <div class="wr-pt">프로젝트 전체 현황</div>
+      <div class="wr-pt">프로젝트 현황</div>
       <div style="flex:1;overflow-y:auto;padding:0 8px 8px;">${projListHtml}</div>
     </div>
   </div>
