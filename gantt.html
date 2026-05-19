@@ -4777,59 +4777,109 @@ function renderWeeklyPage(){
   function buildDeadlineGantt(h){
     const pjList=PROJECTS.filter(p=>p.projEnd);
     if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:${h}px;font-size:10px;color:#94a3b8;">마감일 데이터 없음</div>`;
-    const W=400,pL=58,pR=46,pT=14,pB=12;
+    const W=400,pL=82,pR=8,gW=W-pL-pR;
+    const mRH=13,dRH=10,hdrH=mRH+dRH,pB=5;
+    const n=pjList.length;
+    const rowH=Math.min(32,Math.max(18,Math.floor((h-hdrH-pB)/Math.max(1,n))));
+    const gH=rowH*n;
     const allSt=pjList.map(p=>(p.projStart||TODAY).getTime());
     const allEn=pjList.map(p=>p.projEnd.getTime());
-    const minD=new Date(Math.min(...allSt,TODAY.getTime()));
-    const maxD=new Date(Math.max(...allEn)); maxD.setDate(maxD.getDate()+10);
-    const span=Math.max(1,maxD-minD);
-    const gW=W-pL-pR;
-    const rowH=Math.max(16,Math.floor((h-pT-pB)/Math.max(1,pjList.length)));
-    const gH=rowH*pjList.length;
-    function xOf(d){return pL+(d.getTime?d.getTime()-minD.getTime():(d-minD.getTime()))/span*gW;}
+    let minD=new Date(Math.min(...allSt,TODAY.getTime()));
+    let maxD=new Date(Math.max(...allEn));
+    minD=new Date(minD.getFullYear(),minD.getMonth(),1);
+    maxD.setDate(maxD.getDate()+14);
+    const span=Math.max(1,maxD.getTime()-minD.getTime());
+    function xOf(d){return pL+((d instanceof Date?d.getTime():+d)-minD.getTime())/span*gW;}
     let s='';
-    pjList.forEach((_,i)=>{
-      if(i%2===0) s+=`<rect x="${pL}" y="${pT+i*rowH}" width="${gW}" height="${rowH}" fill="rgba(0,0,0,.015)"/>`;
-    });
+    // 흰 배경
+    s+=`<rect x="0" y="0" width="${W}" height="${h}" fill="#fff"/>`;
+    s+=`<rect x="${pL}" y="${hdrH}" width="${gW}" height="${gH}" fill="#f8fafc"/>`;
+    // 교대 행 배경
+    for(let i=0;i<n;i++){
+      if(i%2===0) s+=`<rect x="${pL}" y="${hdrH+i*rowH}" width="${gW}" height="${rowH}" fill="rgba(0,0,0,.022)"/>`;
+    }
+    // 주말 음영
+    {let d=new Date(minD);
+    while(d<=maxD){
+      const dow=d.getDay();
+      if(dow===0||dow===6){
+        const x1=Math.max(pL,xOf(d));
+        const nd=new Date(d);nd.setDate(nd.getDate()+1);
+        const x2=Math.min(pL+gW,xOf(nd));
+        if(x2>x1) s+=`<rect x="${x1}" y="${hdrH}" width="${x2-x1}" height="${gH}" fill="rgba(99,102,241,.055)"/>`;
+      }
+      d.setDate(d.getDate()+1);
+    }}
+    // 월 헤더
+    let mi=0,mc=new Date(minD.getFullYear(),minD.getMonth(),1);
+    while(mc<=maxD){
+      const nmc=new Date(mc.getFullYear(),mc.getMonth()+1,1);
+      const x1=Math.max(pL,xOf(mc)),x2=Math.min(pL+gW,xOf(nmc));
+      if(x2>x1){
+        s+=`<rect x="${x1}" y="0" width="${x2-x1}" height="${mRH}" fill="${mi%2===0?'#dde6f5':'#e8eef9'}"/>`;
+        s+=`<text x="${(x1+x2)/2}" y="${mRH-3}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#1e3a5f">${mc.getFullYear()}.${String(mc.getMonth()+1).padStart(2,'0')}</text>`;
+      }
+      // 월 경계선
+      const mx=xOf(mc);
+      if(mx>pL&&mx<pL+gW) s+=`<line x1="${mx}" y1="0" x2="${mx}" y2="${hdrH+gH}" stroke="#aab5cc" stroke-width="1"/>`;
+      mc=nmc;mi++;
+    }
+    // 7일 간격 일자 눈금 + 격자선
+    {let d=new Date(minD);
+    while(d<=maxD){
+      const dx=xOf(d);
+      if(dx>=pL&&dx<=pL+gW){
+        s+=`<text x="${dx}" y="${hdrH-2}" text-anchor="middle" font-size="6" fill="#64748b">${d.getDate()}</text>`;
+        s+=`<line x1="${dx}" y1="${mRH}" x2="${dx}" y2="${hdrH+gH}" stroke="#dde3ec" stroke-width="0.5"/>`;
+      }
+      d.setDate(d.getDate()+7);
+    }}
+    // 헤더 하단 구분선
+    s+=`<line x1="${pL}" y1="${hdrH}" x2="${pL+gW}" y2="${hdrH}" stroke="#c0cad8" stroke-width="1"/>`;
+    // 행 구분선
+    for(let i=1;i<n;i++) s+=`<line x1="${pL}" y1="${hdrH+i*rowH}" x2="${pL+gW}" y2="${hdrH+i*rowH}" stroke="#e2e8f0" stroke-width="0.5"/>`;
+    // TODAY 빨간 점선
     const tx=xOf(TODAY);
-    s+=`<rect x="${tx-0.75}" y="${pT}" width="1.5" height="${gH}" fill="#ef4444" opacity="0.6"/>`;
-    s+=`<text x="${tx}" y="${pT-4}" text-anchor="middle" font-size="7.5" fill="#ef4444" font-weight="700">TODAY</text>`;
+    if(tx>=pL&&tx<=pL+gW){
+      s+=`<line x1="${tx}" y1="${mRH}" x2="${tx}" y2="${hdrH+gH}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.85"/>`;
+      s+=`<rect x="${tx-9}" y="${mRH+1}" width="18" height="${dRH-2}" rx="2" fill="#fef2f2"/>`;
+      s+=`<text x="${tx}" y="${mRH+dRH-3}" text-anchor="middle" font-size="5.5" fill="#ef4444" font-weight="700">TODAY</text>`;
+    }
+    // 프로젝트 바
     pjList.forEach((p,i)=>{
       const{pct:pp}=wrPct(p);
-      const y=pT+i*rowH, bY=y+rowH*0.2, bH=rowH*0.55;
-      const hasStart=!!p.projStart;
+      const ry=hdrH+i*rowH;
+      const bY=ry+rowH*0.22,bH=Math.max(8,rowH*0.55);
+      const tY=ry+rowH*0.49+3;
       const nm=p.name.length>8?p.name.slice(0,7)+'…':p.name;
-      s+=`<text x="${pL-4}" y="${y+rowH*0.7}" text-anchor="end" font-size="8" font-weight="600" fill="#334155">${nm}</text>`;
-      if(!hasStart){
-        // 시작일 없음 → "예정" 점선 표시
-        const ex=xOf(p.projEnd);
-        const sx=Math.max(pL,ex-50);
-        const bW=Math.max(4,ex-sx);
-        s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="3" fill="none" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>`;
-        s+=`<text x="${ex+4}" y="${bY+bH*0.82}" font-size="6.5" fill="#94a3b8" font-weight="600">예정</text>`;
-        s+=`<text x="${W-pR+3}" y="${y+rowH*0.7}" font-size="7" font-weight="700" fill="#94a3b8">-</text>`;
+      s+=`<text x="${pL-4}" y="${tY}" text-anchor="end" font-size="8" font-weight="700" fill="#1e293b">${nm}</text>`;
+      if(p.projStart&&p.projEnd){
+        const dr=`${p.projStart.getMonth()+1}/${p.projStart.getDate()}~${p.projEnd.getMonth()+1}/${p.projEnd.getDate()}`;
+        s+=`<text x="${pL-4}" y="${tY+7}" text-anchor="end" font-size="5.5" fill="#94a3b8">${dr}</text>`;
+      }
+      if(!p.projStart){
+        const ex=xOf(p.projEnd),sx=Math.max(pL,ex-Math.min(40,gW*0.15)),bW=Math.max(4,ex-sx);
+        s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="2" fill="none" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>`;
+        s+=`<text x="${Math.min(ex+2,pL+gW-4)}" y="${bY+bH*0.82}" font-size="6" fill="#94a3b8">예정</text>`;
       } else if(pp>=100){
-        // 완료(100%) → 초록 완료 바 표시
-        const sx=xOf(p.projStart), ex=xOf(p.projEnd);
-        const bW=Math.max(4,ex-sx);
-        s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="3" fill="#059669"/>`;
-        s+=`<text x="${sx+bW/2}" y="${bY+bH*0.82}" text-anchor="middle" font-size="6.5" fill="#fff" font-weight="700">✓ 완료</text>`;
+        const sx=Math.max(pL,xOf(p.projStart)),ex=Math.min(pL+gW,xOf(p.projEnd)),bW=Math.max(4,ex-sx);
+        s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="2" fill="#22c55e"/>`;
+        if(bW>18) s+=`<text x="${sx+bW/2}" y="${bY+bH*0.8}" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">✓완료</text>`;
         const dlStr=`${p.projEnd.getMonth()+1}/${p.projEnd.getDate()}`;
-        s+=`<text x="${ex+4}" y="${bY+bH*0.8}" font-size="6.5" fill="#059669" font-weight="600">${dlStr}</text>`;
-        s+=`<text x="${W-pR+3}" y="${y+rowH*0.7}" font-size="7.5" font-weight="700" fill="#059669">완료</text>`;
+        s+=`<text x="${Math.min(xOf(p.projEnd),pL+gW)-1}" y="${bY-2}" text-anchor="end" font-size="5.5" fill="#16a34a" font-weight="700">${dlStr}</text>`;
       } else {
-        // 진행중
-        const sx=xOf(p.projStart), ex=xOf(p.projEnd);
-        const bW=Math.max(4,ex-sx);
-        s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="3" fill="${p.color}18"/>`;
-        if(pp>0) s+=`<rect x="${sx}" y="${bY}" width="${bW*pp/100}" height="${bH}" rx="3" fill="${p.color}bb"/>`;
+        const sx=Math.max(pL,xOf(p.projStart)),ex=Math.min(pL+gW,xOf(p.projEnd)),bW=Math.max(4,ex-sx);
+        s+=`<rect x="${sx}" y="${bY}" width="${bW}" height="${bH}" rx="2" fill="${p.color}20"/>`;
+        if(pp>0) s+=`<rect x="${sx}" y="${bY}" width="${bW*pp/100}" height="${bH}" rx="2" fill="${p.color}bb"/>`;
+        if(bW>22&&pp>0) s+=`<text x="${sx+(bW*pp/100)/2}" y="${bY+bH*0.8}" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">${pp}%</text>`;
         const risk=wrRisk(p);
-        const rc=risk==='overdue'||risk==='danger'?'#ef4444':risk==='warning'?'#f59e0b':'#10b981';
+        const rc=risk==='overdue'||risk==='danger'?'#ef4444':risk==='warning'?'#f59e0b':'#475569';
         const dlStr=`${p.projEnd.getMonth()+1}/${p.projEnd.getDate()}`;
-        s+=`<text x="${ex+4}" y="${bY+bH*0.8}" font-size="6.5" fill="${rc}" font-weight="600">${dlStr}</text>`;
-        s+=`<text x="${W-pR+3}" y="${y+rowH*0.7}" font-size="7.5" font-weight="700" fill="${p.color}">${pp}%</text>`;
+        s+=`<text x="${Math.min(xOf(p.projEnd),pL+gW)-1}" y="${bY-2}" text-anchor="end" font-size="5.5" fill="${rc}" font-weight="700">${dlStr}</text>`;
       }
     });
+    // 차트 테두리
+    s+=`<rect x="${pL}" y="0" width="${gW}" height="${hdrH+gH}" fill="none" stroke="#c0cad8" stroke-width="0.75"/>`;
     return `<svg width="100%" height="${h}" viewBox="0 0 ${W} ${h}">${s}</svg>`;
   }
 
