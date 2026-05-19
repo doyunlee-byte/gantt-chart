@@ -1145,6 +1145,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
         <button class="page-tab" id="tabCap" onclick="switchPage('cap')" style="white-space:nowrap;font-size:10px;padding:4px 5px;">📸 포캐Summary</button>
         <button class="page-tab" id="tabSummary" onclick="switchPage('summary')" style="white-space:nowrap;font-size:10px;padding:4px 5px;">📈 간트Summary</button>
         <button class="page-tab" id="tabBoard" onclick="switchPage('board')" style="white-space:nowrap;font-size:10px;padding:4px 5px;">📋 태스크</button>
+        <button class="page-tab" id="tabWeekly" onclick="switchPage('weekly')" style="white-space:nowrap;font-size:10px;padding:4px 5px;">📝 주간보고</button>
         <button id="shareBtn" onclick="copyShareLink()" style="white-space:nowrap;font-size:10px;padding:4px 5px;margin-left:8px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-weight:600;cursor:pointer;font-family:inherit;">🔗 설정</button>
       </div>
       <!-- 모바일 전용 동기화 표시 -->
@@ -1227,6 +1228,14 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     </div>
 
   <div id="pageSummary" style="display:none;flex:1;overflow:hidden;flex-direction:column;"><div id="summaryContainer" style="flex:1;overflow:auto;"></div></div>
+
+  <!-- 주간보고 페이지 -->
+  <div id="pageWeekly" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+    <iframe id="weeklyIframe"
+      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTryPQXfM3PqFsJ5jjXq4Fd3crnxaYQcmWLhjpgj2lXp9yjDIO36pJYdCdCMCVfs_2u8XAd3-RPUhIL/pubhtml?gid=1234030367&single=true"
+      style="flex:1;width:100%;height:100%;border:none;min-height:0;"
+      allowfullscreen></iframe>
+  </div>
 
   <!-- 모바일 하단 탭바 (2탭) -->
   <div class="mob-tabbar" id="mobTabbar">
@@ -1415,8 +1424,9 @@ function switchPage(page){
   document.getElementById('pageCap').classList.toggle('show',page==='cap');
   document.getElementById('pageBoard').style.display=page==='board'?'flex':'none';
   document.getElementById('pageSummary').style.display=page==='summary'?'flex':'none';
-  ['tabGantt','tabFc','tabCap','tabBoard','tabSummary'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  document.getElementById({gantt:'tabGantt',fc:'tabFc',cap:'tabCap',board:'tabBoard',summary:'tabSummary'}[page]).classList.add('active');
+  document.getElementById('pageWeekly').style.display=page==='weekly'?'flex':'none';
+  ['tabGantt','tabFc','tabCap','tabBoard','tabSummary','tabWeekly'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById({gantt:'tabGantt',fc:'tabFc',cap:'tabCap',board:'tabBoard',summary:'tabSummary',weekly:'tabWeekly'}[page]).classList.add('active');
   // 모바일 하단 탭바 활성 탭 갱신
   ['mobTabCap','mobTabSummary'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
   if(page==='cap'){const el=document.getElementById('mobTabCap');if(el)el.classList.add('active');}
