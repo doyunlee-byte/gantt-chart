@@ -4891,18 +4891,18 @@ function renderWeeklyPage(){
     <span class="sync-dot" style="width:6px;height:6px;"></span>
   </div>
 </div>
-<div class="wr-body" style="flex-direction:column;gap:8px;">
+<div class="wr-body" style="flex-direction:column;gap:0;padding:0 10px;">
   <!-- 상단: 센터 카드 3열 2행 -->
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:5px;height:188px;flex-shrink:0;">${ccHtml}</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:5px;height:338px;flex-shrink:0;">${ccHtml}</div>
   <!-- 하단: 꺾은선 / 마감간트 / KPI+현황 -->
-  <div style="display:flex;gap:8px;flex:1;min-height:0;">
+  <div style="display:flex;gap:8px;height:338px;flex-shrink:0;overflow:hidden;">
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">센터별 주간 실적 비교</div>
-      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildWrLineChart(400)}</div>
+      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildWrLineChart(310)}</div>
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">프로젝트 마감 일정</div>
-      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildDeadlineGantt(400)}</div>
+      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildDeadlineGantt(310)}</div>
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">KPI 현황</div>
