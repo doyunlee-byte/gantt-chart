@@ -1109,6 +1109,170 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   }
 }
 
+/* ── 주간보고 슬라이드 ─────────────────────────── */
+#pageWeekly {
+  background: #eef0f6;
+  overflow: auto;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 14px 16px;
+  gap: 8px;
+}
+.wr-toolbar {
+  width: 100%;
+  max-width: 1280px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.wr-capture-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 7px;
+  border: 1.5px solid #4f7cff;
+  background: #fff;
+  color: #4f7cff;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+.wr-capture-btn:hover { background: #4f7cff; color: #fff; }
+.wr-slide {
+  width: 100%;
+  max-width: 1280px;
+  aspect-ratio: 16 / 9;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 20px rgba(0,0,0,.12);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px 10px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.wr-slide:fullscreen,
+.wr-slide:-webkit-full-screen {
+  max-width: 100vw;
+  aspect-ratio: unset;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  padding: 20px 28px 14px;
+}
+.wr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+  flex-shrink: 0;
+}
+.wr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 7px;
+  flex-shrink: 0;
+}
+.wr-body {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.wr-left {
+  flex: 0 0 60%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  align-content: start;
+  overflow: hidden;
+}
+.wr-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
+}
+.wr-center-card {
+  background: #fff;
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  display: flex;
+  flex-direction: column;
+}
+.wr-card-head {
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.wr-card-body {
+  padding: 3px 8px 5px;
+  flex: 1;
+  overflow: hidden;
+}
+.wr-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.wr-kpi-card {
+  background: #fff;
+  border-radius: 7px;
+  padding: 7px 9px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07);
+}
+.wr-proj-box {
+  background: #fff;
+  border-radius: 7px;
+  padding: 8px 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.wr-proj-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 12px;
+  overflow: hidden;
+}
+.wr-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid #eef0f8;
+  flex-shrink: 0;
+}
+@media print {
+  .wr-toolbar { display: none !important; }
+  #pageWeekly { background: #fff !important; padding: 0 !important; }
+  .wr-slide {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100vh !important;
+    aspect-ratio: unset !important;
+    page-break-inside: avoid;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1230,11 +1394,13 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   <div id="pageSummary" style="display:none;flex:1;overflow:hidden;flex-direction:column;"><div id="summaryContainer" style="flex:1;overflow:auto;"></div></div>
 
   <!-- 주간보고 페이지 -->
-  <div id="pageWeekly" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
-    <iframe id="weeklyIframe"
-      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTryPQXfM3PqFsJ5jjXq4Fd3crnxaYQcmWLhjpgj2lXp9yjDIO36pJYdCdCMCVfs_2u8XAd3-RPUhIL/pubhtml?gid=1234030367&single=true"
-      style="flex:1;width:100%;height:100%;border:none;min-height:0;"
-      allowfullscreen></iframe>
+  <div id="pageWeekly" style="display:none;flex:1;flex-direction:column;">
+    <div class="wr-toolbar">
+      <button class="wr-capture-btn" onclick="weeklyFullscreen()">⛶ 캡처용 보기</button>
+    </div>
+    <div id="weeklySlide" class="wr-slide">
+      <div id="weeklyContent" style="display:contents;"></div>
+    </div>
   </div>
 
   <!-- 모바일 하단 탭바 (2탭) -->
@@ -1443,6 +1609,7 @@ function switchPage(page){
     renderCapPage();
   }
   if(page==='board'){if(!boardDataLoaded)loadBoardData();else boardRenderAll();}
+  if(page==='weekly'){renderWeeklyPage();}
   if(page==='summary'){
     if(window.innerWidth<=768&&fcSelectedProjects.size>0){summarySelectedProjs.clear();fcSelectedProjects.forEach(id=>summarySelectedProjs.add(id));}
     renderSummaryPage();
@@ -4436,6 +4603,200 @@ function openEditBoardTask(sheetRow) {
 
 function closeBoardModal() {
   document.getElementById('boardModal').style.display = 'none';
+}
+
+// ── 주간보고 16:9 슬라이드 ──────────────────────
+function weeklyFullscreen(){
+  const el = document.getElementById('weeklySlide');
+  if(!el) return;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+  if(req) req.call(el);
+}
+
+function toggleWeeklyChip(pid){
+  if(fcSelectedProjects.has(pid)) fcSelectedProjects.delete(pid);
+  else fcSelectedProjects.add(pid);
+  renderWeeklyPage();
+}
+
+function renderWeeklyPage(){
+  const slide = document.getElementById('weeklySlide');
+  if(!slide) return;
+
+  // 선택 프로젝트 없으면 전체 선택
+  if(!fcSelectedProjects.size && PROJECTS.length) PROJECTS.forEach(p=>fcSelectedProjects.add(p.id));
+  const selP = PROJECTS.filter(p=>fcSelectedProjects.has(p.id));
+
+  // ── KPI 계산
+  const allT = selP.flatMap(p=>p.tasks);
+  const tot  = allT.reduce((s,t)=>s+t.total,0);
+  const don  = allT.reduce((s,t)=>s+t.done,0);
+  const pct  = tot>0?Math.round(don/tot*100):0;
+  const inProg  = allT.filter(t=>t.status!=='완료').length;
+  const doneCount = allT.filter(t=>t.status==='완료').length;
+  const delayed = allT.filter(t=>{
+    if(t.status==='완료') return false;
+    const rem=Math.max(0,t.total-t.done);
+    if(!rem||!t.deadline) return false;
+    return addWorkDays(TODAY,Math.ceil(rem/(BASE_RATE*3)))>t.deadline;
+  }).length;
+
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+
+  // ── 프로젝트 칩
+  const chipHtml = PROJECTS.map(p=>{
+    const on=fcSelectedProjects.has(p.id);
+    const s=on?`background:${p.color}18;border:1.5px solid ${p.color};color:${p.color};`
+               :'background:#f0f2f8;border:1.5px solid #e0e4ef;color:#9096b0;';
+    return `<button onclick="toggleWeeklyChip('${p.id}')" style="${s}display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;"><span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>${p.name}</button>`;
+  }).join('');
+
+  // ── 센터 카드
+  let centerCardsHtml='';
+  CENTERS.forEach(c=>{
+    const cls=getCLS(c.name);
+    const shortName=c.name.replace('비버','');
+    const fixedProjs=selP.filter(p=>fcFixMap[p.id+'_'+c.name]);
+    const isFixed=fixedProjs.length>0;
+    const modeLabel=cls.mode==='parallel'?'병행':'순차';
+    const modeColor=cls.mode==='parallel'?'#4f7cff':'#059669';
+    const modeBg=cls.mode==='parallel'?'#eef2ff':'#f0fdf4';
+
+    let worst={label:'미배정',color:'#9096b0',border:'#e5e7eb',headBg:'#f9fafb'};
+    fixedProjs.forEach(p=>{
+      const st=calcProjStatus(p,c);
+      if(st.label.includes('위험')) worst={label:'🔴 위험',color:'#dc2626',border:'#dc2626',headBg:'#fef2f2'};
+      else if(st.label.includes('주의')&&!worst.label.includes('위험')) worst={label:'⚡ 주의',color:'#f59e0b',border:'#f59e0b',headBg:'#fffbeb'};
+      else if((st.label.includes('충분')||st.label==='완료')&&worst.label==='미배정') worst={label:'✅ 충분',color:'#059669',border:'#059669',headBg:'#f0fdf4'};
+    });
+    const dailyCap=fixedProjs.reduce((s,p)=>s+(getPCS(p.id,c.name).realDaily||0),0);
+
+    let projRowsHtml='';
+    if(!selP.length){
+      projRowsHtml='<div style="font-size:8px;color:#9096b0;padding:4px 0;">선택된 프로젝트 없음</div>';
+    } else {
+      selP.forEach(p=>{
+        const s=getPCS(p.id,c.name);
+        const st=calcProjStatus(p,c);
+        const fixed=!!fcFixMap[p.id+'_'+c.name];
+        const cDone=Object.values(CENTER_DAILY[p.name]?.[c.name]||{}).reduce((a,b)=>a+b,0);
+        const cRem=getCRem(c.name,p);
+        const cTot=cDone+cRem;
+        const cpct=cTot>0?Math.round(cDone/cTot*100):0;
+        const fcDateStr=st.fcDate?`${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}`:'-';
+        if(!fixed){
+          projRowsHtml+=`<div style="display:flex;align-items:center;gap:4px;padding:3px 0;border-top:1px solid #f0f2f8;">
+            <span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
+            <span style="font-size:8px;color:#c0c6d8;flex:1;">${p.name}</span>
+            <span style="font-size:7px;color:#c0c6d8;font-style:italic;">미배정</span></div>`;
+        } else {
+          projRowsHtml+=`<div style="padding:3px 0;border-top:1px solid #f0f2f8;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+              <div style="display:flex;align-items:center;gap:3px;min-width:0;flex:1;overflow:hidden;">
+                <span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
+                <span style="font-size:9px;font-weight:700;color:#1a1d2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+                <span style="font-size:7px;color:#9096b0;white-space:nowrap;flex-shrink:0;">${s.realPersonnel}명·${s.realDaily}건/일</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:4px;">
+                <span style="font-size:7px;color:#9096b0;">예상 <strong style="color:${st.color};">${fcDateStr}</strong></span>
+                <span style="font-size:7px;font-weight:700;color:${st.color};white-space:nowrap;">${st.label}</span>
+              </div>
+            </div>
+            <div style="height:3px;background:#eef0f8;border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:${cpct}%;background:${p.color};border-radius:2px;"></div>
+            </div>
+            <div style="font-size:7px;color:${p.color};font-weight:700;text-align:right;margin-top:1px;">${cpct}%</div></div>`;
+        }
+      });
+    }
+
+    centerCardsHtml+=`<div class="wr-center-card" style="border:1.5px solid ${worst.border};">
+      <div class="wr-card-head" style="background:${worst.headBg};">
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+          <span style="width:6px;height:6px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:11px;font-weight:800;color:#1a1d2e;">${shortName}</span>
+          <span style="font-size:8px;font-weight:600;color:#4a5068;background:#f1f5f9;padding:1px 5px;border-radius:3px;">총 ${cls.totalPersonnel}명</span>
+          ${isFixed?`<span style="font-size:7px;font-weight:700;color:#fff;background:#059669;padding:1px 4px;border-radius:3px;">FIXED·${dailyCap}건/일</span>`:''}
+          <span style="font-size:7px;font-weight:700;color:${modeColor};background:${modeBg};padding:1px 4px;border-radius:3px;">${modeLabel}</span>
+        </div>
+        <span style="font-size:9px;font-weight:700;color:${worst.color};white-space:nowrap;">${worst.label}</span>
+      </div>
+      <div class="wr-card-body">${projRowsHtml}</div>
+    </div>`;
+  });
+
+  // ── KPI 카드
+  const kpiHtml=`<div class="wr-kpi-grid">
+    <div class="wr-kpi-card" style="border-top:3px solid #4f7cff;">
+      <div style="font-size:8px;font-weight:600;color:#9096b0;margin-bottom:2px;">전체 진척률</div>
+      <div style="font-size:22px;font-weight:800;color:#1a1d2e;line-height:1;">${pct}<span style="font-size:12px;">%</span></div>
+      <div style="height:3px;background:#eef0f8;border-radius:2px;margin:4px 0 2px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:#4f7cff;border-radius:2px;"></div></div>
+      <div style="font-size:7px;color:#9096b0;">${don.toLocaleString()} / ${tot.toLocaleString()} 매장</div>
+    </div>
+    <div class="wr-kpi-card" style="border-top:3px solid #059669;">
+      <div style="font-size:8px;font-weight:600;color:#9096b0;margin-bottom:2px;">완료</div>
+      <div style="font-size:22px;font-weight:800;color:#059669;line-height:1;">${doneCount}</div>
+      <div style="font-size:7px;color:#9096b0;margin-top:6px;">태스크 기준</div>
+    </div>
+    <div class="wr-kpi-card" style="border-top:3px solid #f59e0b;">
+      <div style="font-size:8px;font-weight:600;color:#9096b0;margin-bottom:2px;">진행중</div>
+      <div style="font-size:22px;font-weight:800;color:#f59e0b;line-height:1;">${inProg}</div>
+      <div style="font-size:7px;color:#9096b0;margin-top:6px;">태스크 기준</div>
+    </div>
+    <div class="wr-kpi-card" style="border-top:3px solid ${delayed>0?'#dc2626':'#059669'};">
+      <div style="font-size:8px;font-weight:600;color:#9096b0;margin-bottom:2px;">마감 위험</div>
+      <div style="font-size:22px;font-weight:800;color:${delayed>0?'#dc2626':'#059669'};line-height:1;">${delayed}</div>
+      <div style="font-size:7px;color:${delayed>0?'#dc2626':'#9096b0'};margin-top:6px;">${delayed>0?'주의 필요':'정상'}</div>
+    </div>
+  </div>`;
+
+  // ── 프로젝트 진척도
+  const projProgressHtml=`<div class="wr-proj-box">
+    <div style="font-size:9px;font-weight:700;color:#4a5068;letter-spacing:.04em;margin-bottom:6px;flex-shrink:0;">프로젝트 진척도</div>
+    <div class="wr-proj-grid">
+      ${selP.map(p=>{
+        const t2=p.tasks.reduce((s,t)=>s+t.total,0);
+        const d2=p.tasks.reduce((s,t)=>s+t.done,0);
+        const p2=t2>0?Math.round(d2/t2*100):0;
+        const rem=p.tasks.reduce((s,t)=>s+Math.max(0,t.total-t.done),0);
+        return`<div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+            <div style="display:flex;align-items:center;gap:3px;min-width:0;overflow:hidden;">
+              <span style="width:4px;height:4px;border-radius:50%;background:${p.color};flex-shrink:0;display:inline-block;"></span>
+              <span style="font-size:8px;font-weight:600;color:#4a5068;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+            </div>
+            <span style="font-size:9px;font-weight:700;color:${p2===100?'#059669':'#1a1d2e'};flex-shrink:0;margin-left:4px;">${p2}%</span>
+          </div>
+          <div style="height:4px;background:#eef0f8;border-radius:2px;overflow:hidden;">
+            <div style="height:100%;width:${p2}%;background:${p.color};border-radius:2px;"></div>
+          </div>
+          <div style="font-size:7px;color:#9096b0;margin-top:1px;">잔여 ${rem.toLocaleString()}매장</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  slide.innerHTML=`
+    <div class="wr-header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:14px;font-weight:800;color:#1a1d2e;letter-spacing:-.3px;">📊 Project Gantt Chart</span>
+        <span style="font-size:10px;color:#9096b0;font-weight:500;border-left:1px solid #e0e4ef;padding-left:8px;">주간보고</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10px;font-weight:600;color:#4a5068;">${dateStr} 기준</span>
+        <span class="sync-dot" style="width:6px;height:6px;"></span>
+      </div>
+    </div>
+    <div class="wr-chips">${chipHtml}</div>
+    <div class="wr-body">
+      <div class="wr-left">${centerCardsHtml}</div>
+      <div class="wr-right">${kpiHtml}${projProgressHtml}</div>
+    </div>
+    <div class="wr-footer">
+      <span style="font-size:8px;color:#c0c6d8;">ProjectGantt · Google Sheets 실시간 연동</span>
+      <span style="font-size:8px;color:#c0c6d8;">Beaver Works Inc. © ${now.getFullYear()}</span>
+    </div>`;
 }
 
 async function saveBoardModal() {
