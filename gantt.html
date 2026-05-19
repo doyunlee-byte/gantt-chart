@@ -4728,35 +4728,46 @@ function renderWeeklyPage(){
   });
   const wColor=selP.length===1?(selP[0]?.color||'#6366f1'):'#818cf8';
 
-  function buildWrBarChart(ch){
-    const W=400,pL=22,pR=8,pT=26,pB=22,gW=W-pL-pR,gH=ch-pT-pB;
-    const maxV=Math.max(1,...Object.values(weekData).flatMap(d=>[d.tw,d.lw]));
+  function buildWrLineChart(ch){
+    const W=400,pL=26,pR=10,pT=32,pB=28,gW=W-pL-pR,gH=ch-pT-pB;
     const n=CENTERS.length;
-    const groupW=gW/n;
-    const bW=Math.min(16,(groupW-10)/2);
+    if(!n) return '';
+    const maxV=Math.max(1,...Object.values(weekData).flatMap(d=>[d.tw,d.lw]));
+    function xOf(i){return pL+(n===1?gW/2:i*gW/(n-1));}
+    function yOf(v){return pT+gH-(v/maxV)*gH;}
     let s='';
-    [0,0.5,1].forEach(r=>{
+    // 가로 그리드선
+    [0,0.25,0.5,0.75,1].forEach(r=>{
       const y=pT+gH-r*gH;
       s+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(0,0,0,.06)" stroke-width="${r===0?1:0.5}"/>`;
-      if(r>0) s+=`<text x="${pL-4}" y="${y+3}" text-anchor="end" font-size="7.5" fill="#cbd5e1">${Math.round(maxV*r)}</text>`;
+      if(r>0) s+=`<text x="${pL-4}" y="${y+3}" text-anchor="end" font-size="7" fill="#cbd5e1">${Math.round(maxV*r)}</text>`;
     });
+    // 전주 꺾은선 (회색)
+    const lwPath=CENTERS.map((c,i)=>`${i===0?'M':'L'}${xOf(i)},${yOf(weekData[c.name]?.lw||0)}`).join('');
+    s+=`<path d="${lwPath}" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    // 금주 꺾은선 영역 채우기
+    const twPts=CENTERS.map((c,i)=>`${i===0?'M':'L'}${xOf(i)},${yOf(weekData[c.name]?.tw||0)}`).join('');
+    s+=`<path d="${twPts}L${xOf(n-1)},${pT+gH}L${xOf(0)},${pT+gH}Z" fill="${wColor}" opacity="0.07"/>`;
+    s+=`<path d="${twPts}" fill="none" stroke="${wColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    // 점 및 레이블
     CENTERS.forEach((c,i)=>{
       const lw=weekData[c.name]?.lw||0;
       const tw=weekData[c.name]?.tw||0;
-      const cx=pL+i*groupW+groupW/2;
-      const lx=cx-bW-1, tx=cx+1;
-      const lh=(lw/maxV)*gH, th=(tw/maxV)*gH;
-      s+=`<rect x="${lx}" y="${pT+gH-Math.max(lh,1)}" width="${bW}" height="${Math.max(lh,1)}" rx="2" fill="#e2e8f0"/>`;
-      if(lw>0) s+=`<text x="${lx+bW/2}" y="${pT+gH-lh-4}" text-anchor="middle" font-size="8" fill="#94a3b8">${lw}</text>`;
-      s+=`<rect x="${tx}" y="${pT+gH-Math.max(th,1)}" width="${bW}" height="${Math.max(th,1)}" rx="2" fill="${c.color}"/>`;
-      if(tw>0) s+=`<text x="${tx+bW/2}" y="${pT+gH-th-4}" text-anchor="middle" font-size="9" font-weight="700" fill="${c.color}">${tw}</text>`;
-      s+=`<text x="${cx}" y="${pT+gH+14}" text-anchor="middle" font-size="9.5" font-weight="600" fill="${c.color}">${c.name.replace('비버','')}</text>`;
+      const x=xOf(i),ly=yOf(lw),ty=yOf(tw);
+      s+=`<circle cx="${x}" cy="${ly}" r="3" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/>`;
+      if(lw>0) s+=`<text x="${x}" y="${ly-7}" text-anchor="middle" font-size="8" fill="#94a3b8">${lw}</text>`;
+      s+=`<circle cx="${x}" cy="${ty}" r="4.5" fill="${c.color}" stroke="#fff" stroke-width="1.5"/>`;
+      if(tw>0) s+=`<text x="${x}" y="${ty-9}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${c.color}">${tw}</text>`;
+      s+=`<text x="${x}" y="${pT+gH+18}" text-anchor="middle" font-size="9.5" font-weight="600" fill="${c.color}">${c.name.replace('비버','')}</text>`;
     });
-    const ly=pT-13;
-    s+=`<rect x="${pL}" y="${ly-4}" width="10" height="5" rx="1" fill="#e2e8f0"/>`;
-    s+=`<text x="${pL+13}" y="${ly+1}" font-size="7.5" fill="#94a3b8">전주</text>`;
-    s+=`<rect x="${pL+38}" y="${ly-4}" width="10" height="5" rx="1" fill="${wColor}"/>`;
-    s+=`<text x="${pL+51}" y="${ly+1}" font-size="7.5" fill="#94a3b8">금주</text>`;
+    // 범례
+    const lgY=pT-18;
+    s+=`<line x1="${pL}" y1="${lgY}" x2="${pL+14}" y2="${lgY}" stroke="#e2e8f0" stroke-width="2"/>`;
+    s+=`<circle cx="${pL+7}" cy="${lgY}" r="2.5" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/>`;
+    s+=`<text x="${pL+18}" y="${lgY+3}" font-size="7.5" fill="#94a3b8">전주</text>`;
+    s+=`<line x1="${pL+44}" y1="${lgY}" x2="${pL+58}" y2="${lgY}" stroke="${wColor}" stroke-width="2.5"/>`;
+    s+=`<circle cx="${pL+51}" cy="${lgY}" r="3" fill="${wColor}"/>`;
+    s+=`<text x="${pL+62}" y="${lgY+3}" font-size="7.5" fill="#94a3b8">금주</text>`;
     return `<svg width="100%" height="${ch}" viewBox="0 0 ${W} ${ch}">${s}</svg>`;
   }
 
@@ -4878,27 +4889,23 @@ function renderWeeklyPage(){
     <span class="sync-dot" style="width:6px;height:6px;"></span>
   </div>
 </div>
-<div class="wr-body">
-  <div class="wr-col-l">
-    <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:5px;flex:1;min-height:0;">${ccHtml}</div>
-  </div>
-  <div class="wr-col-m">
+<div class="wr-body" style="flex-direction:column;gap:6px;">
+  <!-- 상단: 센터 카드 3열 2행 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:5px;height:188px;flex-shrink:0;">${ccHtml}</div>
+  <!-- 하단: 꺾은선 / 마감간트 / KPI+현황 -->
+  <div style="display:flex;gap:8px;flex:1;min-height:0;">
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">센터별 주간 실적 비교</div>
-      <div style="height:272px;padding:2px 8px 6px;">${buildWrBarChart(260)}</div>
+      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildWrLineChart(400)}</div>
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">프로젝트 마감 일정</div>
-      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildDeadlineGantt(278)}</div>
-    </div>
-  </div>
-  <div class="wr-col-r">
-    <div class="wr-panel" style="flex-shrink:0;">
-      <div class="wr-pt">KPI 현황</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 8px 8px;">${kpiHtml}</div>
+      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildDeadlineGantt(400)}</div>
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
-      <div class="wr-pt">프로젝트 현황</div>
+      <div class="wr-pt">KPI 현황</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 8px 6px;flex-shrink:0;">${kpiHtml}</div>
+      <div class="wr-pt" style="border-top:1px solid #f1f5f9;">프로젝트 현황</div>
       <div style="flex:1;min-height:0;overflow:hidden;padding:0 8px 6px;">${projListHtml}</div>
     </div>
   </div>
