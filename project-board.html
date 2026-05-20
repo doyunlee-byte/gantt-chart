@@ -443,6 +443,52 @@
   }
 
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .filter-bar {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filter-bar:empty { display: none; }
+
+  .filter-label {
+    font-size: 12px;
+    color: var(--text3);
+    white-space: nowrap;
+    margin-right: 2px;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 4px 13px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.5;
+  }
+
+  .filter-chip:hover { opacity: 0.75; }
+
+  .filter-chip.active {
+    background: var(--text);
+    color: var(--bg);
+    border-color: transparent;
+    font-weight: 600;
+  }
 </style>
 </head>
 <body>
@@ -476,6 +522,8 @@
     <input type="date" id="global-date" oninput="renderAll()">
     <button class="date-clear" onclick="document.getElementById('global-date').value='';renderAll()">초기화</button>
   </div>
+
+  <div class="filter-bar" id="project-filter"></div>
 
   <div id="projects-container"></div>
 
@@ -559,6 +607,30 @@ function onDevTabCheck(el, key) {
   const checks = [...card.querySelectorAll('.task-check')];
   const allDone = checks.some(c => c.checked);
   card.classList.toggle('all-done', allDone);
+}
+
+const selectedProjectIds = new Set();
+
+function toggleProjectFilter(id) {
+  if (selectedProjectIds.has(id)) {
+    selectedProjectIds.delete(id);
+  } else {
+    selectedProjectIds.add(id);
+  }
+  renderAll();
+}
+
+function renderFilterBar() {
+  const bar = document.getElementById('project-filter');
+  if (projects.length <= 1) {
+    bar.innerHTML = '';
+    return;
+  }
+  const chips = projects.map(p => {
+    const active = selectedProjectIds.has(p.id);
+    return `<button class="filter-chip${active ? ' active' : ''}" onclick="toggleProjectFilter('${p.id}')">${p.name}</button>`;
+  }).join('');
+  bar.innerHTML = `<span class="filter-label">프로젝트</span>${chips}`;
 }
 
 let projects = [
@@ -785,16 +857,21 @@ function renderProject(project) {
 }
 
 function renderAll() {
+  renderFilterBar();
   const container = document.getElementById('projects-container');
   if (projects.length === 0) {
     container.innerHTML = `<div class="empty-state"><p>아직 프로젝트가 없습니다.<br>위 입력창에 프로젝트를 추가해보세요.</p></div>`;
     return;
   }
-  container.innerHTML = projects.map(renderProject).join('');
+  const visible = selectedProjectIds.size > 0
+    ? projects.filter(p => selectedProjectIds.has(p.id))
+    : projects;
+  container.innerHTML = visible.map(renderProject).join('');
 }
 
 function deleteProject(id) {
   projects = projects.filter(p => p.id !== id);
+  selectedProjectIds.delete(id);
   renderAll();
 }
 

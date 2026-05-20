@@ -4659,7 +4659,7 @@ function renderWeeklyPage(){
   // 헤더 프로젝트 칩
   const chipHtml=PROJECTS.map(p=>{
     const on=fcSelectedProjects.has(p.id);
-    return `<button onclick="toggleWeeklyChip('${p.id}')" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1.5px solid ${on?p.color:'#e2e8f0'};background:${on?p.color+'18':'#f8fafc'};color:${on?p.color:'#94a3b8'};"><span style="width:5px;height:5px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}</button>`;
+    return `<button onclick="toggleWeeklyChip('${p.id}')" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1.5px solid ${on?p.color:'#E8EDF5'};background:${on?p.color+'18':'#EEF1F8'};color:${on?p.color:'#94A8C8'};"><span style="width:5px;height:5px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}</button>`;
   }).join('');
 
   // 센터 카드 (좌측 열)
@@ -4694,7 +4694,7 @@ function renderWeeklyPage(){
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
             <div style="display:flex;align-items:center;gap:3px;min-width:0;flex:1;overflow:hidden;">
               <span style="width:5px;height:5px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
-              <span style="font-size:8.5px;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+              <span style="font-size:8.5px;font-weight:700;color:#0B1E3E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:3px;">
               <span style="font-size:6.5px;color:#94a3b8;white-space:nowrap;">${s.realPersonnel}명</span>
@@ -4822,37 +4822,37 @@ function renderWeeklyPage(){
       }
 
       const isLast=i===n-1;
-      const borderStyle=isLast?'none':'0.5px solid #e5e5e5';
+      const borderStyle=isLast?'none':'0.5px solid #E8EDF5';
 
       const deadlineMeta=isDone
         ?`<span style="font-size:${dlSz}px;font-weight:700;color:#fff;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:3px;padding:1px 4px;display:inline-block;white-space:nowrap;">완료</span>`
-        :`<span style="font-size:${dlSz}px;color:#64748b;white-space:nowrap;">${formatDeadline(p.projEnd)}</span>`;
+        :`<span style="font-size:${dlSz}px;color:#94A8C8;white-space:nowrap;">${formatDeadline(p.projEnd)}</span>`;
 
-      const lbl1=showLabels?`<div style="font-size:${labelSz}px;color:#94a3b8;margin-bottom:2px;font-weight:500;">실질 진척도</div>`:'';
-      const lbl2=showLabels?`<div style="font-size:${labelSz}px;color:#94a3b8;margin-bottom:2px;font-weight:500;">예상 완료</div>`:'';
+      const lbl1=showLabels?`<div style="font-size:${labelSz}px;color:#94A8C8;margin-bottom:2px;font-weight:500;">실질 진척도</div>`:'';
+      const lbl2=showLabels?`<div style="font-size:${labelSz}px;color:#94A8C8;margin-bottom:2px;font-weight:500;">예상 완료</div>`:'';
 
       return `<div style="display:flex;align-items:center;gap:7px;padding:${padV}px 0;border-bottom:${borderStyle};height:${rowH}px;box-sizing:border-box;">
   <div style="flex:0 0 88px;display:flex;align-items:center;gap:5px;overflow:hidden;min-width:0;">
     <span style="width:6px;height:6px;border-radius:50%;background:${c};flex-shrink:0;display:inline-block;"></span>
-    <span style="font-size:${nmSz}px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+    <span style="font-size:${nmSz}px;font-weight:600;color:#0B1E3E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
   </div>
   <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:${barGap}px;">
     <div>${lbl1}<div style="height:${barH1}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:4px;"></div></div></div>
     <div>${lbl2}<div style="height:${barH2}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${expPct}%;height:100%;background:#B5C8E8;border-radius:4px;"></div></div></div>
   </div>
   <div style="flex:0 0 54px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
-    <div style="font-size:${pctSz}px;font-weight:500;color:#1e293b;line-height:1;">${pp}%</div>
+    <div style="font-size:${pctSz}px;font-weight:500;color:#0B1E3E;line-height:1;">${pp}%</div>
     <div>${deadlineMeta}</div>
   </div>
 </div>`;
     }).join('');
 
     const legend=`<div style="display:flex;align-items:center;gap:12px;height:${legendH}px;flex-shrink:0;">
-  <span style="display:flex;align-items:center;gap:4px;font-size:8px;color:#64748b;">
-    <span style="width:10px;height:4px;border-radius:2px;background:#64748b;display:inline-block;"></span>실질 진척도
+  <span style="display:flex;align-items:center;gap:4px;font-size:8px;color:#94A8C8;">
+    <span style="width:10px;height:4px;border-radius:2px;background:#94A8C8;display:inline-block;"></span>실질 진척도
   </span>
-  <span style="display:flex;align-items:center;gap:4px;font-size:8px;color:#64748b;">
-    <span style="width:10px;height:4px;border-radius:2px;background:#64748b;opacity:0.3;display:inline-block;"></span>예상 완료 기간
+  <span style="display:flex;align-items:center;gap:4px;font-size:8px;color:#94A8C8;">
+    <span style="width:10px;height:4px;border-radius:2px;background:#94A8C8;opacity:0.3;display:inline-block;"></span>예상 완료 기간
   </span>
 </div>`;
 
@@ -4881,18 +4881,18 @@ function renderWeeklyPage(){
     const risk=wrRisk(p);
     const rl=risk?RL_WR[risk]:null;
     const hasDates=p.projStart&&p.projEnd;
-    let badgeColor='#94a3b8',badgeBg='#f1f5f9',badgeText='예정';
+    let badgeColor='#94A8C8',badgeBg='#EEF1F8',badgeText='예정';
     if(pp===100){badgeColor='#fff';badgeBg='linear-gradient(90deg, #0B1E3E, #2A5298)';badgeText='완료';}
     else if(hasDates&&rl&&risk!=='ok'){badgeColor='#E85D5D';badgeBg='#FEF0F0';badgeText=rl.t;}
     else if(hasDates){badgeColor='#3b82f6';badgeBg='#eff6ff';badgeText='진행중';}
     const dl=p.projEnd?Math.ceil((p.projEnd-TODAY)/86400000):null;
     const dlStr=dl!==null?(dl<0?`D+${Math.abs(dl)}`:(dl===0?'D-Day':`D-${dl}`)): '';
-    const dlColor=dl!==null?(dl<0?'#ef4444':dl<=7?'#f59e0b':'#94a3b8'):'transparent';
-    return `<div style="padding:3px 0;border-bottom:1px solid #f1f5f9;">
+    const dlColor=dl!==null?(dl<0?'#ef4444':dl<=7?'#f59e0b':'#94A8C8'):'transparent';
+    return `<div style="padding:3px 0;border-bottom:1px solid #E8EDF5;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
         <div style="display:flex;align-items:center;gap:4px;min-width:0;flex:1;overflow:hidden;">
           <span style="width:6px;height:6px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
-          <span style="font-size:8.5px;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+          <span style="font-size:8.5px;font-weight:700;color:#0B1E3E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
           <span style="font-size:6px;font-weight:700;color:${badgeColor};background:${badgeBg};padding:1px 4px;border-radius:3px;flex-shrink:0;white-space:nowrap;">${badgeText}</span>
         </div>
         <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:4px;">
@@ -4903,7 +4903,7 @@ function renderWeeklyPage(){
       <div style="height:3px;background:#EEF1F8;border-radius:2px;overflow:hidden;">
         <div style="height:100%;width:${pp}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:2px;"></div>
       </div>
-      <div style="font-size:6.5px;color:#94a3b8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${pd.toLocaleString()} / ${pt.toLocaleString()} 완료</div>
+      <div style="font-size:6.5px;color:#94A8C8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${pd.toLocaleString()} / ${pt.toLocaleString()} 완료</div>
     </div>`;
   }).join('');
 
@@ -4936,7 +4936,7 @@ function renderWeeklyPage(){
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">KPI 현황</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 8px 6px;flex-shrink:0;">${kpiHtml}</div>
-      <div class="wr-pt" style="border-top:1px solid #f1f5f9;">프로젝트 현황</div>
+      <div class="wr-pt" style="border-top:1px solid #E8EDF5;">프로젝트 현황</div>
       <div style="flex:1;min-height:0;overflow:hidden;padding:0 8px 6px;">${projListHtml}</div>
     </div>
   </div>
