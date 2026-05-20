@@ -1202,8 +1202,9 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 .wr-panel {
   background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 1px 6px rgba(0,0,0,.07);
+  border: 1px solid #E8EDF5;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(11,30,62,0.07);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1219,12 +1220,12 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 .wr-cc {
   background: #fff;
-  border-radius: 7px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1.5px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  border: 1px solid #E8EDF5;
+  box-shadow: 0 2px 12px rgba(11,30,62,0.07);
 }
 .wr-cch {
   padding: 5px 7px 4px;
@@ -3848,7 +3849,7 @@ function renderSummaryPage() {
         <span style="font-size:13px;font-weight:800;color:${p.color};flex-shrink:0;">${pct}%</span>
       </div>
       <div style="background:${bg2};border-radius:4px;height:6px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:${p.color};border-radius:4px;transition:width .4s;"></div>
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:4px;transition:width .4s;"></div>
       </div>
       <div style="font-size:10px;color:${txt2};">${done.toLocaleString()} / ${total.toLocaleString()}개 완료</div>
     </div>`;
@@ -4018,7 +4019,7 @@ function renderSummaryPage() {
         </div>
         <div style="font-size:20px;font-weight:800;color:${p.color};line-height:1;margin-bottom:5px;">${pct}%</div>
         <div style="background:${mobBg2};border-radius:3px;height:4px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:${p.color};border-radius:3px;transition:width .4s;"></div>
+          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:3px;transition:width .4s;"></div>
         </div>
       </div>`;
     }).join('') : `<div style="background:${mobBg1};border-radius:10px;padding:18px;text-align:center;color:${mobTxt2};font-size:12px;grid-column:span 2;box-shadow:0 1px 8px rgba(0,0,0,.08);">진행 중인 프로젝트 없음</div>`;
@@ -4700,7 +4701,7 @@ function renderWeeklyPage(){
               <span style="font-size:7.5px;color:${st.color};font-weight:700;white-space:nowrap;">${fd}</span>
             </div>
           </div>
-          <div style="height:4px;background:#eef2f8;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:${p.color};border-radius:2px;"></div></div>
+          <div style="height:4px;background:#EEF1F8;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:2px;"></div></div>
           <div style="font-size:6.5px;color:${p.color};font-weight:700;text-align:right;margin-top:1px;">${cp}%</div>
         </div>`;
       });
@@ -4824,7 +4825,7 @@ function renderWeeklyPage(){
       const borderStyle=isLast?'none':'0.5px solid #e5e5e5';
 
       const deadlineMeta=isDone
-        ?`<span style="font-size:${dlSz}px;font-weight:700;color:#fff;background:#22c55e;border-radius:3px;padding:1px 4px;display:inline-block;white-space:nowrap;">완료</span>`
+        ?`<span style="font-size:${dlSz}px;font-weight:700;color:#fff;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:3px;padding:1px 4px;display:inline-block;white-space:nowrap;">완료</span>`
         :`<span style="font-size:${dlSz}px;color:#64748b;white-space:nowrap;">${formatDeadline(p.projEnd)}</span>`;
 
       const lbl1=showLabels?`<div style="font-size:${labelSz}px;color:#94a3b8;margin-bottom:2px;font-weight:500;">실질 진척도</div>`:'';
@@ -4836,7 +4837,7 @@ function renderWeeklyPage(){
     <span style="font-size:${nmSz}px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
   </div>
   <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:${barGap}px;">
-    <div>${lbl1}<div style="height:${barH1}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:${c};border-radius:4px;"></div></div></div>
+    <div>${lbl1}<div style="height:${barH1}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:4px;"></div></div></div>
     <div>${lbl2}<div style="height:${barH2}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${expPct}%;height:100%;background:#B5C8E8;border-radius:4px;"></div></div></div>
   </div>
   <div style="flex:0 0 54px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
@@ -4881,8 +4882,8 @@ function renderWeeklyPage(){
     const rl=risk?RL_WR[risk]:null;
     const hasDates=p.projStart&&p.projEnd;
     let badgeColor='#94a3b8',badgeBg='#f1f5f9',badgeText='예정';
-    if(pp===100){badgeColor='#059669';badgeBg='#dcfce7';badgeText='완료';}
-    else if(hasDates&&rl&&risk!=='ok'){badgeColor=rl.c;badgeBg=rl.c+'18';badgeText=rl.t;}
+    if(pp===100){badgeColor='#fff';badgeBg='linear-gradient(90deg, #0B1E3E, #2A5298)';badgeText='완료';}
+    else if(hasDates&&rl&&risk!=='ok'){badgeColor='#E85D5D';badgeBg='#FEF0F0';badgeText=rl.t;}
     else if(hasDates){badgeColor='#3b82f6';badgeBg='#eff6ff';badgeText='진행중';}
     const dl=p.projEnd?Math.ceil((p.projEnd-TODAY)/86400000):null;
     const dlStr=dl!==null?(dl<0?`D+${Math.abs(dl)}`:(dl===0?'D-Day':`D-${dl}`)): '';
@@ -4899,8 +4900,8 @@ function renderWeeklyPage(){
           <span style="font-size:9px;font-weight:800;color:${pp===100?'#059669':p.color};white-space:nowrap;">${pp}%</span>
         </div>
       </div>
-      <div style="height:3px;background:#f1f5f9;border-radius:2px;overflow:hidden;">
-        <div style="height:100%;width:${pp}%;background:${p.color};border-radius:2px;"></div>
+      <div style="height:3px;background:#EEF1F8;border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:${pp}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:2px;"></div>
       </div>
       <div style="font-size:6.5px;color:#94a3b8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${pd.toLocaleString()} / ${pt.toLocaleString()} 완료</div>
     </div>`;
