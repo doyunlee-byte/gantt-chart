@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7,15 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f1117;--surface:#1a1d27;--surface2:#252838;--border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.18);--text:#f0f2fa;--text2:#b0b7cc;--text3:#7c83a0;--accent:#6b93ff;--green:#3ee8a8;--amber:#e6a800;--red:#ff8080;--blue-bg:#0C447C;--blue-text:#B5D4F4;--blue-avatar:#185FA5;--teal-bg:#085041;--teal-text:#9FE1CB;--teal-avatar:#0F6E56;--teal2-bg:#04342C;--teal2-text:#9FE1CB;--teal2-avatar:#1D9E75;--amber-bg:#633806;--amber-text:#FAC775;--amber-avatar:#854F0B;--purple-bg:#3C3489;--purple-text:#CECBF6;--purple-avatar:#534AB7;--red-bg:#791F1F;--red-text:#F7C1C1;--radius:12px;--radius-sm:8px;}
-:root.light{--bg:#F0F2F8;--surface:#FFFFFF;--surface2:#EEF1F8;--border:#E8EDF5;--border2:#E8EDF5;--text:#0B1E3E;--text2:#3A4A6A;--text3:#94A8C8;--accent:#2A5298;--green:#2A7A5A;--amber:#b07800;--red:#E85D5D;--blue-bg:#E6F1FB;--blue-text:#0C447C;--blue-avatar:#B5D4F4;--teal-bg:#E1F5EE;--teal-text:#085041;--teal-avatar:#9FE1CB;--teal2-bg:#d0f0e4;--teal2-text:#04342C;--teal2-avatar:#5DCAA5;--amber-bg:#FAEEDA;--amber-text:#633806;--amber-avatar:#FAC775;--purple-bg:#EEEDFE;--purple-text:#3C3489;--purple-avatar:#CECBF6;--red-bg:#FEF0F0;--red-text:#E85D5D;--radius:12px;--radius-sm:8px;}
+:root.light{--bg:#F0F2F8;--surface:#FFFFFF;--surface2:#F0F4FB;--border:#E8EDF5;--border2:#E8EDF5;--text:#1A3A6E;--text2:#3A4A6A;--text3:#94A8C8;--accent:#4A7FCC;--green:#2A7A5A;--amber:#b07800;--red:#E85D5D;--blue-bg:#E6F1FB;--blue-text:#0C447C;--blue-avatar:#B5D4F4;--teal-bg:#E1F5EE;--teal-text:#085041;--teal-avatar:#9FE1CB;--teal2-bg:#d0f0e4;--teal2-text:#04342C;--teal2-avatar:#5DCAA5;--amber-bg:#FAEEDA;--amber-text:#633806;--amber-avatar:#FAC775;--purple-bg:#EEEDFE;--purple-text:#3C3489;--purple-avatar:#CECBF6;--red-bg:#FEF0F0;--red-text:#E85D5D;--radius:12px;--radius-sm:8px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Pretendard',-apple-system,sans-serif;font-size:13px;background:var(--bg);color:var(--text);min-height:100vh;}
 .app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 .loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:999;}
 .spinner{width:34px;height:34px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--accent);animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.topbar{background:linear-gradient(135deg, #0B1E3E 0%, #1A3A6E 60%, #2A5298 100%);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.logo{font-size:15px;font-weight:700;color:#fff;}.logo span{color:#B5C8E8;}
+.topbar{background:linear-gradient(135deg, #1A3A6E 0%, #2A5298 60%, #4A7FCC 100%);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.logo{font-size:15px;font-weight:700;color:#fff;}.logo span{color:#C8D8F0;}
 .sync-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.12);padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);margin-left:12px;}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
@@ -23,10 +23,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;font-size:13px;background
 .nav-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);padding:5px 10px;border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;}
 .nav-btn:hover{background:rgba(255,255,255,0.22);}
 .month-label{font-size:13px;font-weight:600;color:#fff;min-width:130px;text-align:center;}
-.today-btn{background:rgba(255,255,255,0.95);border:none;color:#0B1E3E;padding:5px 12px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;}
+.today-btn{background:rgba(255,255,255,0.95);border:none;color:#1A3A6E;padding:5px 12px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;}
 .page-tabs{display:flex;gap:4px;margin-left:12px;}
 .page-tab{padding:5px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;border:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);white-space:nowrap;transition:all .15s;}
-.page-tab.active{background:#fff;border-color:transparent;color:#0B1E3E;font-weight:700;}
+.page-tab.active{background:#fff;border-color:transparent;color:#1A3A6E;font-weight:700;}
 .theme-toggle{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);user-select:none;}
 .toggle-track{width:30px;height:16px;border-radius:8px;background:var(--border2);position:relative;transition:background .2s;flex-shrink:0;}
 .light .toggle-track{background:var(--accent);}
@@ -79,7 +79,7 @@ td.day-td.week-start{border-left:2px solid rgba(255,255,255,.15)!important;}
 .light td.day-td.week-start{border-left:2px solid rgba(0,0,0,.15)!important;}
 td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 .status-tag{display:inline-block;font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;margin-top:2px;}
-.s-done{background:linear-gradient(90deg, #0B1E3E, #2A5298);color:#fff;}
+.s-done{background:linear-gradient(90deg, #1A3A6E, #4A7FCC);color:#fff;}
 .s-prog{background:#EAF5F0;color:#2A7A5A;}
 .s-wait{background:rgba(176,183,204,.12);color:var(--text2);}
 .s-fail{background:#FEF0F0;color:#E85D5D;}
@@ -399,16 +399,16 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     align-items: center;
   }
 
-  .dept-card.all-done { border: 2px solid #2A5298 !important; background: rgba(42,82,152,0.05); }
-  .dept-card.all-done .dept-header { background: #0B1E3E; }
+  .dept-card.all-done { border: 2px solid #4A7FCC !important; background: rgba(42,82,152,0.05); }
+  .dept-card.all-done .dept-header { background: #1A3A6E; }
   .dept-card.all-done .done-badge  { display: inline-flex; }
   .dept-card.all-done .d-remain    { display: none; }
-  .dept-card.all-done .d-badge { background: linear-gradient(90deg, #0B1E3E, #2A5298) !important; color: #fff !important; }
+  .dept-card.all-done .d-badge { background: linear-gradient(90deg, #1A3A6E, #4A7FCC) !important; color: #fff !important; }
 
-  .done-badge { background: linear-gradient(90deg, #0B1E3E, #2A5298); color: #fff; }
-  :root.light .done-badge { background: linear-gradient(90deg, #0B1E3E, #2A5298); color: #fff; }
+  .done-badge { background: linear-gradient(90deg, #1A3A6E, #4A7FCC); color: #fff; }
+  :root.light .done-badge { background: linear-gradient(90deg, #1A3A6E, #4A7FCC); color: #fff; }
   :root.light .dept-card.all-done { background: rgba(42,82,152,0.04); }
-  :root.light .dept-card.all-done .dept-header { background: #0B1E3E; }
+  :root.light .dept-card.all-done .dept-header { background: #1A3A6E; }
 
   .task-body { flex: 1; color: var(--text); }
   .task-note { font-size: 11.5px; color: var(--text2); display: block; margin-top: 2px; }
@@ -819,7 +819,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .topbar {
     padding: 0 14px;
     height: 46px;
-    background: linear-gradient(135deg, #0B1E3E 0%, #1A3A6E 60%, #2A5298 100%);
+    background: linear-gradient(135deg, #1A3A6E 0%, #2A5298 60%, #4A7FCC 100%);
     border-bottom: none;
     gap: 0;
   }
@@ -891,7 +891,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     transition: color .15s, background .15s;
     padding: 6px 0;
   }
-  .mob-tab.active { color: #2A5298; background: rgba(42,82,152,.07); }
+  .mob-tab.active { color: #4A7FCC; background: rgba(42,82,152,.07); }
   .mob-tab-icon { width: 22px; height: 22px; }
 
   /* 하단 탭바 높이만큼 스크롤 영역 여백 */
@@ -1160,7 +1160,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 .wr-hdr {
   height: 44px;
-  background: linear-gradient(135deg, #0B1E3E 0%, #1A3A6E 60%, #2A5298 100%);
+  background: linear-gradient(135deg, #1A3A6E 0%, #2A5298 60%, #4A7FCC 100%);
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -3799,8 +3799,8 @@ function renderSummaryPage() {
   const isDark = document.documentElement.classList.contains('light') ? false : true;
   const bg0   = isDark ? '#0d0f1a' : '#F0F2F8';
   const bg1   = isDark ? '#181c2e' : '#FFFFFF';
-  const bg2   = isDark ? '#1e2338' : '#EEF1F8';
-  const txt1  = isDark ? '#e4e8ff' : '#0B1E3E';
+  const bg2   = isDark ? '#1e2338' : '#F0F4FB';
+  const txt1  = isDark ? '#e4e8ff' : '#1A3A6E';
   const txt2  = isDark ? '#7b82b0' : '#3A4A6A';
   const txt3  = isDark ? '#4a5070' : '#94A8C8';
   const bdr   = isDark ? 'rgba(255,255,255,.06)' : '#E8EDF5';
@@ -3819,7 +3819,7 @@ function renderSummaryPage() {
     {label:'마감 위험',   value:`${riskCount}건`, sub:'즉시 조치 필요', alert:riskCount>0},
     {label:'완료',        value:`${doneCount}건`, sub:'100% 달성'},
   ].map(k=>`
-    <div style="background:${isDark ? bg1 : 'linear-gradient(135deg, #0B1E3E, #1A3A6E)'};border:none;border-radius:10px;padding:14px 18px;flex:1;min-width:100px;box-shadow:0 2px 12px rgba(11,30,62,.15);">
+    <div style="background:${isDark ? bg1 : 'linear-gradient(135deg, #1A3A6E, #2A5298)'};border:none;border-radius:10px;padding:14px 18px;flex:1;min-width:100px;box-shadow:0 2px 12px rgba(11,30,62,.15);">
       <div style="font-size:10px;font-weight:600;color:${isDark ? txt2 : '#94A8C8'};letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">${k.label}</div>
       <div style="font-size:24px;font-weight:800;color:${k.alert?'#E85D5D':(isDark ? txt1 : '#fff')};letter-spacing:-.02em;line-height:1;">${k.value}</div>
       <div style="font-size:11px;color:${isDark ? txt2 : '#94A8C8'};margin-top:6px;">${k.sub}</div>
@@ -3849,7 +3849,7 @@ function renderSummaryPage() {
         <span style="font-size:13px;font-weight:800;color:${p.color};flex-shrink:0;">${pct}%</span>
       </div>
       <div style="background:${bg2};border-radius:4px;height:6px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:4px;transition:width .4s;"></div>
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg, #1A3A6E, #4A7FCC);border-radius:4px;transition:width .4s;"></div>
       </div>
       <div style="font-size:10px;color:${txt2};">${done.toLocaleString()} / ${total.toLocaleString()}개 완료</div>
     </div>`;
@@ -3889,8 +3889,8 @@ function renderSummaryPage() {
   const chartColor = isMultiSel ? MULTI_COLOR : (graphProjs[0]?.color || '#6366f1');
 
   // ══ 차트 전용 색상 (라이트=네이비, 다크=프로젝트 색)
-  const prevChartColor = isDark ? chartColor : '#B5C8E8';
-  const curChartColor  = isDark ? chartColor : '#2A5298';
+  const prevChartColor = isDark ? chartColor : '#C8D8F0';
+  const curChartColor  = isDark ? chartColor : '#4A7FCC';
   const fillChartColor = isDark ? chartColor : 'rgba(42,82,152,0.07)';
   const fillChartOpacity = isDark ? '0.12' : '1';
   const gridChartColor = isDark ? bdr : 'rgba(180,196,220,0.2)';
@@ -3984,9 +3984,9 @@ function renderSummaryPage() {
 
   // ── 모바일 분기: 컴팩트 대시보드 뷰 (화이트 테마)
   if(window.innerWidth <= 768) {
-    const mobBg0 = '#F0F2F8', mobBg1 = '#ffffff', mobBg2 = '#EEF1F8';
-    const mobTxt1 = '#0B1E3E', mobTxt2 = '#94A8C8', mobBdr = '#E8EDF5';
-    const mobAccent = '#2A5298';
+    const mobBg0 = '#F0F2F8', mobBg1 = '#ffffff', mobBg2 = '#F0F4FB';
+    const mobTxt1 = '#1A3A6E', mobTxt2 = '#94A8C8', mobBdr = '#E8EDF5';
+    const mobAccent = '#4A7FCC';
 
     // KPI 카드 1행 4열
     const kpiMob = [
@@ -3994,7 +3994,7 @@ function renderSummaryPage() {
       {label:'진행중',      value:`${activeCount}`, sub:`${PROJECTS.length}개 프로젝트`},
       {label:'마감위험',    value:`${riskCount}`,   sub:'즉시 조치', alert:riskCount>0},
       {label:'완료',        value:`${doneCount}`,   sub:'100% 달성'},
-    ].map(k => `<div style="background:linear-gradient(135deg, #0B1E3E, #1A3A6E);border-radius:10px;padding:8px 8px;box-shadow:0 2px 12px rgba(11,30,62,.15);text-align:center;">
+    ].map(k => `<div style="background:linear-gradient(135deg, #1A3A6E, #2A5298);border-radius:10px;padding:8px 8px;box-shadow:0 2px 12px rgba(11,30,62,.15);text-align:center;">
       <div style="font-size:10px;font-weight:600;color:#94A8C8;margin-bottom:4px;white-space:nowrap;">${k.label}</div>
       <div style="font-size:20px;font-weight:800;color:${k.alert?'#E85D5D':'#fff'};line-height:1;">${k.value}</div>
       <div style="font-size:9px;color:#94A8C8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.sub}</div>
@@ -4019,7 +4019,7 @@ function renderSummaryPage() {
         </div>
         <div style="font-size:20px;font-weight:800;color:${p.color};line-height:1;margin-bottom:5px;">${pct}%</div>
         <div style="background:${mobBg2};border-radius:3px;height:4px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:3px;transition:width .4s;"></div>
+          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg, #1A3A6E, #4A7FCC);border-radius:3px;transition:width .4s;"></div>
         </div>
       </div>`;
     }).join('') : `<div style="background:${mobBg1};border-radius:10px;padding:18px;text-align:center;color:${mobTxt2};font-size:12px;grid-column:span 2;box-shadow:0 1px 8px rgba(0,0,0,.08);">진행 중인 프로젝트 없음</div>`;
@@ -4041,7 +4041,7 @@ function renderSummaryPage() {
 
     el.innerHTML = `<div style="padding:0;display:flex;flex-direction:column;background:${mobBg0};min-height:100%;font-family:'Pretendard','Apple SD Gothic Neo',-apple-system,sans-serif;">
 
-      <div style="background:linear-gradient(135deg, #0B1E3E 0%, #1A3A6E 60%, #2A5298 100%);padding:12px 16px;margin-bottom:10px;">
+      <div style="background:linear-gradient(135deg, #1A3A6E 0%, #2A5298 60%, #4A7FCC 100%);padding:12px 16px;margin-bottom:10px;">
         <div style="font-size:14px;font-weight:700;color:#fff;letter-spacing:-.2px;">Operation Center Overview</div>
       </div>
 
@@ -4165,7 +4165,7 @@ function renderSummaryPage() {
     <!-- 헤더 + PPT 버튼 -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
       <div style="font-size:13px;font-weight:700;color:${txt1};">📊 ProjectGantt 주간보고</div>
-      <button onclick="downloadWeeklyPPT()" style="padding:7px 16px;border-radius:8px;border:none;background:linear-gradient(135deg, #0B1E3E, #2A5298);color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">⬇ PPT 다운로드</button>
+      <button onclick="downloadWeeklyPPT()" style="padding:7px 16px;border-radius:8px;border:none;background:linear-gradient(135deg, #1A3A6E, #4A7FCC);color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">⬇ PPT 다운로드</button>
     </div>
     <!-- KPI 카드 -->
     <div style="display:flex;gap:12px;">${kpiCards}</div>
@@ -4659,7 +4659,7 @@ function renderWeeklyPage(){
   // 헤더 프로젝트 칩
   const chipHtml=PROJECTS.map(p=>{
     const on=fcSelectedProjects.has(p.id);
-    return `<button onclick="toggleWeeklyChip('${p.id}')" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1.5px solid ${on?p.color:'#E8EDF5'};background:${on?p.color+'18':'#EEF1F8'};color:${on?p.color:'#94A8C8'};"><span style="width:5px;height:5px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}</button>`;
+    return `<button onclick="toggleWeeklyChip('${p.id}')" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1.5px solid ${on?p.color:'#E8EDF5'};background:${on?p.color+'18':'#F0F4FB'};color:${on?p.color:'#94A8C8'};"><span style="width:5px;height:5px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}</button>`;
   }).join('');
 
   // 센터 카드 (좌측 열)
@@ -4696,14 +4696,14 @@ function renderWeeklyPage(){
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
             <div style="display:flex;align-items:center;gap:3px;min-width:0;flex:1;overflow:hidden;">
               <span style="width:5px;height:5px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
-              <span style="font-size:8.5px;font-weight:700;color:#0B1E3E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+              <span style="font-size:8.5px;font-weight:700;color:#1A3A6E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:3px;">
               <span style="font-size:6.5px;color:#94a3b8;white-space:nowrap;">${s.realPersonnel}명</span>
               <span style="font-size:7.5px;color:${st.color};font-weight:700;white-space:nowrap;">${fd}</span>
             </div>
           </div>
-          <div style="height:4px;background:#EEF1F8;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:2px;"></div></div>
+          <div style="height:4px;background:#F0F4FB;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:linear-gradient(90deg, #1A3A6E, #4A7FCC);border-radius:2px;"></div></div>
           <div style="font-size:6.5px;color:${p.color};font-weight:700;text-align:right;margin-top:1px;">${cp}%</div>
         </div>`;
       });
@@ -4756,29 +4756,29 @@ function renderWeeklyPage(){
     const lwPts=CENTERS.map((c,i)=>({x:xOf(i),y:yOf(weekData[c.name]?.lw||0)}));
     const twPts=CENTERS.map((c,i)=>({x:xOf(i),y:yOf(weekData[c.name]?.tw||0)}));
     // 전주 곡선 (연한 블루)
-    s+=`<path d="${smoothPath(lwPts)}" fill="none" stroke="#B5C8E8" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round"/>`;
+    s+=`<path d="${smoothPath(lwPts)}" fill="none" stroke="#C8D8F0" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round"/>`;
     // 금주 곡선 영역 채우기
     const twCurve=smoothPath(twPts);
     s+=`<path d="${twCurve} L${xOf(n-1)},${pT+gH} L${xOf(0)},${pT+gH}Z" fill="rgba(42,82,152,0.07)" stroke="none"/>`;
-    s+=`<path d="${twCurve}" fill="none" stroke="#2A5298" stroke-width="2.5" stroke-linecap="round"/>`;
+    s+=`<path d="${twCurve}" fill="none" stroke="#4A7FCC" stroke-width="2.5" stroke-linecap="round"/>`;
     // 점 및 레이블
     CENTERS.forEach((c,i)=>{
       const lw=weekData[c.name]?.lw||0;
       const tw=weekData[c.name]?.tw||0;
       const x=xOf(i),ly=yOf(lw),ty=yOf(tw);
-      s+=`<circle cx="${x}" cy="${ly}" r="3" fill="#fff" stroke="#B5C8E8" stroke-width="1.5"/>`;
+      s+=`<circle cx="${x}" cy="${ly}" r="3" fill="#fff" stroke="#C8D8F0" stroke-width="1.5"/>`;
       if(lw>0) s+=`<text x="${x}" y="${ly-7}" text-anchor="middle" font-size="7" fill="#94A8C8">${lw}</text>`;
-      s+=`<circle cx="${x}" cy="${ty}" r="4.5" fill="#2A5298" stroke="#fff" stroke-width="1.5"/>`;
-      if(tw>0) s+=`<text x="${x}" y="${ty-9}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#2A5298">${tw}</text>`;
+      s+=`<circle cx="${x}" cy="${ty}" r="4.5" fill="#4A7FCC" stroke="#fff" stroke-width="1.5"/>`;
+      if(tw>0) s+=`<text x="${x}" y="${ty-9}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#4A7FCC">${tw}</text>`;
       s+=`<text x="${x}" y="${pT+gH+18}" text-anchor="middle" font-size="8.5" font-weight="600" fill="#94A8C8">${c.name.replace('비버','')}</text>`;
     });
     // 범례
     const lgY=pT-18;
-    s+=`<line x1="${pL}" y1="${lgY}" x2="${pL+14}" y2="${lgY}" stroke="#B5C8E8" stroke-width="2" stroke-dasharray="4,3"/>`;
-    s+=`<circle cx="${pL+7}" cy="${lgY}" r="2.5" fill="#fff" stroke="#B5C8E8" stroke-width="1.5"/>`;
+    s+=`<line x1="${pL}" y1="${lgY}" x2="${pL+14}" y2="${lgY}" stroke="#C8D8F0" stroke-width="2" stroke-dasharray="4,3"/>`;
+    s+=`<circle cx="${pL+7}" cy="${lgY}" r="2.5" fill="#fff" stroke="#C8D8F0" stroke-width="1.5"/>`;
     s+=`<text x="${pL+18}" y="${lgY+3}" font-size="6.5" fill="#94A8C8">전주</text>`;
-    s+=`<line x1="${pL+44}" y1="${lgY}" x2="${pL+58}" y2="${lgY}" stroke="#2A5298" stroke-width="2.5"/>`;
-    s+=`<circle cx="${pL+51}" cy="${lgY}" r="3" fill="#2A5298"/>`;
+    s+=`<line x1="${pL+44}" y1="${lgY}" x2="${pL+58}" y2="${lgY}" stroke="#4A7FCC" stroke-width="2.5"/>`;
+    s+=`<circle cx="${pL+51}" cy="${lgY}" r="3" fill="#4A7FCC"/>`;
     s+=`<text x="${pL+62}" y="${lgY+3}" font-size="6.5" fill="#94A8C8">금주</text>`;
     return `<svg width="100%" height="${ch}" viewBox="0 0 ${W} ${ch}">${s}</svg>`;
   }
@@ -4826,7 +4826,7 @@ function renderWeeklyPage(){
       const borderStyle=isLast?'none':'0.5px solid #E8EDF5';
 
       const deadlineMeta=isDone
-        ?`<span style="font-size:${dlSz}px;font-weight:700;color:#fff;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:3px;padding:1px 4px;display:inline-block;white-space:nowrap;">완료</span>`
+        ?`<span style="font-size:${dlSz}px;font-weight:700;color:#fff;background:linear-gradient(90deg, #1A3A6E, #4A7FCC);border-radius:3px;padding:1px 4px;display:inline-block;white-space:nowrap;">완료</span>`
         :`<span style="font-size:${dlSz}px;color:#94A8C8;white-space:nowrap;">${formatDeadline(p.projEnd)}</span>`;
 
       const lbl1=showLabels?`<div style="font-size:${labelSz}px;color:#94A8C8;margin-bottom:2px;font-weight:500;">실질 진척도</div>`:'';
@@ -4835,14 +4835,14 @@ function renderWeeklyPage(){
       return `<div style="display:flex;align-items:center;gap:7px;padding:${padV}px 0;border-bottom:${borderStyle};height:${rowH}px;box-sizing:border-box;">
   <div style="flex:0 0 88px;display:flex;align-items:center;gap:5px;overflow:hidden;min-width:0;">
     <span style="width:6px;height:6px;border-radius:50%;background:${c};flex-shrink:0;display:inline-block;"></span>
-    <span style="font-size:${nmSz}px;font-weight:600;color:#0B1E3E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+    <span style="font-size:${nmSz}px;font-weight:600;color:#1A3A6E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
   </div>
   <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:${barGap}px;">
-    <div>${lbl1}<div style="height:${barH1}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:4px;"></div></div></div>
-    <div>${lbl2}<div style="height:${barH2}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${expPct}%;height:100%;background:#B5C8E8;border-radius:4px;"></div></div></div>
+    <div>${lbl1}<div style="height:${barH1}px;background:#F0F4FB;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:linear-gradient(90deg, #1A3A6E, #4A7FCC);border-radius:4px;"></div></div></div>
+    <div>${lbl2}<div style="height:${barH2}px;background:#F0F4FB;border-radius:4px;overflow:hidden;"><div style="width:${expPct}%;height:100%;background:#C8D8F0;border-radius:4px;"></div></div></div>
   </div>
   <div style="flex:0 0 54px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
-    <div style="font-size:${pctSz}px;font-weight:500;color:#0B1E3E;line-height:1;">${pp}%</div>
+    <div style="font-size:${pctSz}px;font-weight:500;color:#1A3A6E;line-height:1;">${pp}%</div>
     <div>${deadlineMeta}</div>
   </div>
 </div>`;
@@ -4870,7 +4870,7 @@ function renderWeeklyPage(){
     {label:'이번 주 처리',value:`${kTW}`,sub:'매장 완료'},
     {label:'마감 위험',value:`${kRisk}`,sub:kRisk>0?'즉시 조치':'이상 없음',alert:kRisk>0},
     {label:'완료 프로젝트',value:`${kDone}/${PROJECTS.length}`,sub:'프로젝트'},
-  ].map(k=>`<div style="background:linear-gradient(135deg, #0B1E3E, #1A3A6E);border-radius:7px;padding:7px 9px;overflow:hidden;box-shadow:0 2px 8px rgba(11,30,62,.15);">
+  ].map(k=>`<div style="background:linear-gradient(135deg, #1A3A6E, #2A5298);border-radius:7px;padding:7px 9px;overflow:hidden;box-shadow:0 2px 8px rgba(11,30,62,.15);">
     <div style="font-size:7px;font-weight:600;color:#94A8C8;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.label}</div>
     <div style="font-size:21px;font-weight:800;color:${k.alert?'#E85D5D':'#fff'};line-height:1;letter-spacing:-.5px;">${k.value}</div>
     <div style="font-size:6.5px;color:#94A8C8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.sub}</div>
@@ -4882,8 +4882,8 @@ function renderWeeklyPage(){
     const risk=wrRisk(p);
     const rl=risk?RL_WR[risk]:null;
     const hasDates=p.projStart&&p.projEnd;
-    let badgeColor='#94A8C8',badgeBg='#EEF1F8',badgeText='예정';
-    if(pp===100){badgeColor='#fff';badgeBg='linear-gradient(90deg, #0B1E3E, #2A5298)';badgeText='완료';}
+    let badgeColor='#94A8C8',badgeBg='#F0F4FB',badgeText='예정';
+    if(pp===100){badgeColor='#fff';badgeBg='linear-gradient(90deg, #1A3A6E, #4A7FCC)';badgeText='완료';}
     else if(hasDates&&rl&&risk!=='ok'){badgeColor='#E85D5D';badgeBg='#FEF0F0';badgeText=rl.t;}
     else if(hasDates){badgeColor='#3b82f6';badgeBg='#eff6ff';badgeText='진행중';}
     const dl=p.projEnd?Math.ceil((p.projEnd-TODAY)/86400000):null;
@@ -4893,7 +4893,7 @@ function renderWeeklyPage(){
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
         <div style="display:flex;align-items:center;gap:4px;min-width:0;flex:1;overflow:hidden;">
           <span style="width:6px;height:6px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
-          <span style="font-size:8.5px;font-weight:700;color:#0B1E3E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+          <span style="font-size:8.5px;font-weight:700;color:#1A3A6E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
           <span style="font-size:6px;font-weight:700;color:${badgeColor};background:${badgeBg};padding:1px 4px;border-radius:3px;flex-shrink:0;white-space:nowrap;">${badgeText}</span>
         </div>
         <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:4px;">
@@ -4901,8 +4901,8 @@ function renderWeeklyPage(){
           <span style="font-size:9px;font-weight:800;color:${pp===100?'#059669':p.color};white-space:nowrap;">${pp}%</span>
         </div>
       </div>
-      <div style="height:3px;background:#EEF1F8;border-radius:2px;overflow:hidden;">
-        <div style="height:100%;width:${pp}%;background:linear-gradient(90deg, #0B1E3E, #2A5298);border-radius:2px;"></div>
+      <div style="height:3px;background:#F0F4FB;border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:${pp}%;background:linear-gradient(90deg, #1A3A6E, #4A7FCC);border-radius:2px;"></div>
       </div>
       <div style="font-size:6.5px;color:#94A8C8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${pd.toLocaleString()} / ${pt.toLocaleString()} 완료</div>
     </div>`;
@@ -4912,7 +4912,7 @@ function renderWeeklyPage(){
 <div class="wr-hdr">
   <div class="wr-hl">
     <span style="font-size:13px;font-weight:800;color:#fff;letter-spacing:-.4px;">ProjectGantt</span>
-    <span style="font-size:8px;font-weight:700;color:#0B1E3E;background:#B5C8E8;padding:2px 8px;border-radius:5px;white-space:nowrap;">주간보고</span>
+    <span style="font-size:8px;font-weight:700;color:#1A3A6E;background:#C8D8F0;padding:2px 8px;border-radius:5px;white-space:nowrap;">주간보고</span>
     <span style="font-size:8px;font-weight:600;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:2px 7px;border-radius:4px;white-space:nowrap;">${TODAY.getFullYear()}년 ${weekNum}주차</span>
   </div>
   <div class="wr-hc">${chipHtml}</div>
