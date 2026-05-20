@@ -4672,13 +4672,15 @@ function renderWeeklyPage(){
     const dailyCap=fixP.reduce((s,p)=>s+(getPCS(p.id,c.name).realDaily||0),0);
     const ml=cls.mode==='parallel'?'병행':'순차';
     const mc=cls.mode==='parallel'?'#4f7cff':'#059669';
-    let worst={label:'미배정',color:'#94a3b8',border:'#e8edf4',hBg:'#f8fafc',strip:'#e2e8f0'};
+    let worst={label:'미배정',color:'#94a3b8'};
     fixP.forEach(p=>{
       const st=calcProjStatus(p,c);
-      if(st.label.includes('위험')) worst={label:'🔴 위험',color:'#dc2626',border:'#fecaca',hBg:'#fff8f8',strip:'#ef4444'};
-      else if(st.label.includes('주의')&&!worst.label.includes('위험')) worst={label:'⚡ 주의',color:'#d97706',border:'#fde68a',hBg:'#fffcf0',strip:'#f59e0b'};
-      else if((st.label.includes('충분')||st.label==='완료')&&worst.label==='미배정') worst={label:'✅ 충분',color:'#059669',border:'#bbf7d0',hBg:'#f0fdf9',strip:'#10b981'};
+      if(st.label.includes('위험')) worst={label:'위험',color:'#E85D5D'};
+      else if(st.label.includes('주의')&&!worst.label.includes('위험')) worst={label:'주의',color:'#B8860B'};
+      else if((st.label.includes('충분')||st.label==='완료')&&worst.label==='미배정') worst={label:'충분',color:'#2A7A5A'};
     });
+    const badgeBg=worst.label==='위험'?'#FEF0F0':worst.label==='주의'?'#FFFBEA':worst.label==='충분'?'#EAF5F0':'#F1F5F9';
+    const badgeColor=worst.color;
     let rows='';
     if(!isFixed){
       rows='<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:4px 0;"><span style="font-size:8px;color:#cbd5e1;font-style:italic;">배정 없음</span></div>';
@@ -4706,9 +4708,8 @@ function renderWeeklyPage(){
         </div>`;
       });
     }
-    ccHtml+=`<div class="wr-cc" style="border-color:${worst.border};display:flex;flex-direction:column;">
-      <div style="height:3px;background:${worst.strip};flex-shrink:0;"></div>
-      <div class="wr-cch" style="background:${worst.hBg};padding:5px 8px 4px;">
+    ccHtml+=`<div class="wr-cc" style="display:flex;flex-direction:column;">
+      <div class="wr-cch" style="background:#FFFFFF;padding:5px 8px 4px;">
         <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;flex:1;">
           <span style="width:8px;height:8px;border-radius:50%;background:${c.color};flex-shrink:0;box-shadow:0 0 0 2px ${c.color}30;"></span>
           <span style="font-size:11px;font-weight:800;color:#0f172a;letter-spacing:-.3px;">${sn}</span>
@@ -4716,7 +4717,7 @@ function renderWeeklyPage(){
           <span style="font-size:6.5px;font-weight:600;color:${mc};white-space:nowrap;">${ml}</span>
           ${isFixed?`<span style="font-size:6px;font-weight:700;color:#fff;background:#059669;padding:1px 4px;border-radius:3px;white-space:nowrap;">${dailyCap}/일</span>`:''}
         </div>
-        <span style="font-size:7.5px;font-weight:700;color:${worst.color};white-space:nowrap;flex-shrink:0;">${worst.label}</span>
+        <span style="font-size:11px;font-weight:600;color:${badgeColor};background:${badgeBg};padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${worst.label}</span>
       </div>
       <div class="wr-ccb" style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:0 9px 6px;">${rows}</div>
     </div>`;
