@@ -4773,7 +4773,7 @@ function renderWeeklyPage(){
     return `<svg width="100%" height="${ch}" viewBox="0 0 ${W} ${ch}">${s}</svg>`;
   }
 
-  // 프로젝트 마감 일정 차트 (중앙 아래) — 바 2개 레이아웃
+  // 프로젝트 마감 일정 차트 (중앙 아래) — 바 2개 레이아웃 (프로젝트 수에 따라 동적 압축)
   function buildDeadlineGantt(h){
     const pjList=PROJECTS.filter(p=>p.projEnd);
     if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:${h}px;font-size:10px;color:#94a3b8;">마감일 데이터 없음</div>`;
@@ -4783,53 +4783,62 @@ function renderWeeklyPage(){
       return `${d.getMonth()+1}월 ${d.getDate()}일 예상`;
     }
 
+    const n=pjList.length;
+    const legendH=22;
+    const rowsH=h-legendH;
+    const rowH=Math.floor(rowsH/n); // 모든 프로젝트가 스크롤 없이 꼭 맞게
+
+    // 행 높이에 따라 시각 요소 동적 스케일
+    const showLabels=rowH>=46;
+    const barH1=Math.max(5,Math.min(12,Math.round(rowH*0.18)));
+    const barH2=Math.max(3,Math.min(7,Math.round(rowH*0.10)));
+    const barGap=Math.max(2,Math.min(5,Math.round(rowH*0.08)));
+    const labelSz=6.5;
+    const labelSpace=showLabels?(labelSz*1.4+2):0; // 라벨+margin
+    const contentH=barH1+barGap+barH2+(showLabels?labelSpace*2:0);
+    const padV=Math.max(2,Math.floor((rowH-contentH)/2));
+    const pctSz=Math.max(11,Math.min(15,Math.round(rowH*0.24)));
+    const dlSz=Math.max(7,Math.min(8.5,Math.round(rowH*0.13)));
+    const nmSz=Math.max(8,Math.min(10,Math.round(rowH*0.155)));
+
     const rows=pjList.map((p,i)=>{
       const{pct:pp}=wrPct(p);
       const isDone=pp>=100;
       const c=p.color;
 
-      // 시간 경과 기반 예상 완료율
       let expPct=0;
       if(p.projStart&&p.projEnd){
         const tot=Math.max(1,p.projEnd.getTime()-p.projStart.getTime());
         expPct=Math.min(100,Math.max(0,Math.round((TODAY.getTime()-p.projStart.getTime())/tot*100)));
       }
 
-      const nm=p.name.length>8?p.name.slice(0,7)+'…':p.name;
-      const isLast=i===pjList.length-1;
+      const isLast=i===n-1;
       const borderStyle=isLast?'none':'0.5px solid #e5e5e5';
 
       const deadlineMeta=isDone
-        ?`<span style="font-size:8px;font-weight:700;color:#fff;background:#22c55e;border-radius:3px;padding:1px 5px;display:inline-block;">완료</span>`
-        :`<span style="font-size:8.5px;color:#64748b;white-space:nowrap;">${formatDeadline(p.projEnd)}</span>`;
+        ?`<span style="font-size:${dlSz}px;font-weight:700;color:#fff;background:#22c55e;border-radius:3px;padding:1px 4px;display:inline-block;white-space:nowrap;">완료</span>`
+        :`<span style="font-size:${dlSz}px;color:#64748b;white-space:nowrap;">${formatDeadline(p.projEnd)}</span>`;
 
-      return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:${borderStyle};">
-  <div style="flex:0 0 70px;display:flex;align-items:center;gap:5px;overflow:hidden;">
-    <span style="width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0;"></span>
-    <span style="font-size:9.5px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nm}</span>
+      const lbl1=showLabels?`<div style="font-size:${labelSz}px;color:#94a3b8;margin-bottom:2px;font-weight:500;">실질 진척도</div>`:'';
+      const lbl2=showLabels?`<div style="font-size:${labelSz}px;color:#94a3b8;margin-bottom:2px;font-weight:500;">예상 완료</div>`:'';
+
+      return `<div style="display:flex;align-items:center;gap:7px;padding:${padV}px 0;border-bottom:${borderStyle};height:${rowH}px;box-sizing:border-box;">
+  <div style="flex:0 0 88px;display:flex;align-items:center;gap:5px;overflow:hidden;min-width:0;">
+    <span style="width:6px;height:6px;border-radius:50%;background:${c};flex-shrink:0;display:inline-block;"></span>
+    <span style="font-size:${nmSz}px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
   </div>
-  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;">
-    <div>
-      <div style="font-size:7px;color:#94a3b8;margin-bottom:2px;font-weight:500;letter-spacing:.02em;">실질 진척도</div>
-      <div style="height:12px;background:#f0f0f0;border-radius:4px;overflow:hidden;">
-        <div style="width:${pp}%;height:100%;background:${c};border-radius:4px;"></div>
-      </div>
-    </div>
-    <div>
-      <div style="font-size:7px;color:#94a3b8;margin-bottom:2px;font-weight:500;letter-spacing:.02em;">예상 완료</div>
-      <div style="height:7px;background:#f0f0f0;border-radius:4px;overflow:hidden;">
-        <div style="width:${expPct}%;height:100%;background:${c};opacity:0.3;border-radius:4px;"></div>
-      </div>
-    </div>
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:${barGap}px;">
+    <div>${lbl1}<div style="height:${barH1}px;background:#f0f0f0;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:${c};border-radius:4px;"></div></div></div>
+    <div>${lbl2}<div style="height:${barH2}px;background:#f0f0f0;border-radius:4px;overflow:hidden;"><div style="width:${expPct}%;height:100%;background:${c};opacity:0.3;border-radius:4px;"></div></div></div>
   </div>
-  <div style="flex:0 0 58px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-    <div style="font-size:16px;font-weight:500;color:#1e293b;line-height:1;">${pp}%</div>
+  <div style="flex:0 0 54px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+    <div style="font-size:${pctSz}px;font-weight:500;color:#1e293b;line-height:1;">${pp}%</div>
     <div>${deadlineMeta}</div>
   </div>
 </div>`;
     }).join('');
 
-    const legend=`<div style="display:flex;align-items:center;gap:14px;padding:2px 0 8px;flex-shrink:0;">
+    const legend=`<div style="display:flex;align-items:center;gap:12px;height:${legendH}px;flex-shrink:0;">
   <span style="display:flex;align-items:center;gap:4px;font-size:8px;color:#64748b;">
     <span style="width:10px;height:4px;border-radius:2px;background:#64748b;display:inline-block;"></span>실질 진척도
   </span>
