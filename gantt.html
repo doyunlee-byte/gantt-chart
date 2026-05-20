@@ -7,27 +7,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f1117;--surface:#1a1d27;--surface2:#252838;--border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.18);--text:#f0f2fa;--text2:#b0b7cc;--text3:#7c83a0;--accent:#6b93ff;--green:#3ee8a8;--amber:#e6a800;--red:#ff8080;--blue-bg:#0C447C;--blue-text:#B5D4F4;--blue-avatar:#185FA5;--teal-bg:#085041;--teal-text:#9FE1CB;--teal-avatar:#0F6E56;--teal2-bg:#04342C;--teal2-text:#9FE1CB;--teal2-avatar:#1D9E75;--amber-bg:#633806;--amber-text:#FAC775;--amber-avatar:#854F0B;--purple-bg:#3C3489;--purple-text:#CECBF6;--purple-avatar:#534AB7;--red-bg:#791F1F;--red-text:#F7C1C1;--radius:12px;--radius-sm:8px;}
-:root.light{--bg:#f4f6fb;--surface:#fff;--surface2:#edf0f7;--border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);--text:#1a1d2e;--text2:#4a5068;--text3:#9096b0;--accent:#3b6fe8;--green:#0a9e6a;--amber:#b07800;--red:#d93025;--blue-bg:#E6F1FB;--blue-text:#0C447C;--blue-avatar:#B5D4F4;--teal-bg:#E1F5EE;--teal-text:#085041;--teal-avatar:#9FE1CB;--teal2-bg:#d0f0e4;--teal2-text:#04342C;--teal2-avatar:#5DCAA5;--amber-bg:#FAEEDA;--amber-text:#633806;--amber-avatar:#FAC775;--purple-bg:#EEEDFE;--purple-text:#3C3489;--purple-avatar:#CECBF6;--red-bg:#FCEBEB;--red-text:#A32D2D;--radius:12px;--radius-sm:8px;}
+:root.light{--bg:#F0F2F8;--surface:#FFFFFF;--surface2:#EEF1F8;--border:#E8EDF5;--border2:#E8EDF5;--text:#0B1E3E;--text2:#3A4A6A;--text3:#94A8C8;--accent:#2A5298;--green:#2A7A5A;--amber:#b07800;--red:#E85D5D;--blue-bg:#E6F1FB;--blue-text:#0C447C;--blue-avatar:#B5D4F4;--teal-bg:#E1F5EE;--teal-text:#085041;--teal-avatar:#9FE1CB;--teal2-bg:#d0f0e4;--teal2-text:#04342C;--teal2-avatar:#5DCAA5;--amber-bg:#FAEEDA;--amber-text:#633806;--amber-avatar:#FAC775;--purple-bg:#EEEDFE;--purple-text:#3C3489;--purple-avatar:#CECBF6;--red-bg:#FEF0F0;--red-text:#E85D5D;--radius:12px;--radius-sm:8px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Pretendard',-apple-system,sans-serif;font-size:13px;background:var(--bg);color:var(--text);min-height:100vh;}
 .app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 .loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:999;}
 .spinner{width:34px;height:34px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--accent);animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.logo{font-size:15px;font-weight:700;}.logo span{color:var(--accent);}
-.sync-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);background:var(--surface2);padding:4px 10px;border-radius:20px;border:1px solid var(--border);margin-left:12px;}
+.topbar{background:linear-gradient(135deg, #0B1E3E 0%, #1A3A6E 60%, #2A5298 100%);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.logo{font-size:15px;font-weight:700;color:#fff;}.logo span{color:#B5C8E8;}
+.sync-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.12);padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);margin-left:12px;}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .topbar-right{display:flex;align-items:center;gap:8px;}
-.nav-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:5px 10px;border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;}
-.nav-btn:hover{background:var(--border2);}
-.month-label{font-size:13px;font-weight:600;color:var(--text);min-width:130px;text-align:center;}
-.today-btn{background:var(--accent);border:none;color:#fff;padding:5px 12px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;}
+.nav-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);padding:5px 10px;border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;}
+.nav-btn:hover{background:rgba(255,255,255,0.22);}
+.month-label{font-size:13px;font-weight:600;color:#fff;min-width:130px;text-align:center;}
+.today-btn{background:rgba(255,255,255,0.95);border:none;color:#0B1E3E;padding:5px 12px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;}
 .page-tabs{display:flex;gap:4px;margin-left:12px;}
-.page-tab{padding:5px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;border:1px solid var(--border2);background:transparent;color:var(--text3);white-space:nowrap;}
-.page-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-.theme-toggle{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);user-select:none;}
+.page-tab{padding:5px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;border:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);white-space:nowrap;transition:all .15s;}
+.page-tab.active{background:#fff;border-color:transparent;color:#0B1E3E;font-weight:700;}
+.theme-toggle{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);user-select:none;}
 .toggle-track{width:30px;height:16px;border-radius:8px;background:var(--border2);position:relative;transition:background .2s;flex-shrink:0;}
 .light .toggle-track{background:var(--accent);}
 .toggle-thumb{position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s;}
@@ -79,10 +79,10 @@ td.day-td.week-start{border-left:2px solid rgba(255,255,255,.15)!important;}
 .light td.day-td.week-start{border-left:2px solid rgba(0,0,0,.15)!important;}
 td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 .status-tag{display:inline-block;font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;margin-top:2px;}
-.s-done{background:rgba(62,232,168,.15);color:var(--green);}
-.s-prog{background:rgba(107,147,255,.15);color:var(--accent);}
+.s-done{background:linear-gradient(90deg, #0B1E3E, #2A5298);color:#fff;}
+.s-prog{background:#EAF5F0;color:#2A7A5A;}
 .s-wait{background:rgba(176,183,204,.12);color:var(--text2);}
-.s-fail{background:rgba(255,128,128,.15);color:var(--red);}
+.s-fail{background:#FEF0F0;color:#E85D5D;}
 .deadline-line{width:2px;height:28px;border-radius:1px;background:var(--red);margin:0 auto;}
 .today-line{width:1.5px;height:28px;border-radius:1px;background:var(--accent);margin:0 auto;opacity:.6;}
 .legend{background:var(--surface);border-top:1px solid var(--border);padding:5px 20px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;flex-shrink:0;font-size:10px;color:var(--text3);}
@@ -399,16 +399,16 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     align-items: center;
   }
 
-  .dept-card.all-done { border: 2px solid #10b981 !important; background: rgba(16,185,129,0.06); }
-  .dept-card.all-done .dept-header { background: #152A1D; }
+  .dept-card.all-done { border: 2px solid #2A5298 !important; background: rgba(42,82,152,0.05); }
+  .dept-card.all-done .dept-header { background: #0B1E3E; }
   .dept-card.all-done .done-badge  { display: inline-flex; }
   .dept-card.all-done .d-remain    { display: none; }
-  .dept-card.all-done .d-badge { background: rgba(16,185,129,0.18) !important; color: #10b981 !important; }
+  .dept-card.all-done .d-badge { background: linear-gradient(90deg, #0B1E3E, #2A5298) !important; color: #fff !important; }
 
-  .done-badge { background: #1A3D25; color: #7ED99A; }
-  :root.light .done-badge { background: #D4EDDA; color: #1A6B35; }
-  :root.light .dept-card.all-done { background: #f0fdf4; }
-  :root.light .dept-card.all-done .dept-header { background: #EDF7EF; }
+  .done-badge { background: linear-gradient(90deg, #0B1E3E, #2A5298); color: #fff; }
+  :root.light .done-badge { background: linear-gradient(90deg, #0B1E3E, #2A5298); color: #fff; }
+  :root.light .dept-card.all-done { background: rgba(42,82,152,0.04); }
+  :root.light .dept-card.all-done .dept-header { background: #0B1E3E; }
 
   .task-body { flex: 1; color: var(--text); }
   .task-note { font-size: 11.5px; color: var(--text2); display: block; margin-top: 2px; }
@@ -815,12 +815,12 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
    모바일 반응형
 ═══════════════════════════════ */
 @media (max-width: 768px) {
-  /* 헤더 - 화이트 */
+  /* 헤더 - 네이비 그라데이션 */
   .topbar {
     padding: 0 14px;
     height: 46px;
-    background: #ffffff;
-    border-bottom: 1px solid #e8ebf4;
+    background: linear-gradient(135deg, #0B1E3E 0%, #1A3A6E 60%, #2A5298 100%);
+    border-bottom: none;
     gap: 0;
   }
   /* 기존 로고 숨기기 */
@@ -836,13 +836,13 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .mob-main-t {
     font-size: 13px;
     font-weight: 700;
-    color: #1a1d2e;
+    color: #fff;
     white-space: nowrap;
     letter-spacing: -0.2px;
   }
   .mob-sub-t {
     font-size: 9px;
-    color: #9096b0;
+    color: rgba(255,255,255,0.6);
     margin-top: 1px;
   }
 
@@ -891,7 +891,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
     transition: color .15s, background .15s;
     padding: 6px 0;
   }
-  .mob-tab.active { color: #4f7cff; background: rgba(79,124,255,.06); }
+  .mob-tab.active { color: #2A5298; background: rgba(42,82,152,.07); }
   .mob-tab-icon { width: 22px; height: 22px; }
 
   /* 하단 탭바 높이만큼 스크롤 영역 여백 */
@@ -1111,7 +1111,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 
 /* ── 주간보고 슬라이드 ─────────────────────────── */
 #pageWeekly {
-  background: #dde3ed;
+  background: #D8DFF0;
   overflow: auto;
   align-items: center;
   justify-content: center;
@@ -1144,9 +1144,9 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 .wr-slide {
   width: 1280px;
   height: 720px;
-  background: #f5f7fb;
+  background: #F0F2F8;
   border-radius: 12px;
-  box-shadow: 0 6px 32px rgba(0,0,0,.18);
+  box-shadow: 0 8px 40px rgba(11,30,62,.20);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1160,8 +1160,8 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 .wr-hdr {
   height: 44px;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #0B1E3E 0%, #1A3A6E 60%, #2A5298 100%);
+  border-bottom: none;
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -1211,7 +1211,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 .wr-pt {
   font-size: 8px;
   font-weight: 700;
-  color: #64748b;
+  color: #94A8C8;
   letter-spacing: .06em;
   text-transform: uppercase;
   padding: 5px 10px 3px;
@@ -1596,7 +1596,7 @@ function toggleTheme(){
   try{localStorage.setItem('ganttTheme',il?'light':'dark');}catch(e){}
   renderAll();
 }
-(function(){try{if(localStorage.getItem('ganttTheme')==='light'){document.documentElement.classList.add('light');setTimeout(()=>{const i=document.getElementById('themeIcon');if(i)i.textContent='☀️';},50);}}catch(e){}})();
+(function(){try{const t=localStorage.getItem('ganttTheme');if(t!=='dark'){document.documentElement.classList.add('light');setTimeout(()=>{const i=document.getElementById('themeIcon');if(i)i.textContent='☀️';},50);}}catch(e){}})();
 
 // ── 간트 렌더링
 function renderAll(){renderChips();renderMetrics();renderCenterPanel();renderTable();}
@@ -3789,20 +3789,20 @@ function renderSummaryPage() {
     return'ok';
   }
   const RL={
-    overdue:{text:'마감 초과',color:'#ef4444'},
-    danger: {text:'마감 위험',color:'#ef4444'},
+    overdue:{text:'마감 초과',color:'#E85D5D'},
+    danger: {text:'마감 위험',color:'#E85D5D'},
     warning:{text:'주의',      color:'#f59e0b'},
-    ok:     {text:'정상',      color:'#10b981'},
+    ok:     {text:'정상',      color:'#2A7A5A'},
   };
 
   const isDark = document.documentElement.classList.contains('light') ? false : true;
-  const bg0   = isDark ? '#0d0f1a' : '#e8ecf8';   // 전체 배경: 라이트=연보라, 다크=짙은 남색
-  const bg1   = isDark ? '#181c2e' : '#ffffff';    // 카드 배경: 라이트=흰색, 다크=짙은 카드
-  const bg2   = isDark ? '#1e2338' : '#f0f3fc';    // 내부 강조 배경
-  const txt1  = isDark ? '#e4e8ff' : '#1a1f4e';
-  const txt2  = isDark ? '#7b82b0' : '#5c6494';
-  const txt3  = isDark ? '#4a5070' : '#9096b0';
-  const bdr   = isDark ? 'rgba(255,255,255,.06)' : 'rgba(255,255,255,0)'; // 라이트는 border 제거 (배경으로 구분)
+  const bg0   = isDark ? '#0d0f1a' : '#F0F2F8';
+  const bg1   = isDark ? '#181c2e' : '#FFFFFF';
+  const bg2   = isDark ? '#1e2338' : '#EEF1F8';
+  const txt1  = isDark ? '#e4e8ff' : '#0B1E3E';
+  const txt2  = isDark ? '#7b82b0' : '#3A4A6A';
+  const txt3  = isDark ? '#4a5070' : '#94A8C8';
+  const bdr   = isDark ? 'rgba(255,255,255,.06)' : '#E8EDF5';
 
   // ══ 상단 KPI 카드
   const totalDone  = PROJECTS.reduce((s,p)=>s+p.tasks.reduce((a,t)=>a+(t.done||0),0),0);
@@ -3818,10 +3818,10 @@ function renderSummaryPage() {
     {label:'마감 위험',   value:`${riskCount}건`, sub:'즉시 조치 필요', alert:riskCount>0},
     {label:'완료',        value:`${doneCount}건`, sub:'100% 달성'},
   ].map(k=>`
-    <div style="background:${bg1};border:none;border-radius:12px;padding:14px 18px;flex:1;min-width:100px;box-shadow:0 2px 12px rgba(80,90,180,.10);">
-      <div style="font-size:10px;font-weight:600;color:${txt2};letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">${k.label}</div>
-      <div style="font-size:24px;font-weight:800;color:${k.alert?'#ef4444':txt1};letter-spacing:-.02em;line-height:1;">${k.value}</div>
-      <div style="font-size:11px;color:${txt2};margin-top:6px;">${k.sub}</div>
+    <div style="background:${isDark ? bg1 : 'linear-gradient(135deg, #0B1E3E, #1A3A6E)'};border:none;border-radius:10px;padding:14px 18px;flex:1;min-width:100px;box-shadow:0 2px 12px rgba(11,30,62,.15);">
+      <div style="font-size:10px;font-weight:600;color:${isDark ? txt2 : '#94A8C8'};letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">${k.label}</div>
+      <div style="font-size:24px;font-weight:800;color:${k.alert?'#E85D5D':(isDark ? txt1 : '#fff')};letter-spacing:-.02em;line-height:1;">${k.value}</div>
+      <div style="font-size:11px;color:${isDark ? txt2 : '#94A8C8'};margin-top:6px;">${k.sub}</div>
     </div>`).join('');
 
   // ══ 프로젝트 진척률 (세로 막대형)
@@ -3887,6 +3887,14 @@ function renderSummaryPage() {
   const MULTI_COLOR = '#8b8fff'; // 다중 선택 시 통일 색상 (연보라)
   const chartColor = isMultiSel ? MULTI_COLOR : (graphProjs[0]?.color || '#6366f1');
 
+  // ══ 차트 전용 색상 (라이트=네이비, 다크=프로젝트 색)
+  const prevChartColor = isDark ? chartColor : '#B5C8E8';
+  const curChartColor  = isDark ? chartColor : '#2A5298';
+  const fillChartColor = isDark ? chartColor : 'rgba(42,82,152,0.07)';
+  const fillChartOpacity = isDark ? '0.12' : '1';
+  const gridChartColor = isDark ? bdr : 'rgba(180,196,220,0.2)';
+  const tickChartColor = isDark ? txt2 : '#94A8C8';
+
   // ══ 전주 vs 금주 곡선 그래프 (X축=센터, Y축=건수)
   function buildWeekCompareChart(ch) {
     const svgW=580, padL=32, padR=16, padT=24, padB=28;
@@ -3900,8 +3908,8 @@ function renderSummaryPage() {
     // Y축 격자
     [0,0.25,0.5,0.75,1].forEach(r=>{
       const y=padT+gH-r*gH;
-      sc+=`<line x1="${padL}" y1="${y}" x2="${svgW-padR}" y2="${y}" stroke="${bdr}" stroke-width="${r===0?1.5:0.7}" opacity="0.6"/>`;
-      if(r>0||r===0) sc+=`<text x="${padL-5}" y="${y+4}" text-anchor="end" font-size="9" fill="${txt2}">${Math.round(maxV*r)}</text>`;
+      sc+=`<line x1="${padL}" y1="${y}" x2="${svgW-padR}" y2="${y}" stroke="${gridChartColor}" stroke-width="${r===0?1.5:0.7}"/>`;
+      if(r>0||r===0) sc+=`<text x="${padL-5}" y="${y+4}" text-anchor="end" font-size="9" fill="${tickChartColor}">${Math.round(maxV*r)}</text>`;
     });
 
     const lP=CENTERS.map((c,i)=>xy(i,weekData[c.name]?.lastW||0));
@@ -3909,34 +3917,34 @@ function renderSummaryPage() {
 
     // 금주 면적 채우기
     const fp=smoothPath(tP)+` L ${tP[tP.length-1].x} ${padT+gH} L ${padL} ${padT+gH} Z`;
-    sc+=`<path d="${fp}" fill="${chartColor}" fill-opacity="0.12"/>`;
+    sc+=`<path d="${fp}" fill="${fillChartColor}" fill-opacity="${fillChartOpacity}"/>`;
 
     // 전주 점선
-    sc+=`<path d="${smoothPath(lP)}" fill="none" stroke="${chartColor}" stroke-width="2" stroke-opacity="0.5" stroke-dasharray="5,3"/>`;
+    sc+=`<path d="${smoothPath(lP)}" fill="none" stroke="${prevChartColor}" stroke-width="2" stroke-dasharray="4,3"/>`;
     // 금주 실선
-    sc+=`<path d="${smoothPath(tP)}" fill="none" stroke="${chartColor}" stroke-width="3"/>`;
+    sc+=`<path d="${smoothPath(tP)}" fill="none" stroke="${curChartColor}" stroke-width="3"/>`;
 
     // 점 + 라벨
     CENTERS.forEach((c,i)=>{
       const lp=lP[i], tp=tP[i];
       const lv=weekData[c.name]?.lastW||0, tv=weekData[c.name]?.thisW||0;
       // 전주 점 (빈 원)
-      sc+=`<circle cx="${lp.x}" cy="${lp.y}" r="4" fill="${bg1}" stroke="${chartColor}" stroke-width="1.5" opacity="0.6"/>`;
-      if(lv>0) sc+=`<text x="${lp.x}" y="${lp.y-9}" text-anchor="middle" font-size="9" fill="${txt2}" opacity="0.85">${lv}</text>`;
+      sc+=`<circle cx="${lp.x}" cy="${lp.y}" r="4" fill="${bg1}" stroke="${prevChartColor}" stroke-width="1.5"/>`;
+      if(lv>0) sc+=`<text x="${lp.x}" y="${lp.y-9}" text-anchor="middle" font-size="9" fill="${tickChartColor}">${lv}</text>`;
       // 금주 점 (채운 원 — 단일이면 센터색, 다중이면 통일색)
-      const dotColor = isMultiSel ? MULTI_COLOR : c.color;
+      const dotColor = isDark ? (isMultiSel ? MULTI_COLOR : c.color) : curChartColor;
       sc+=`<circle cx="${tp.x}" cy="${tp.y}" r="5" fill="${dotColor}" stroke="${bg1}" stroke-width="1.5"/>`;
       if(tv>0) sc+=`<text x="${tp.x}" y="${tp.y-10}" text-anchor="middle" font-size="10" font-weight="800" fill="${dotColor}">${tv}</text>`;
       // X축 센터명
-      sc+=`<text x="${tp.x}" y="${ch-1}" text-anchor="middle" font-size="10" font-weight="600" fill="${c.color}">${c.name.replace('비버','')}</text>`;
+      sc+=`<text x="${tp.x}" y="${ch-1}" text-anchor="middle" font-size="10" font-weight="600" fill="${isDark ? c.color : tickChartColor}">${c.name.replace('비버','')}</text>`;
     });
 
     // 범례
     const legY = padT - 10;
-    sc+=`<line x1="${padL}" y1="${legY}" x2="${padL+18}" y2="${legY}" stroke="${chartColor}" stroke-width="2" stroke-dasharray="5,3" opacity="0.6"/>`;
-    sc+=`<text x="${padL+22}" y="${legY+4}" font-size="9" fill="${txt2}">전주</text>`;
-    sc+=`<line x1="${padL+52}" y1="${legY}" x2="${padL+70}" y2="${legY}" stroke="${chartColor}" stroke-width="3"/>`;
-    sc+=`<text x="${padL+74}" y="${legY+4}" font-size="9" fill="${txt2}">금주</text>`;
+    sc+=`<line x1="${padL}" y1="${legY}" x2="${padL+18}" y2="${legY}" stroke="${prevChartColor}" stroke-width="2" stroke-dasharray="4,3"/>`;
+    sc+=`<text x="${padL+22}" y="${legY+4}" font-size="9" fill="${tickChartColor}">전주</text>`;
+    sc+=`<line x1="${padL+52}" y1="${legY}" x2="${padL+70}" y2="${legY}" stroke="${curChartColor}" stroke-width="3"/>`;
+    sc+=`<text x="${padL+74}" y="${legY+4}" font-size="9" fill="${tickChartColor}">금주</text>`;
 
 
     return `<svg width="100%" height="${ch}" viewBox="0 0 ${svgW} ${ch}" preserveAspectRatio="none">${sc}</svg>`;
@@ -3975,9 +3983,9 @@ function renderSummaryPage() {
 
   // ── 모바일 분기: 컴팩트 대시보드 뷰 (화이트 테마)
   if(window.innerWidth <= 768) {
-    const mobBg0 = '#f5f7fa', mobBg1 = '#ffffff', mobBg2 = '#eef0f8';
-    const mobTxt1 = '#1a1d2e', mobTxt2 = '#9096b0', mobBdr = '#e8ebf4';
-    const mobAccent = '#4f7cff';
+    const mobBg0 = '#F0F2F8', mobBg1 = '#ffffff', mobBg2 = '#EEF1F8';
+    const mobTxt1 = '#0B1E3E', mobTxt2 = '#94A8C8', mobBdr = '#E8EDF5';
+    const mobAccent = '#2A5298';
 
     // KPI 카드 1행 4열
     const kpiMob = [
@@ -3985,10 +3993,10 @@ function renderSummaryPage() {
       {label:'진행중',      value:`${activeCount}`, sub:`${PROJECTS.length}개 프로젝트`},
       {label:'마감위험',    value:`${riskCount}`,   sub:'즉시 조치', alert:riskCount>0},
       {label:'완료',        value:`${doneCount}`,   sub:'100% 달성'},
-    ].map(k => `<div style="background:${mobBg1};border-radius:10px;padding:8px 8px;box-shadow:0 1px 8px rgba(0,0,0,.08);text-align:center;">
-      <div style="font-size:10px;font-weight:600;color:${mobTxt2};margin-bottom:4px;white-space:nowrap;">${k.label}</div>
-      <div style="font-size:20px;font-weight:800;color:${k.alert?'#ef4444':mobAccent};line-height:1;">${k.value}</div>
-      <div style="font-size:9px;color:${mobTxt2};margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.sub}</div>
+    ].map(k => `<div style="background:linear-gradient(135deg, #0B1E3E, #1A3A6E);border-radius:10px;padding:8px 8px;box-shadow:0 2px 12px rgba(11,30,62,.15);text-align:center;">
+      <div style="font-size:10px;font-weight:600;color:#94A8C8;margin-bottom:4px;white-space:nowrap;">${k.label}</div>
+      <div style="font-size:20px;font-weight:800;color:${k.alert?'#E85D5D':'#fff'};line-height:1;">${k.value}</div>
+      <div style="font-size:9px;color:#94A8C8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.sub}</div>
     </div>`).join('');
 
     // 프로젝트 칩 (그래프용)
@@ -4032,7 +4040,7 @@ function renderSummaryPage() {
 
     el.innerHTML = `<div style="padding:0;display:flex;flex-direction:column;background:${mobBg0};min-height:100%;font-family:'Pretendard','Apple SD Gothic Neo',-apple-system,sans-serif;">
 
-      <div style="background:linear-gradient(135deg,#1a56db 0%,#3b82f6 100%);padding:12px 16px;margin-bottom:10px;">
+      <div style="background:linear-gradient(135deg, #0B1E3E 0%, #1A3A6E 60%, #2A5298 100%);padding:12px 16px;margin-bottom:10px;">
         <div style="font-size:14px;font-weight:700;color:#fff;letter-spacing:-.2px;">Operation Center Overview</div>
       </div>
 
@@ -4156,7 +4164,7 @@ function renderSummaryPage() {
     <!-- 헤더 + PPT 버튼 -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
       <div style="font-size:13px;font-weight:700;color:${txt1};">📊 ProjectGantt 주간보고</div>
-      <button onclick="downloadWeeklyPPT()" style="padding:7px 16px;border-radius:8px;border:none;background:#4f46e5;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">⬇ PPT 다운로드</button>
+      <button onclick="downloadWeeklyPPT()" style="padding:7px 16px;border-radius:8px;border:none;background:linear-gradient(135deg, #0B1E3E, #2A5298);color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">⬇ PPT 다운로드</button>
     </div>
     <!-- KPI 카드 -->
     <div style="display:flex;gap:12px;">${kpiCards}</div>
@@ -4165,20 +4173,20 @@ function renderSummaryPage() {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
 
       <!-- 프로젝트 진척률 -->
-      <div style="background:${bg1};border:none;border-radius:14px;padding:16px;box-shadow:0 2px 12px rgba(80,90,180,.10);">
-        <div style="font-size:10px;font-weight:700;color:${txt2};letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">진행 중 프로젝트</div>
+      <div style="background:${bg1};border:1px solid ${bdr};border-radius:12px;padding:16px;box-shadow:0 2px 12px rgba(11,30,62,.07);">
+        <div style="font-size:10px;font-weight:700;color:${txt3};letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">진행 중 프로젝트</div>
         <div style="display:flex;flex-direction:column;gap:10px;">${projBars}</div>
         ${pendingHtml}
       </div>
 
       <!-- 센터별 설치 현황 -->
-      <div style="background:${bg1};border:none;border-radius:14px;padding:16px;box-shadow:0 2px 12px rgba(80,90,180,.10);">
-        <div style="font-size:11px;font-weight:700;color:${txt2};letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">센터별 일별 실행 추이 (전주 vs 금주)</div>
+      <div style="background:${bg1};border:1px solid ${bdr};border-radius:12px;padding:16px;box-shadow:0 2px 12px rgba(11,30,62,.07);">
+        <div style="font-size:11px;font-weight:700;color:${txt3};letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">센터별 일별 실행 추이 (전주 vs 금주)</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">${projToggleBtns}</div>
         <div style="display:flex;gap:14px;align-items:flex-start;">
           <div style="flex:1;min-width:0;">${lineChart}</div>
           <div style="width:175px;flex-shrink:0;">
-            <div style="font-size:10px;color:${txt2};padding-bottom:6px;border-bottom:1px solid ${bdr};margin-bottom:2px;letter-spacing:.04em;">센터 &nbsp;·&nbsp; 전주→금주 &nbsp;·&nbsp; 증감</div>
+            <div style="font-size:10px;color:${txt3};padding-bottom:6px;border-bottom:1px solid ${bdr};margin-bottom:2px;letter-spacing:.04em;">센터 &nbsp;·&nbsp; 전주→금주 &nbsp;·&nbsp; 증감</div>
             ${centerList}
           </div>
         </div>
@@ -4186,8 +4194,8 @@ function renderSummaryPage() {
     </div>
 
     <!-- 하단 마감 게이지 -->
-    <div style="background:${bg1};border:none;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(80,90,180,.10);">
-      <div style="padding:14px 20px;font-size:11px;font-weight:700;color:${txt2};letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid ${bdr};">예상 마감 일정</div>
+    <div style="background:${bg1};border:1px solid ${bdr};border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(11,30,62,.07);">
+      <div style="padding:14px 20px;font-size:11px;font-weight:700;color:${txt3};letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid ${bdr};">예상 마감 일정</div>
       <div style="overflow-x:auto;">
         <div class="sum-wrap">${monthRow}${dateRow}${ganttRows}</div>
       </div>
@@ -4739,37 +4747,37 @@ function renderWeeklyPage(){
     // 가로 그리드선
     [0,0.25,0.5,0.75,1].forEach(r=>{
       const y=pT+gH-r*gH;
-      s+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(0,0,0,.06)" stroke-width="${r===0?1:0.5}"/>`;
-      if(r>0) s+=`<text x="${pL-4}" y="${y+3}" text-anchor="end" font-size="6" fill="#cbd5e1">${Math.round(maxV*r)}</text>`;
+      s+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(180,196,220,0.2)" stroke-width="${r===0?1:0.5}"/>`;
+      if(r>0) s+=`<text x="${pL-4}" y="${y+3}" text-anchor="end" font-size="6" fill="#94A8C8">${Math.round(maxV*r)}</text>`;
     });
     // 포인트 배열 생성
     const lwPts=CENTERS.map((c,i)=>({x:xOf(i),y:yOf(weekData[c.name]?.lw||0)}));
     const twPts=CENTERS.map((c,i)=>({x:xOf(i),y:yOf(weekData[c.name]?.tw||0)}));
-    // 전주 곡선 (회색)
-    s+=`<path d="${smoothPath(lwPts)}" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/>`;
+    // 전주 곡선 (연한 블루)
+    s+=`<path d="${smoothPath(lwPts)}" fill="none" stroke="#B5C8E8" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round"/>`;
     // 금주 곡선 영역 채우기
     const twCurve=smoothPath(twPts);
-    s+=`<path d="${twCurve} L${xOf(n-1)},${pT+gH} L${xOf(0)},${pT+gH}Z" fill="${wColor}" fill-opacity="0.1" stroke="none"/>`;
-    s+=`<path d="${twCurve}" fill="none" stroke="${wColor}" stroke-width="2.5" stroke-linecap="round"/>`;
+    s+=`<path d="${twCurve} L${xOf(n-1)},${pT+gH} L${xOf(0)},${pT+gH}Z" fill="rgba(42,82,152,0.07)" stroke="none"/>`;
+    s+=`<path d="${twCurve}" fill="none" stroke="#2A5298" stroke-width="2.5" stroke-linecap="round"/>`;
     // 점 및 레이블
     CENTERS.forEach((c,i)=>{
       const lw=weekData[c.name]?.lw||0;
       const tw=weekData[c.name]?.tw||0;
       const x=xOf(i),ly=yOf(lw),ty=yOf(tw);
-      s+=`<circle cx="${x}" cy="${ly}" r="3" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/>`;
-      if(lw>0) s+=`<text x="${x}" y="${ly-7}" text-anchor="middle" font-size="7" fill="#94a3b8">${lw}</text>`;
-      s+=`<circle cx="${x}" cy="${ty}" r="4.5" fill="${c.color}" stroke="#fff" stroke-width="1.5"/>`;
-      if(tw>0) s+=`<text x="${x}" y="${ty-9}" text-anchor="middle" font-size="8.5" font-weight="700" fill="${c.color}">${tw}</text>`;
-      s+=`<text x="${x}" y="${pT+gH+18}" text-anchor="middle" font-size="8.5" font-weight="600" fill="${c.color}">${c.name.replace('비버','')}</text>`;
+      s+=`<circle cx="${x}" cy="${ly}" r="3" fill="#fff" stroke="#B5C8E8" stroke-width="1.5"/>`;
+      if(lw>0) s+=`<text x="${x}" y="${ly-7}" text-anchor="middle" font-size="7" fill="#94A8C8">${lw}</text>`;
+      s+=`<circle cx="${x}" cy="${ty}" r="4.5" fill="#2A5298" stroke="#fff" stroke-width="1.5"/>`;
+      if(tw>0) s+=`<text x="${x}" y="${ty-9}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#2A5298">${tw}</text>`;
+      s+=`<text x="${x}" y="${pT+gH+18}" text-anchor="middle" font-size="8.5" font-weight="600" fill="#94A8C8">${c.name.replace('비버','')}</text>`;
     });
     // 범례
     const lgY=pT-18;
-    s+=`<line x1="${pL}" y1="${lgY}" x2="${pL+14}" y2="${lgY}" stroke="#e2e8f0" stroke-width="2"/>`;
-    s+=`<circle cx="${pL+7}" cy="${lgY}" r="2.5" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/>`;
-    s+=`<text x="${pL+18}" y="${lgY+3}" font-size="6.5" fill="#94a3b8">전주</text>`;
-    s+=`<line x1="${pL+44}" y1="${lgY}" x2="${pL+58}" y2="${lgY}" stroke="${wColor}" stroke-width="2.5"/>`;
-    s+=`<circle cx="${pL+51}" cy="${lgY}" r="3" fill="${wColor}"/>`;
-    s+=`<text x="${pL+62}" y="${lgY+3}" font-size="6.5" fill="#94a3b8">금주</text>`;
+    s+=`<line x1="${pL}" y1="${lgY}" x2="${pL+14}" y2="${lgY}" stroke="#B5C8E8" stroke-width="2" stroke-dasharray="4,3"/>`;
+    s+=`<circle cx="${pL+7}" cy="${lgY}" r="2.5" fill="#fff" stroke="#B5C8E8" stroke-width="1.5"/>`;
+    s+=`<text x="${pL+18}" y="${lgY+3}" font-size="6.5" fill="#94A8C8">전주</text>`;
+    s+=`<line x1="${pL+44}" y1="${lgY}" x2="${pL+58}" y2="${lgY}" stroke="#2A5298" stroke-width="2.5"/>`;
+    s+=`<circle cx="${pL+51}" cy="${lgY}" r="3" fill="#2A5298"/>`;
+    s+=`<text x="${pL+62}" y="${lgY+3}" font-size="6.5" fill="#94A8C8">금주</text>`;
     return `<svg width="100%" height="${ch}" viewBox="0 0 ${W} ${ch}">${s}</svg>`;
   }
 
@@ -4828,8 +4836,8 @@ function renderWeeklyPage(){
     <span style="font-size:${nmSz}px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
   </div>
   <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:${barGap}px;">
-    <div>${lbl1}<div style="height:${barH1}px;background:#f0f0f0;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:${c};border-radius:4px;"></div></div></div>
-    <div>${lbl2}<div style="height:${barH2}px;background:#f0f0f0;border-radius:4px;overflow:hidden;"><div style="width:${expPct}%;height:100%;background:${c};opacity:0.3;border-radius:4px;"></div></div></div>
+    <div>${lbl1}<div style="height:${barH1}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:${c};border-radius:4px;"></div></div></div>
+    <div>${lbl2}<div style="height:${barH2}px;background:#EEF1F8;border-radius:4px;overflow:hidden;"><div style="width:${expPct}%;height:100%;background:#B5C8E8;border-radius:4px;"></div></div></div>
   </div>
   <div style="flex:0 0 54px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
     <div style="font-size:${pctSz}px;font-weight:500;color:#1e293b;line-height:1;">${pp}%</div>
@@ -4854,16 +4862,16 @@ function renderWeeklyPage(){
   }
 
   // KPI 카드 (우측 위)
-  const RL_WR={overdue:{t:'마감초과',c:'#ef4444'},danger:{t:'마감위험',c:'#ef4444'},warning:{t:'주의',c:'#f59e0b'},ok:{t:'정상',c:'#10b981'}};
+  const RL_WR={overdue:{t:'마감초과',c:'#E85D5D'},danger:{t:'마감위험',c:'#E85D5D'},warning:{t:'주의',c:'#f59e0b'},ok:{t:'정상',c:'#2A7A5A'}};
   const kpiHtml=[
-    {label:'전체 진척률',value:`${kPct}%`,sub:`${kDon.toLocaleString()} / ${kTot.toLocaleString()} 매장`,color:'#4f7cff'},
-    {label:'이번 주 처리',value:`${kTW}`,sub:'매장 완료',color:'#8b5cf6'},
-    {label:'마감 위험',value:`${kRisk}`,sub:kRisk>0?'즉시 조치':'이상 없음',color:kRisk>0?'#ef4444':'#10b981'},
-    {label:'완료 프로젝트',value:`${kDone}/${PROJECTS.length}`,sub:'프로젝트',color:'#10b981'},
-  ].map(k=>`<div style="background:#fff;border-radius:7px;padding:7px 9px;border:1px solid #e8edf4;border-left:3px solid ${k.color};box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden;">
-    <div style="font-size:7px;font-weight:600;color:#64748b;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.label}</div>
-    <div style="font-size:21px;font-weight:800;color:${k.color};line-height:1;letter-spacing:-.5px;">${k.value}</div>
-    <div style="font-size:6.5px;color:#94a3b8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.sub}</div>
+    {label:'전체 진척률',value:`${kPct}%`,sub:`${kDon.toLocaleString()} / ${kTot.toLocaleString()} 매장`},
+    {label:'이번 주 처리',value:`${kTW}`,sub:'매장 완료'},
+    {label:'마감 위험',value:`${kRisk}`,sub:kRisk>0?'즉시 조치':'이상 없음',alert:kRisk>0},
+    {label:'완료 프로젝트',value:`${kDone}/${PROJECTS.length}`,sub:'프로젝트'},
+  ].map(k=>`<div style="background:linear-gradient(135deg, #0B1E3E, #1A3A6E);border-radius:7px;padding:7px 9px;overflow:hidden;box-shadow:0 2px 8px rgba(11,30,62,.15);">
+    <div style="font-size:7px;font-weight:600;color:#94A8C8;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.label}</div>
+    <div style="font-size:21px;font-weight:800;color:${k.alert?'#E85D5D':'#fff'};line-height:1;letter-spacing:-.5px;">${k.value}</div>
+    <div style="font-size:6.5px;color:#94A8C8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.sub}</div>
   </div>`).join('');
 
   // 프로젝트 전체 현황 (우측 아래)
@@ -4901,13 +4909,13 @@ function renderWeeklyPage(){
   slide.innerHTML=`
 <div class="wr-hdr">
   <div class="wr-hl">
-    <span style="font-size:13px;font-weight:800;color:#0f172a;letter-spacing:-.4px;">ProjectGantt</span>
-    <span style="font-size:8px;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f7cff,#6366f1);padding:2px 8px;border-radius:5px;white-space:nowrap;">주간보고</span>
-    <span style="font-size:8px;font-weight:600;color:#64748b;background:#f1f5f9;padding:2px 7px;border-radius:4px;white-space:nowrap;">${TODAY.getFullYear()}년 ${weekNum}주차</span>
+    <span style="font-size:13px;font-weight:800;color:#fff;letter-spacing:-.4px;">ProjectGantt</span>
+    <span style="font-size:8px;font-weight:700;color:#0B1E3E;background:#B5C8E8;padding:2px 8px;border-radius:5px;white-space:nowrap;">주간보고</span>
+    <span style="font-size:8px;font-weight:600;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:2px 7px;border-radius:4px;white-space:nowrap;">${TODAY.getFullYear()}년 ${weekNum}주차</span>
   </div>
   <div class="wr-hc">${chipHtml}</div>
   <div class="wr-hr">
-    <span style="font-size:9px;font-weight:600;color:#475569;white-space:nowrap;">${dateStr}</span>
+    <span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.7);white-space:nowrap;">${dateStr}</span>
     <span class="sync-dot" style="width:6px;height:6px;"></span>
   </div>
 </div>
