@@ -4696,15 +4696,15 @@ function renderWeeklyPage(){
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
             <div style="display:flex;align-items:center;gap:3px;min-width:0;flex:1;overflow:hidden;">
               <span style="width:5px;height:5px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
-              <span style="font-size:8.5px;font-weight:700;color:#1A3A6E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+              <span style="font-size:13px;font-weight:700;color:#1A3A6E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:3px;">
-              <span style="font-size:6.5px;color:#94a3b8;white-space:nowrap;">${s.realPersonnel}명</span>
-              <span style="font-size:7.5px;color:${st.color};font-weight:700;white-space:nowrap;">${fd}</span>
+              <span style="font-size:12px;color:#94a3b8;white-space:nowrap;">${s.realPersonnel}명</span>
+              <span style="font-size:12px;color:${st.color};font-weight:700;white-space:nowrap;">${fd}</span>
             </div>
           </div>
-          <div style="height:4px;background:#F0F4FB;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:linear-gradient(90deg, #1A3A6E, #4A7FCC);border-radius:2px;"></div></div>
-          <div style="font-size:6.5px;color:${p.color};font-weight:700;text-align:right;margin-top:1px;">${cp}%</div>
+          <div style="height:12px;background:#F0F4FB;border-radius:6px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:linear-gradient(90deg, #1A3A6E, #4A7FCC);border-radius:6px;"></div></div>
+          <div style="font-size:12px;color:${p.color};font-weight:700;text-align:right;margin-top:1px;">${cp}%</div>
         </div>`;
       });
     }
@@ -4712,7 +4712,7 @@ function renderWeeklyPage(){
       <div class="wr-cch" style="background:#FFFFFF;padding:5px 8px 4px;">
         <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;flex:1;">
           <span style="width:8px;height:8px;border-radius:50%;background:${c.color};flex-shrink:0;box-shadow:0 0 0 2px ${c.color}30;"></span>
-          <span style="font-size:11px;font-weight:800;color:#0f172a;letter-spacing:-.3px;">${sn}</span>
+          <span style="font-size:15px;font-weight:800;color:#0f172a;letter-spacing:-.3px;">${sn}</span>
           <span style="font-size:6.5px;color:#64748b;background:#f1f5f9;padding:1px 4px;border-radius:3px;white-space:nowrap;">${cls.totalPersonnel}명</span>
           <span style="font-size:6.5px;font-weight:600;color:${mc};white-space:nowrap;">${ml}</span>
           ${isFixed?`<span style="font-size:6px;font-weight:700;color:#fff;background:#059669;padding:1px 4px;border-radius:3px;white-space:nowrap;">${dailyCap}/일</span>`:''}
