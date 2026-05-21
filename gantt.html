@@ -4689,7 +4689,8 @@ function renderWeeklyPage(){
         const s=getPCS(p.id,c.name);
         const st=calcProjStatus(p,c);
         const cDone=Object.values((CENTER_DAILY[p.name]||{})[c.name]||{}).reduce((a,b)=>a+b,0);
-        const cTot=cDone+getCRem(c.name,p);
+        const cRem=getCRem(c.name,p);
+        const cTot=cDone+cRem;
         const cp=cTot>0?Math.round(cDone/cTot*100):0;
         const fd=st.fcDate?`${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}`:'-';
         rows+=`<div style="padding:3px 0;border-top:1px solid #f1f5f9;">
@@ -4704,7 +4705,10 @@ function renderWeeklyPage(){
             </div>
           </div>
           <div style="height:12px;background:#F0F4FB;border-radius:6px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:6px;"></div></div>
-          <div style="font-size:12px;color:${p.color};font-weight:700;text-align:right;margin-top:1px;">${cp}%</div>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:1px;">
+            <span style="font-size:12px;color:${p.color};font-weight:700;">${cp}%</span>
+            ${cRem>0?`<span style="font-size:11px;color:#94A8C8;">잔여 ${cRem}개</span>`:''}
+          </div>
         </div>`;
       });
     }
