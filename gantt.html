@@ -4662,10 +4662,10 @@ function renderWeeklyPage(){
 
   // 센터 카드 (좌측 열)
   function getCardScale(n){
-    if(n<=1) return {nm:'14px',barH:'10px',meta:'12px',pad:'5px 0',rem:'11px',bodyPad:'0 9px 8px'};
-    if(n===2) return {nm:'13px',barH:'8px',meta:'11px',pad:'3px 0',rem:'10px',bodyPad:'0 9px 6px'};
-    if(n===3) return {nm:'12px',barH:'7px',meta:'10px',pad:'2px 0',rem:'10px',bodyPad:'0 8px 5px'};
-    return {nm:'11px',barH:'6px',meta:'10px',pad:'1px 0',rem:'9px',bodyPad:'0 7px 4px'};
+    if(n<=1) return {nm:'14px',barH:'10px',meta:'12px',pad:'5px 0',rem:'11px',bodyPad:'0 9px 12px'};
+    if(n===2) return {nm:'13px',barH:'8px',meta:'11px',pad:'3px 0',rem:'10px',bodyPad:'0 9px 12px'};
+    if(n===3) return {nm:'12px',barH:'7px',meta:'10px',pad:'2px 0',rem:'10px',bodyPad:'0 8px 12px'};
+    return {nm:'11px',barH:'6px',meta:'10px',pad:'1px 0',rem:'9px',bodyPad:'0 7px 12px'};
   }
   let ccHtml='';
   CENTERS.forEach(c=>{
