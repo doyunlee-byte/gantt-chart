@@ -4886,7 +4886,7 @@ function renderWeeklyPage(){
   </div>`).join('');
 
   // 프로젝트 전체 현황 (우측 아래)
-  const projListHtml=PROJECTS.map(p=>{
+  const projListHtml=PROJECTS.filter(p=>wrPct(p).total>0).map(p=>{
     const{total:pt,done:pd,pct:pp}=wrPct(p);
     const risk=wrRisk(p);
     const rl=risk?RL_WR[risk]:null;
