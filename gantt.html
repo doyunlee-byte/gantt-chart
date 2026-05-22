@@ -1114,7 +1114,6 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   background: #D8DFF0;
   overflow: auto;
   align-items: center;
-  justify-content: center;
   padding: 20px 16px;
   gap: 8px;
 }
@@ -1167,9 +1166,13 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   padding: 0 16px;
   gap: 12px;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-radius: 12px 12px 0 0;
 }
 .wr-hl { display:flex;align-items:center;gap:8px;flex-shrink:0; }
-.wr-hc { flex:1;display:flex;align-items:center;gap:4px;overflow:hidden;min-width:0; }
+.wr-hc { flex:1;display:flex;align-items:center;gap:4px;overflow-x:auto;min-width:0; }
 .wr-hr { display:flex;align-items:center;gap:6px;flex-shrink:0; }
 .wr-body {
   flex: 1;
