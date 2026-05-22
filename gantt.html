@@ -1236,8 +1236,6 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 }
 .wr-ccb {
   padding: 2px 7px 5px;
-  flex: 1;
-  overflow: hidden;
 }
 @media print {
   .wr-toolbar { display: none !important; }
@@ -4663,6 +4661,12 @@ function renderWeeklyPage(){
   }).join('');
 
   // 센터 카드 (좌측 열)
+  function getCardScale(n){
+    if(n<=1) return {nm:'14px',barH:'10px',meta:'12px',pad:'5px 0',rem:'11px',bodyPad:'0 9px 8px'};
+    if(n===2) return {nm:'13px',barH:'8px',meta:'11px',pad:'3px 0',rem:'10px',bodyPad:'0 9px 6px'};
+    if(n===3) return {nm:'12px',barH:'7px',meta:'10px',pad:'2px 0',rem:'10px',bodyPad:'0 8px 5px'};
+    return {nm:'11px',barH:'6px',meta:'10px',pad:'1px 0',rem:'9px',bodyPad:'0 7px 4px'};
+  }
   let ccHtml='';
   CENTERS.forEach(c=>{
     const cls=getCLS(c.name);
@@ -4681,9 +4685,10 @@ function renderWeeklyPage(){
     });
     const badgeBg=worst.label==='위험'?'#FEF0F0':worst.label==='주의'?'#FFFBEA':worst.label==='충분'?'#EAF5F0':'#F1F5F9';
     const badgeColor=worst.color;
+    const sc=getCardScale(fixP.length);
     let rows='';
     if(!isFixed){
-      rows='<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:4px 0;"><span style="font-size:8px;color:#cbd5e1;font-style:italic;">배정 없음</span></div>';
+      rows='<div style="display:flex;align-items:center;justify-content:center;padding:4px 0;"><span style="font-size:8px;color:#cbd5e1;font-style:italic;">배정 없음</span></div>';
     } else {
       fixP.forEach(p=>{
         const s=getPCS(p.id,c.name);
@@ -4693,21 +4698,21 @@ function renderWeeklyPage(){
         const cTot=cDone+cRem;
         const cp=cTot>0?Math.round(cDone/cTot*100):0;
         const fd=st.fcDate?`${st.fcDate.getMonth()+1}/${st.fcDate.getDate()}`:'-';
-        rows+=`<div style="padding:3px 0;border-top:1px solid #f1f5f9;">
+        rows+=`<div style="padding:${sc.pad};border-top:1px solid #f1f5f9;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
             <div style="display:flex;align-items:center;gap:3px;min-width:0;flex:1;overflow:hidden;">
               <span style="width:5px;height:5px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
-              <span style="font-size:13px;font-weight:700;color:#2E6BC4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
+              <span style="font-size:${sc.nm};font-weight:700;color:#2E6BC4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
             </div>
             <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:3px;">
-              <span style="font-size:12px;color:#94a3b8;white-space:nowrap;">${s.realPersonnel}명</span>
-              <span style="font-size:12px;color:${st.color};font-weight:700;white-space:nowrap;">${fd}</span>
+              <span style="font-size:${sc.meta};color:#94a3b8;white-space:nowrap;">${s.realPersonnel}명</span>
+              <span style="font-size:${sc.meta};color:${st.color};font-weight:700;white-space:nowrap;">${fd}</span>
             </div>
           </div>
-          <div style="height:12px;background:#F0F4FB;border-radius:6px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:6px;"></div></div>
+          <div style="height:${sc.barH};background:#F0F4FB;border-radius:6px;overflow:hidden;"><div style="height:100%;width:${cp}%;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:6px;"></div></div>
           <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:1px;">
-            <span style="font-size:12px;color:${p.color};font-weight:700;">${cp}%</span>
-            ${cRem>0?`<span style="font-size:11px;color:#94A8C8;">잔여 ${cRem}개</span>`:''}
+            <span style="font-size:${sc.meta};color:${p.color};font-weight:700;">${cp}%</span>
+            ${cRem>0?`<span style="font-size:${sc.rem};color:#94A8C8;">잔여 ${cRem}개</span>`:''}
           </div>
         </div>`;
       });
@@ -4723,7 +4728,7 @@ function renderWeeklyPage(){
         </div>
         <span style="font-size:11px;font-weight:600;color:${badgeColor};background:${badgeBg};padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${worst.label}</span>
       </div>
-      <div class="wr-ccb" style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:0 9px 6px;">${rows}</div>
+      <div class="wr-ccb" style="display:flex;flex-direction:column;padding:${sc.bodyPad};">${rows}</div>
     </div>`;
   });
 
@@ -4944,7 +4949,7 @@ function renderWeeklyPage(){
     </div>
   </div>
   <!-- 하단: 센터 카드 3열 2행 -->
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:5px;height:338px;flex-shrink:0;">${ccHtml}</div>
+  <div style="flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:auto;align-content:start;gap:5px;">${ccHtml}</div>
 </div>`;
 }
 
