@@ -4926,21 +4926,21 @@ function renderWeeklyPage(){
   </div>
 </div>
 <div class="wr-body" style="flex-direction:column;gap:0;padding:0 10px;">
-  <!-- 상단: 꺾은선 / 마감간트 / KPI+현황 -->
+  <!-- 상단: KPI+현황 / 마감간트 / 꺾은선 -->
   <div style="display:flex;gap:8px;height:338px;flex-shrink:0;overflow:hidden;">
     <div class="wr-panel" style="flex:1;min-height:0;">
-      <div class="wr-pt">센터별 주간 실적 비교</div>
-      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildWrLineChart(310)}</div>
+      <div class="wr-pt">KPI 현황</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 8px 6px;flex-shrink:0;">${kpiHtml}</div>
+      <div class="wr-pt" style="border-top:1px solid #E8EDF5;">프로젝트 현황</div>
+      <div style="flex:1;min-height:0;overflow:hidden;padding:0 8px 6px;">${projListHtml}</div>
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">프로젝트 마감 일정</div>
       <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildDeadlineGantt(310)}</div>
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
-      <div class="wr-pt">KPI 현황</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 8px 6px;flex-shrink:0;">${kpiHtml}</div>
-      <div class="wr-pt" style="border-top:1px solid #E8EDF5;">프로젝트 현황</div>
-      <div style="flex:1;min-height:0;overflow:hidden;padding:0 8px 6px;">${projListHtml}</div>
+      <div class="wr-pt">센터별 주간 실적 비교</div>
+      <div style="flex:1;min-height:0;padding:2px 8px 6px;overflow:hidden;">${buildWrLineChart(310)}</div>
     </div>
   </div>
   <!-- 하단: 센터 카드 3열 2행 -->
