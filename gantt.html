@@ -4926,9 +4926,7 @@ function renderWeeklyPage(){
   </div>
 </div>
 <div class="wr-body" style="flex-direction:column;gap:0;padding:0 10px;">
-  <!-- 상단: 센터 카드 3열 2행 -->
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:5px;height:338px;flex-shrink:0;">${ccHtml}</div>
-  <!-- 하단: 꺾은선 / 마감간트 / KPI+현황 -->
+  <!-- 상단: 꺾은선 / 마감간트 / KPI+현황 -->
   <div style="display:flex;gap:8px;height:338px;flex-shrink:0;overflow:hidden;">
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">센터별 주간 실적 비교</div>
@@ -4945,6 +4943,8 @@ function renderWeeklyPage(){
       <div style="flex:1;min-height:0;overflow:hidden;padding:0 8px 6px;">${projListHtml}</div>
     </div>
   </div>
+  <!-- 하단: 센터 카드 3열 2행 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:5px;height:338px;flex-shrink:0;">${ccHtml}</div>
 </div>`;
 }
 
