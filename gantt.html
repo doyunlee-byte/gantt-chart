@@ -1495,7 +1495,13 @@ function parseCSV(txt){
 }
 
 async function buildDailyMap(pname,url){
-  const txt=await fetchCSV(url);
+  let txt;
+  if(url){
+    txt=await fetchCSV(url);
+  }else{
+    // URL 없을 때: 프로젝트명을 탭 이름으로 Apps Script에서 직접 fetch
+    try{const r=await fetch(`${APPS_SCRIPT_URL}?tab=${encodeURIComponent(pname)}`);if(r.ok){const t=await r.text();if(t&&t.length>10)txt=t;}}catch(e){}
+  }
   if(!txt){DAILY_MAP[pname]={};CENTER_DAILY[pname]={};return;}
   const lines=txt.trim().split('\n').slice(1);
   const map={},cmap={},cdaily={};
@@ -1541,6 +1547,10 @@ async function loadData(){
       projStart:pd(tasks[0]['프로젝트_시작일']),projEnd:pd(tasks[0]['프로젝트_마감일']),
       tasks:tasks.map(t=>({task:t['태스크']||'',team:t['팀명']||'',start:pd(t['시작일']),deadline:pd(t['마감일']||t['종료일']),total:parseInt(t['전체매장']||'0')||0,done:parseInt(t['완료매장']||'0')||0,status:t['상태']||''}))};
   });
+  // RAW_CSVS에 없는 프로젝트(예: 노모어피자)도 Apps Script 탭 이름으로 동적 로드
+  const knownRaw=new Set(Object.keys(RAW_CSVS));
+  const missingRaw=PROJECTS.filter(p=>!knownRaw.has(p.name));
+  if(missingRaw.length){setT('추가 raw 데이터 불러오는 중...');await Promise.allSettled(missingRaw.map(p=>buildDailyMap(p.name,null)));}
   selected=new Set(PROJECTS.map(p=>p.id));
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='flex';
