@@ -4607,6 +4607,17 @@ function toggleWeeklyChip(pid){
   renderWeeklyPage();
 }
 
+function addBusinessDays(startDate, days) {
+  let date = new Date(startDate);
+  let added = 0;
+  while (added < days) {
+    date.setDate(date.getDate() + 1);
+    const day = date.getDay();
+    if (day !== 0 && day !== 6) added++;
+  }
+  return date;
+}
+
 function renderWeeklyPage(){
   const slide = document.getElementById('weeklySlide');
   if(!slide) return;
@@ -4735,9 +4746,17 @@ function renderWeeklyPage(){
     const pjList=PROJECTS.filter(p=>p.projEnd).sort((a,b)=>wrPct(b).pct-wrPct(a).pct);
     if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:${h}px;font-size:10px;color:#94a3b8;">마감일 데이터 없음</div>`;
 
-    function formatDeadline(d){
-      if(!d) return '';
-      return `${d.getMonth()+1}월 ${d.getDate()}일 예상`;
+    function formatDeadline(p){
+      const{total:pt,done:pd}=wrPct(p);
+      const remaining=pt-pd;
+      const totalFix=CENTERS.reduce((s,c)=>s+(projCenterSettings[p.id]?.[c.name]?.realPersonnel||0),0);
+      if(totalFix>0&&remaining>0){
+        const days=Math.ceil(remaining/(totalFix*2));
+        const est=addBusinessDays(TODAY,days);
+        return `${est.getMonth()+1}월 ${est.getDate()}일 예상`;
+      }
+      if(!p.projEnd) return '';
+      return `${p.projEnd.getMonth()+1}월 ${p.projEnd.getDate()}일 예상`;
     }
 
     const n=pjList.length;
@@ -4774,7 +4793,7 @@ function renderWeeklyPage(){
 
       const deadlineMeta=isDone
         ?`<span style="font-size:${dlSz}px;font-weight:700;color:#fff;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:3px;padding:1px 4px;display:inline-block;white-space:nowrap;">완료</span>`
-        :`<span style="font-size:${dlSz}px;color:#94A8C8;white-space:nowrap;">${formatDeadline(p.projEnd)}</span>`;
+        :`<span style="font-size:${dlSz}px;color:#94A8C8;white-space:nowrap;">${formatDeadline(p)}</span>`;
 
       const lbl1=showLabels?`<div style="font-size:${labelSz}px;color:#94A8C8;margin-bottom:2px;font-weight:500;">실질 진척도</div>`:'';
       const lbl2=showLabels?`<div style="font-size:${labelSz}px;color:#94A8C8;margin-bottom:2px;font-weight:500;">예상 완료</div>`:'';
