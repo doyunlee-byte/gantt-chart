@@ -4732,7 +4732,7 @@ function renderWeeklyPage(){
 
   // 프로젝트 마감 일정 차트 (중앙 아래) — 바 2개 레이아웃 (프로젝트 수에 따라 동적 압축)
   function buildDeadlineGantt(h){
-    const pjList=PROJECTS.filter(p=>p.projEnd);
+    const pjList=PROJECTS.filter(p=>p.projEnd).sort((a,b)=>wrPct(b).pct-wrPct(a).pct);
     if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:${h}px;font-size:10px;color:#94a3b8;">마감일 데이터 없음</div>`;
 
     function formatDeadline(d){
@@ -4884,7 +4884,7 @@ function renderWeeklyPage(){
     </div>
     <div class="wr-panel" style="flex:1;min-height:0;">
       <div class="wr-pt">센터별 주간 실적 비교</div>
-      <div style="flex:1;min-height:0;padding:4px 10px 8px;overflow:hidden;">${buildWrLineChart(chartH)}</div>
+      <div style="height:${chartH}px;padding:4px 10px 8px;overflow:hidden;">${buildWrLineChart(chartH)}</div>
     </div>
   </div>
 </div>`;
