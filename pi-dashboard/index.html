@@ -190,6 +190,40 @@
   .team-card .team-desc{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;}
   .team-card .team-pct{font-size:22px;font-weight:800;margin-bottom:5px;}
   .team-card .gauge-bar{height:5px;}
+
+  /* ---- View toggle ---- */
+  .view-toggle{display:flex;gap:6px;margin-bottom:10px;}
+  .tab-btn{padding:6px 16px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;transition:background .15s,color .15s;}
+  .tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+  /* ---- Calendar ---- */
+  .cal-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
+  .cal-nav{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+  .cal-nav-btn{background:#fff;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:600;color:var(--text);transition:background .1s;}
+  .cal-nav-btn:hover{background:#f7f8fa;}
+  .cal-nav-title{font-size:15px;font-weight:700;flex:1;text-align:center;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid var(--border);border-left:1px solid var(--border);}
+  .cal-dow{background:#f7f8fa;font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:7px 2px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .cal-dow.sat{color:var(--blue);}
+  .cal-dow.sun{color:var(--red);}
+  .cal-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:5px;min-height:88px;cursor:pointer;transition:background .1s;}
+  .cal-cell:hover:not(.out-range){background:#f7f9fc;}
+  .cal-cell.out-range{opacity:.3;pointer-events:none;}
+  .cal-cell.today .cal-date{background:var(--primary);color:#fff;border-radius:50%;}
+  .cal-date{font-size:11.5px;font-weight:600;width:22px;height:22px;display:flex;align-items:center;justify-content:center;margin-bottom:3px;}
+  .cal-date.sat{color:var(--blue);}
+  .cal-date.sun{color:var(--red);}
+  .cal-chip{display:block;font-size:10px;border-radius:3px;padding:2px 5px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cal-chip.done{background:var(--green-bg);color:var(--green);}
+  .cal-chip.pending{background:var(--c1-bg);color:var(--c1);}
+  .cal-chip.hl{outline:2px solid var(--amber);outline-offset:-1px;}
+  .cal-more{display:block;font-size:9.5px;color:var(--muted);}
+
+  /* ---- Day panel ---- */
+  .day-panel{position:fixed;right:0;top:58px;bottom:0;width:340px;background:#fff;border-left:1px solid var(--border);box-shadow:-4px 0 20px rgba(0,0,0,.09);transform:translateX(110%);transition:transform .25s ease;z-index:40;display:flex;flex-direction:column;}
+  .day-panel.open{transform:translateX(0);}
+  .day-panel-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .day-panel-body{flex:1;overflow-y:auto;padding:10px 12px;}
 </style>
 </head>
 <body>
@@ -238,7 +272,7 @@
                  oninput="presetSearchQuery=this.value;renderPresetPage()"
                  style="flex:1;min-width:140px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
           <span style="font-size:12px;color:var(--muted);white-space:nowrap">설치일</span>
-          <input type="date" id="presetDateFrom" onchange="presetDateFrom=this.value;renderPresetPage()"
+          <input type="date" id="presetDateFrom" onchange="presetDateFromChanged(this.value)"
                  style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;">
           <span style="color:var(--muted);font-size:12px">~</span>
           <input type="date" id="presetDateTo" onchange="presetDateTo=this.value;renderPresetPage()"
@@ -246,7 +280,12 @@
           <button class="btn ghost sm" onclick="clearPresetFilters()">초기화</button>
         </div>
       </div>
+      <div class="view-toggle">
+        <button id="btnListView" class="tab-btn active" onclick="setPresetView('list')">매장리스트</button>
+        <button id="btnCalView" class="tab-btn" onclick="setPresetView('calendar')">캘린더</button>
+      </div>
       <div id="presetList"></div>
+      <div id="presetCalendar" style="display:none"></div>
     </section>
 
     <!-- 업무 프로세스 -->
@@ -341,6 +380,15 @@
   </div>
 </div>
 
+<!-- 날짜별 매장 슬라이드 패널 -->
+<div class="day-panel" id="dayPanel">
+  <div class="day-panel-head">
+    <span class="day-panel-title" style="font-size:14px;font-weight:700"></span>
+    <button onclick="closeDayPanel()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">✕</button>
+  </div>
+  <div class="day-panel-body" id="dayPanelBody"></div>
+</div>
+
 <script>
 /* ============================================================
    설치·세팅 통합 관리 대시보드
@@ -393,6 +441,10 @@ let presetOpenSet = new Set();
 let presetSearchQuery = '';
 let presetDateFrom = '';
 let presetDateTo = '';
+let presetViewMode = 'list';
+let calendarYear = new Date().getFullYear();
+let calendarMonth = new Date().getMonth();
+let currentDayPanelDate = null;
 
 function ensureProjectLocal(key){
   if(!LOCAL.projects[key]) LOCAL.projects[key] = { manualStores:[], storeData:{} };
@@ -639,37 +691,52 @@ function renderPresetPage(){
   } else {
     box.innerHTML = `✅ "${cfg.sheetName}" 시트와 연동 · ${(SHEET_CACHE[CURRENT_PROJECT]||[]).length}건 불러옴`;
   }
-  let stores = getMergedStores(CURRENT_PROJECT);
-  if(presetSearchQuery){
-    const q = presetSearchQuery.toLowerCase();
-    stores = stores.filter(s=>(s.name+s.brand).toLowerCase().includes(q));
+
+  const btnList = document.getElementById('btnListView');
+  const btnCal  = document.getElementById('btnCalView');
+  if(btnList){ btnList.className = 'tab-btn'+(presetViewMode==='list'?' active':''); }
+  if(btnCal){  btnCal.className  = 'tab-btn'+(presetViewMode==='calendar'?' active':''); }
+
+  const listEl = document.getElementById('presetList');
+  const calEl  = document.getElementById('presetCalendar');
+
+  if(presetViewMode === 'list'){
+    listEl.style.display = ''; calEl.style.display = 'none';
+    let stores = getMergedStores(CURRENT_PROJECT);
+    if(presetSearchQuery){ const q=presetSearchQuery.toLowerCase(); stores=stores.filter(s=>(s.name+s.brand).toLowerCase().includes(q)); }
+    if(presetDateFrom||presetDateTo){ stores=stores.filter(s=>dateInRange(s.installDate,presetDateFrom,presetDateTo)); }
+    listEl.innerHTML = stores.map(s=>{
+      const open = presetOpenSet.has(s.bizNo);
+      return `<div class="preset-item">
+        <div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
+          <span class="preset-store-name">${s.brand} · ${s.name}</span>
+          ${badgePct(s.preset)}
+          <span class="preset-chevron">${open?'▲':'▼'}</span>
+        </div>
+        ${open?`<div class="preset-checklist-body">
+          <ul class="checklist">
+            ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
+              <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
+              <span>${c.label}</span></li>`).join('')}
+          </ul>
+        </div>`:''}
+      </div>`;
+    }).join('') || `<div class="empty">${sheetEmptyMessage()}</div>`;
+  } else {
+    listEl.style.display = 'none'; calEl.style.display = '';
+    renderCalendar();
+    if(currentDayPanelDate) renderDayPanel();
   }
-  if(presetDateFrom || presetDateTo){
-    stores = stores.filter(s=>dateInRange(s.installDate, presetDateFrom, presetDateTo));
-  }
-  document.getElementById('presetList').innerHTML = stores.map(s=>{
-    const open = presetOpenSet.has(s.bizNo);
-    return `<div class="preset-item">
-      <div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
-        <span class="preset-store-name">${s.brand} · ${s.name}</span>
-        ${badgePct(s.preset)}
-        <span class="preset-chevron">${open?'▲':'▼'}</span>
-      </div>
-      ${open?`<div class="preset-checklist-body">
-        <ul class="checklist">
-          ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
-            <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
-            <span>${c.label}</span></li>`).join('')}
-        </ul>
-      </div>`:''}
-    </div>`;
-  }).join('') || `<div class="empty">${sheetEmptyMessage()}</div>`;
 }
 
 function togglePresetAccordion(bizNo){
   if(presetOpenSet.has(bizNo)) presetOpenSet.delete(bizNo);
   else presetOpenSet.add(bizNo);
-  renderPresetPage();
+  if(presetViewMode==='calendar' && currentDayPanelDate){
+    renderDayPanel();
+  } else {
+    renderPresetPage();
+  }
 }
 
 function clearPresetFilters(){
@@ -870,6 +937,152 @@ function openNewProjectModal(){
   saveProjectOrder();
   saveLocal();
   renderAll();
+}
+
+/* ---- 프리셋 뷰 전환 ---- */
+function setPresetView(mode){
+  presetViewMode = mode;
+  if(mode !== 'calendar') closeDayPanel();
+  renderPresetPage();
+}
+
+function presetDateFromChanged(val){
+  presetDateFrom = val;
+  if(presetViewMode === 'calendar' && val){
+    const m = val.match(/^(\d{4})-(\d{2})/);
+    if(m){ calendarYear=parseInt(m[1]); calendarMonth=parseInt(m[2])-1; }
+  }
+  renderPresetPage();
+}
+
+function parseInstallDate(dateStr){
+  if(!dateStr) return null;
+  const m = String(dateStr).match(/(\d{4})[.\/-]?(\d{2})[.\/-]?(\d{2})/);
+  if(!m) return null;
+  return m[1]+'-'+m[2]+'-'+m[3];
+}
+
+/* ---- 캘린더 렌더 ---- */
+function renderCalendar(){
+  const allStores = getMergedStores(CURRENT_PROJECT);
+  const searchQ = presetSearchQuery ? presetSearchQuery.toLowerCase() : '';
+
+  const dateMap = {};
+  allStores.forEach(s=>{
+    const d = parseInstallDate(s.installDate);
+    if(!d) return;
+    if(!dateMap[d]) dateMap[d]=[];
+    dateMap[d].push(s);
+  });
+
+  const year=calendarYear, month=calendarMonth;
+  const today=new Date();
+  const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const prevMonthDays=new Date(year,month,0).getDate();
+  const totalCells=Math.ceil((firstDay+daysInMonth)/7)*7;
+  const DOW=['일','월','화','수','목','금','토'];
+
+  let cells = DOW.map((d,i)=>`<div class="cal-dow${i===0?' sun':i===6?' sat':''}">${d}</div>`).join('');
+
+  for(let i=0;i<totalCells;i++){
+    const dow=i%7;
+    let day,cy=year,cm=month,isCur=true;
+    if(i<firstDay){
+      day=prevMonthDays-firstDay+i+1; cm=month-1;
+      if(cm<0){cm=11;cy=year-1;} isCur=false;
+    } else if(i>=firstDay+daysInMonth){
+      day=i-firstDay-daysInMonth+1; cm=month+1;
+      if(cm>11){cm=0;cy=year+1;} isCur=false;
+    } else {
+      day=i-firstDay+1;
+    }
+    const dateStr=cy+'-'+String(cm+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    const isToday=isCur&&dateStr===todayStr;
+    const dayStores=dateMap[dateStr]||[];
+
+    let outRange=!isCur;
+    if(isCur&&(presetDateFrom||presetDateTo)){
+      if(presetDateFrom&&dateStr<presetDateFrom) outRange=true;
+      if(presetDateTo&&dateStr>presetDateTo) outRange=true;
+    }
+
+    const cellCls=['cal-cell',outRange?'out-range':'',isToday?'today':''].filter(Boolean).join(' ');
+    const dateCls=['cal-date',dow===0?'sun':dow===6?'sat':''].filter(Boolean).join(' ');
+
+    const visible=dayStores.slice(0,3), more=dayStores.length-3;
+    let chips=visible.map(s=>{
+      const done=isDone(s.preset);
+      const hi=searchQ&&(s.name+s.brand).toLowerCase().includes(searchQ);
+      return `<span class="cal-chip ${done?'done':'pending'}${hi?' hl':''}" title="${s.brand}·${s.name}">${s.name}</span>`;
+    }).join('');
+    if(more>0) chips+=`<span class="cal-more">+${more}개 더</span>`;
+
+    const clickAttr=isCur?`onclick="openDayPanel('${dateStr}')"` :'';
+    cells+=`<div class="${cellCls}" ${clickAttr}><div class="${dateCls}">${day}</div>${chips}</div>`;
+  }
+
+  document.getElementById('presetCalendar').innerHTML=`
+    <div class="cal-wrap">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calNav(-1)">◀ 이전달</button>
+        <span class="cal-nav-title">${year}년 ${month+1}월</span>
+        <button class="cal-nav-btn" onclick="calNav(1)">다음달 ▶</button>
+        <button class="cal-nav-btn" onclick="calToday()" style="margin-left:4px">오늘</button>
+      </div>
+      <div class="cal-grid">${cells}</div>
+    </div>`;
+}
+
+function calNav(delta){
+  calendarMonth+=delta;
+  if(calendarMonth<0){calendarMonth=11;calendarYear--;}
+  if(calendarMonth>11){calendarMonth=0;calendarYear++;}
+  renderCalendar();
+  if(currentDayPanelDate) renderDayPanel();
+}
+function calToday(){
+  const now=new Date(); calendarYear=now.getFullYear(); calendarMonth=now.getMonth();
+  renderCalendar();
+  if(currentDayPanelDate) renderDayPanel();
+}
+
+/* ---- Day 패널 ---- */
+function openDayPanel(dateStr){
+  currentDayPanelDate=dateStr;
+  renderDayPanel();
+  document.getElementById('dayPanel').classList.add('open');
+}
+function closeDayPanel(){
+  currentDayPanelDate=null;
+  document.getElementById('dayPanel').classList.remove('open');
+}
+function renderDayPanel(){
+  if(!currentDayPanelDate) return;
+  const allStores=getMergedStores(CURRENT_PROJECT);
+  const dayStores=allStores.filter(s=>parseInstallDate(s.installDate)===currentDayPanelDate);
+  const [y,mo,d]=currentDayPanelDate.split('-');
+  document.querySelector('#dayPanel .day-panel-title').textContent=`${y}년 ${parseInt(mo)}월 ${parseInt(d)}일 설치 매장`;
+  document.getElementById('dayPanelBody').innerHTML=dayStores.length===0
+    ?`<div class="empty">설치 예정 매장이 없습니다.</div>`
+    :dayStores.map(s=>{
+        const open=presetOpenSet.has(s.bizNo);
+        return `<div class="preset-item">
+          <div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
+            <span class="preset-store-name">${s.brand} · ${s.name}</span>
+            ${badgePct(s.preset)}
+            <span class="preset-chevron">${open?'▲':'▼'}</span>
+          </div>
+          ${open?`<div class="preset-checklist-body">
+            <ul class="checklist">
+              ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
+                <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
+                <span>${c.label}</span></li>`).join('')}
+            </ul>
+          </div>`:''}
+        </div>`;
+      }).join('');
 }
 
 /* ---- 렌더 루프 ---- */
