@@ -33,20 +33,17 @@
     --c4:#F5A623;
     --c4-bg:#FEF6E7;
   }
-  @font-face{
-    font-family:"KIMM";
-    src:url("fonts/KIMM-Light.ttf") format("truetype");
-    font-weight:300 400;
-    font-display:swap;
-  }
-  @font-face{
-    font-family:"KIMM";
-    src:url("fonts/KIMM-Bold.ttf") format("truetype");
-    font-weight:600 800;
-    font-display:swap;
-  }
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-1Thin.ttf') format('truetype');font-weight:100;font-display:swap;}
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-2ExtraLight.ttf') format('truetype');font-weight:200;font-display:swap;}
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-3Light.ttf') format('truetype');font-weight:300;font-display:swap;}
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-4Regular.ttf') format('truetype');font-weight:400;font-display:swap;}
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-5Medium.ttf') format('truetype');font-weight:500;font-display:swap;}
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-6SemiBold.ttf') format('truetype');font-weight:600;font-display:swap;}
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-7Bold.ttf') format('truetype');font-weight:700;font-display:swap;}
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-8ExtraBold.ttf') format('truetype');font-weight:800;font-display:swap;}
+  @font-face{font-family:'A2Z';src:url('fonts/a2z/에이투지체-9Black.ttf') format('truetype');font-weight:900;font-display:swap;}
   *{box-sizing:border-box;}
-  body{margin:0;font-family:"KIMM","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text);}
+  body{margin:0;font-family:'A2Z','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg);color:var(--text);}
 
   header{
     height:58px;background:#fff;color:var(--text);display:flex;align-items:center;
@@ -97,8 +94,8 @@
   main{margin-left:220px;padding:16px 20px 20px;width:calc(100% - 220px);background:#fff;}
   .view{display:none;}
   .view.active{display:block;}
-  h1.page-title{font-size:15px;margin:0 0 2px;}
-  .page-sub{color:var(--muted);font-size:11px;margin:0 0 12px;}
+  h1.page-title{font-size:15px;margin:0 0 2px;font-weight:700;}
+  .page-sub{color:var(--muted);font-size:11px;margin:0 0 12px;font-weight:500;}
 
   .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:18px;}
   .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -127,7 +124,7 @@
   .step .dot{width:26px;height:26px;border-radius:50%;background:#e1e5ec;color:#9aa3b2;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;z-index:2;}
   .step.done .dot{background:var(--green);color:#fff;}
   .step.current .dot{background:var(--amber);color:#fff;}
-  .step .lbl{font-size:11px;margin-top:6px;color:var(--muted);text-align:center;}
+  .step .lbl{font-size:11px;margin-top:6px;color:var(--muted);text-align:center;font-weight:500;}
   .step.done .lbl,.step.current .lbl{color:var(--text);font-weight:600;}
   .step:not(:last-child)::after{content:"";position:absolute;top:13px;left:calc(50% + 16px);right:calc(-50% + 16px);height:2px;background:#e1e5ec;z-index:1;}
   .step.done:not(:last-child)::after{background:var(--green);}
@@ -138,7 +135,7 @@
   .store-head-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0 18px;}
   .store-head-col{border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
   .store-head-col h4{margin:0 0 8px;font-size:12.5px;color:var(--primary);}
-  .store-head-col .row{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;color:var(--muted);}
+  .store-head-col .row{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;color:var(--muted);font-weight:500;}
   .store-head-col .row b{color:var(--text);font-weight:600;}
   .checklist{list-style:none;margin:0;padding:0;}
   .checklist li{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px dashed #eef0f4;}
@@ -180,8 +177,8 @@
   .progress-card .icon-badge{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
   .progress-card .info{flex:1;min-width:0;}
   .progress-card .proj-name{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:2px;}
-  .progress-card .proj-sub{font-size:10.5px;color:var(--muted);margin-bottom:7px;}
-  .progress-card .proj-pct{font-size:20px;font-weight:700;line-height:1;margin-bottom:5px;}
+  .progress-card .proj-sub{font-size:10.5px;color:var(--muted);margin-bottom:7px;font-weight:500;}
+  .progress-card .proj-pct{font-size:20px;font-weight:800;line-height:1;margin-bottom:5px;}
   .gauge-bar{height:5px;background:#eef0f4;border-radius:99px;overflow:hidden;}
   .gauge-fill{height:100%;border-radius:99px;transition:width .5s ease;}
 
@@ -190,8 +187,8 @@
   .team-card .team-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
   .team-card .team-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
   .team-card .team-name{font-size:12px;font-weight:700;color:var(--text);}
-  .team-card .team-desc{font-size:10px;color:var(--muted);margin-top:2px;}
-  .team-card .team-pct{font-size:22px;font-weight:700;margin-bottom:5px;}
+  .team-card .team-desc{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;}
+  .team-card .team-pct{font-size:22px;font-weight:800;margin-bottom:5px;}
   .team-card .gauge-bar{height:5px;}
 </style>
 </head>
