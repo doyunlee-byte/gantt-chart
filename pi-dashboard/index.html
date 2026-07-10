@@ -14,7 +14,7 @@
     --card:#ffffff;
     --border:#e1e5ec;
     --text:#1c2533;
-    --muted:#7b8494;
+    --muted:#4b5563;
     --gold:#c9a227;
     --green:#1f9d55;
     --green-bg:#e8f7ee;
@@ -144,7 +144,7 @@
   .checklist li{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px dashed #eef0f4;}
   .checklist li:last-child{border-bottom:none;}
   .checklist input{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
-  .checklist li.checked span{color:var(--muted);text-decoration:line-through;}
+  .checklist li.checked span{color:#9ca3af;text-decoration:line-through;}
   .stage-block{border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
   .stage-block-head{display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
   .stage-block-head h4{margin:0;font-size:13px;}
@@ -161,6 +161,14 @@
   .day-badge.d0{background:#eafaf0;color:var(--green);}
   .day-badge.d1{background:var(--amber-bg);color:var(--amber);}
   .day-badge.d2{background:var(--red-bg);color:var(--red);}
+
+  /* Preset accordion */
+  .preset-item{background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;overflow:hidden;}
+  .preset-row{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background .15s;}
+  .preset-row:hover{background:#f7f8fa;}
+  .preset-store-name{font-weight:700;font-size:13px;color:var(--text);flex:1;}
+  .preset-chevron{color:var(--muted);font-size:11px;flex-shrink:0;}
+  .preset-checklist-body{padding:4px 14px 12px;border-top:1px solid var(--border);}
 
   /* Dashboard */
   .dash-section{margin-bottom:18px;}
@@ -226,6 +234,20 @@
           </div>
         </div>
         <div class="upload-zone" id="sheetStatusBox">연동 상태 확인 중...</div>
+      </div>
+      <div class="card" style="padding:11px 14px;margin-bottom:8px;">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="text" id="presetSearch" placeholder="매장명 검색…"
+                 oninput="presetSearchQuery=this.value;renderPresetPage()"
+                 style="flex:1;min-width:140px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+          <span style="font-size:12px;color:var(--muted);white-space:nowrap">설치일</span>
+          <input type="date" id="presetDateFrom" onchange="presetDateFrom=this.value;renderPresetPage()"
+                 style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;">
+          <span style="color:var(--muted);font-size:12px">~</span>
+          <input type="date" id="presetDateTo" onchange="presetDateTo=this.value;renderPresetPage()"
+                 style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;">
+          <button class="btn ghost sm" onclick="clearPresetFilters()">초기화</button>
+        </div>
       </div>
       <div id="presetList"></div>
     </section>
@@ -369,6 +391,11 @@ function loadLocal(){
 }
 function saveLocal(){ localStorage.setItem(LOCAL_KEY, JSON.stringify(LOCAL)); document.getElementById('lastUpdated').textContent = new Date().toLocaleString('ko-KR'); }
 let LOCAL = loadLocal();
+
+let presetOpenSet = new Set();
+let presetSearchQuery = '';
+let presetDateFrom = '';
+let presetDateTo = '';
 
 function ensureProjectLocal(key){
   if(!LOCAL.projects[key]) LOCAL.projects[key] = { manualStores:[], storeData:{} };
@@ -594,8 +621,17 @@ function renderDashboard(){
 }
 
 /* ---- 프리셋 설정 (구 매장관리 + 프리셋체크리스트 통합) ---- */
+function dateInRange(dateStr, from, to){
+  if(!dateStr) return false;
+  const m = String(dateStr).match(/(\d{4})[.\/-]?(\d{2})[.\/-]?(\d{2})/);
+  if(!m) return false;
+  const d = m[1]+'-'+m[2]+'-'+m[3];
+  if(from && d < from) return false;
+  if(to && d > to) return false;
+  return true;
+}
+
 function renderPresetPage(){
-  const stores = getMergedStores(CURRENT_PROJECT);
   const err = SHEET_ERROR[CURRENT_PROJECT];
   const cfg = PROJECT_CONFIG[CURRENT_PROJECT];
   const box = document.getElementById('sheetStatusBox');
@@ -606,17 +642,46 @@ function renderPresetPage(){
   } else {
     box.innerHTML = `✅ "${cfg.sheetName}" 시트와 연동 · ${(SHEET_CACHE[CURRENT_PROJECT]||[]).length}건 불러옴`;
   }
-  document.getElementById('presetList').innerHTML = stores.map(s=>`
-    <div class="card">
-      <div class="card-head">
-        <h3>${s.brand} · ${s.name} ${badgePct(s.preset)}</h3>
+  let stores = getMergedStores(CURRENT_PROJECT);
+  if(presetSearchQuery){
+    const q = presetSearchQuery.toLowerCase();
+    stores = stores.filter(s=>(s.name+s.brand).toLowerCase().includes(q));
+  }
+  if(presetDateFrom || presetDateTo){
+    stores = stores.filter(s=>dateInRange(s.installDate, presetDateFrom, presetDateTo));
+  }
+  document.getElementById('presetList').innerHTML = stores.map(s=>{
+    const open = presetOpenSet.has(s.bizNo);
+    return `<div class="preset-item">
+      <div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
+        <span class="preset-store-name">${s.brand} · ${s.name}</span>
+        ${badgePct(s.preset)}
+        <span class="preset-chevron">${open?'▲':'▼'}</span>
       </div>
-      <ul class="checklist">
-        ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
-          <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
-          <span>${c.label}</span></li>`).join('')}
-      </ul>
-    </div>`).join('') || `<div class="empty">${sheetEmptyMessage()}</div>`;
+      ${open?`<div class="preset-checklist-body">
+        <ul class="checklist">
+          ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
+            <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
+            <span>${c.label}</span></li>`).join('')}
+        </ul>
+      </div>`:''}
+    </div>`;
+  }).join('') || `<div class="empty">${sheetEmptyMessage()}</div>`;
+}
+
+function togglePresetAccordion(bizNo){
+  if(presetOpenSet.has(bizNo)) presetOpenSet.delete(bizNo);
+  else presetOpenSet.add(bizNo);
+  renderPresetPage();
+}
+
+function clearPresetFilters(){
+  presetSearchQuery=''; presetDateFrom=''; presetDateTo='';
+  const s=document.getElementById('presetSearch');
+  const df=document.getElementById('presetDateFrom');
+  const dt=document.getElementById('presetDateTo');
+  if(s) s.value=''; if(df) df.value=''; if(dt) dt.value='';
+  renderPresetPage();
 }
 
 function sheetEmptyMessage(){
