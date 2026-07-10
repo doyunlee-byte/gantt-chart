@@ -167,6 +167,12 @@
   .preset-chevron{color:var(--muted);font-size:11px;flex-shrink:0;}
   .preset-checklist-body{padding:4px 14px 12px;border-top:1px solid var(--border);}
 
+  /* Store info grid */
+  .store-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px 8px;background:#f7f8fa;border:1px solid #eef0f4;border-radius:6px;padding:8px 10px;margin:8px 0 10px;}
+  .store-info-item{display:flex;flex-direction:column;gap:2px;padding:2px 0;}
+  .store-info-label{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.03em;}
+  .store-info-val{font-size:12px;color:var(--text);font-weight:600;}
+
   /* Dashboard */
   .dash-section{margin-bottom:18px;}
   .dash-section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
@@ -202,14 +208,24 @@
   .kpi-gauge-track{height:5px;background:rgba(255,255,255,0.25);border-radius:99px;overflow:hidden;}
   .kpi-gauge-fill{height:100%;background:rgba(255,255,255,0.9);border-radius:99px;transition:width .5s ease;}
 
-  .team-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-  .team-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px;}
+  .team-prog-row{display:flex;gap:12px;align-items:stretch;}
+  .team-cards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;flex:0 0 auto;}
+  .team-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px;display:flex;flex-direction:column;justify-content:space-between;}
   .team-card .team-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
   .team-card .team-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
   .team-card .team-name{font-size:12px;font-weight:700;color:var(--text);}
   .team-card .team-desc{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;}
   .team-card .team-pct{font-size:22px;font-weight:800;margin-bottom:5px;}
   .team-card .gauge-bar{height:5px;}
+
+  .install-trend-card{
+    flex:1;min-width:0;border-radius:24px;padding:20px 22px 14px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.18),0 3px 8px rgba(0,0,0,0.12);
+    background:linear-gradient(135deg,#3B7FD4 0%,#6940C8 100%);
+    color:#fff;display:flex;flex-direction:column;
+  }
+  .install-trend-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:.03em;}
+  .install-trend-sub{font-size:11px;color:rgba(255,255,255,0.68);margin-bottom:10px;font-weight:500;}
 
   /* ---- View toggle ---- */
   .view-toggle{display:flex;gap:6px;margin-bottom:10px;}
@@ -417,7 +433,7 @@
 const PROJECT_CONFIG = {
   cocohodo: {
     label: "코코호도",
-    webAppUrl: "https://script.google.com/macros/s/AKfycbw6YWQUR2T-AiZ7UdwDXWheNio7RqYW2dZpU34qRKO4O4nS3fkDuNI43QMcABLjdq_Ogg/exec",
+    webAppUrl: "https://script.google.com/macros/s/AKfycbxKwZiLRg0Fz1cn0X1Bec2_uH_PJNFXUnOfxoyRJVcUVDKD2BdXtw_ISqkdqHj5O3CX/exec",
     sheetName: "가맹점리스트 취합"
   },
   deoban: {
@@ -506,7 +522,13 @@ async function fetchSheetStores(key){
       partner: s.partner || "",
       installOwner: s.installOwner || "",
       installDate: s.installDate || "",
-      progress: s.progress || ""
+      progress: s.progress || "",
+      orderType: s.orderType || "",
+      storeId: s.storeId || "",
+      naverId: s.naverId || "",
+      posCount: (s.posCount !== undefined && s.posCount !== "") ? s.posCount : "",
+      onlineBizReg: s.onlineBizReg || "",
+      naverConnect: s.naverConnect || ""
     })).filter(s => s.bizNo && s.name);
     SHEET_ERROR[key] = null;
   }catch(err){
@@ -608,6 +630,82 @@ function badgeCS(store){
   return `<span class="badge issue">${open}건</span>`;
 }
 
+/* ---- 주간 날짜 헬퍼 ---- */
+function getWeekDays(){
+  const today = new Date();
+  const dow = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+  const DAYS = ['일','월','화','수','목','금','토'];
+  const result = [];
+  for(let i = 0; i < 5; i++){
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    result.push({ date:`${y}-${m}-${dd}`, label:`${m}/${dd} (${DAYS[d.getDay()]})` });
+  }
+  return result;
+}
+
+function buildInstallTrendSVG(data, gradId){
+  if(!data || data.length === 0) return '<div style="color:rgba(255,255,255,0.45);text-align:center;padding:40px 0;font-size:12px">데이터 없음</div>';
+  const W=400, H=168, padL=32, padR=14, padT=26, padB=46;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const maxVal=Math.max(...data.map(d=>d.count), 1);
+  const pts=data.map((d,i)=>({
+    x: padL + (data.length>1 ? i/(data.length-1) : 0.5)*innerW,
+    y: padT + innerH - (d.count/maxVal)*innerH,
+    d
+  }));
+
+  let pathD='', areaD='';
+  if(pts.length === 1){
+    pathD=`M ${pts[0].x-2} ${pts[0].y} L ${pts[0].x+2} ${pts[0].y}`;
+    areaD=`M ${pts[0].x-2} ${pts[0].y} L ${pts[0].x+2} ${pts[0].y} L ${pts[0].x+2} ${padT+innerH} L ${pts[0].x-2} ${padT+innerH} Z`;
+  } else {
+    pathD=`M ${pts[0].x} ${pts[0].y}`;
+    for(let i=1;i<pts.length;i++){
+      const cp1x=pts[i-1].x+(pts[i].x-pts[i-1].x)/3;
+      const cp2x=pts[i-1].x+2*(pts[i].x-pts[i-1].x)/3;
+      pathD+=` C ${cp1x} ${pts[i-1].y} ${cp2x} ${pts[i].y} ${pts[i].x} ${pts[i].y}`;
+    }
+    areaD=pathD+` L ${pts[pts.length-1].x} ${padT+innerH} L ${pts[0].x} ${padT+innerH} Z`;
+  }
+
+  const yTick0=padT+innerH, yTick1=padT;
+  const midY=padT+innerH/2;
+  const midVal=Math.round(maxVal/2);
+  const gridLines=`
+    <line x1="${padL}" y1="${yTick0}" x2="${W-padR}" y2="${yTick0}" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <text x="${padL-4}" y="${yTick0+4}" text-anchor="end" font-size="9" fill="rgba(255,255,255,0.55)">0</text>
+    <line x1="${padL}" y1="${midY}" x2="${W-padR}" y2="${midY}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="${padL-4}" y="${midY+4}" text-anchor="end" font-size="9" fill="rgba(255,255,255,0.55)">${midVal}</text>
+    <line x1="${padL}" y1="${yTick1}" x2="${W-padR}" y2="${yTick1}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <text x="${padL-4}" y="${yTick1+4}" text-anchor="end" font-size="9" fill="rgba(255,255,255,0.55)">${maxVal}</text>`;
+
+  const circles=pts.map(p=>`
+    <circle cx="${p.x}" cy="${p.y}" r="5" fill="rgba(255,255,255,0.95)" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+    ${p.d.count>0?`<text x="${p.x}" y="${p.y-11}" text-anchor="middle" font-size="10" fill="white" font-weight="700">${p.d.count}</text>`:''}`).join('');
+
+  const xLabels=pts.map(p=>`<text x="${p.x}" y="${H-padB+20}" text-anchor="middle" font-size="9.5" fill="rgba(255,255,255,0.72)">${p.d.label}</text>`).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;flex:1">
+    <defs>
+      <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.38)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+      </linearGradient>
+    </defs>
+    ${gridLines}
+    <path d="${areaD}" fill="url(#${gradId})"/>
+    <path d="${pathD}" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${circles}
+    ${xLabels}
+  </svg>`;
+}
+
 /* ---- 대시보드 ---- */
 function renderDashboard(){
   // A: 세팅 현황 박스 (블루) — 전체 프로젝트 세로 나열
@@ -662,19 +760,17 @@ function renderDashboard(){
     </div>`;
   }).join('');
 
-  // D: 팀별 업무 진척도 (현재 프로젝트 기준) — 기존 스타일 그대로
+  // D: 팀별 업무 진척도 (현재 프로젝트 기준)
   const stores = getMergedStores(CURRENT_PROJECT);
   const total = stores.length;
   const presetPct = total > 0 ? Math.round(stores.filter(s=>isDone(s.preset)).length/total*100) : 0;
   const installPct = total > 0 ? Math.round(stores.filter(s=>installDone(s)).length/total*100) : 0;
 
   const TEAMS = [
-    {name:"솔루션운영팀", desc:"메뉴 반영",          icon:"📋", c:"--c2", bg:"--c2-bg", p:0},
-    {name:"계약관리팀",   desc:"계약 라이선스 완료 현황", icon:"📝", c:"--c4", bg:"--c4-bg", p:0},
-    {name:"VAN팀",        desc:"결제테스트 체크 현황", icon:"💳", c:"--c3", bg:"--c3-bg", p:0},
-    {name:"제품기획팀",   desc:"가이드 제작(점포용)", icon:"📐", c:"--c1", bg:"--c1-bg", p:0},
-    {name:"세팅팀",       desc:"프리셋 설정 진척도",  icon:"⚙", c:"--c1", bg:"--c1-bg", p:presetPct},
-    {name:"설치팀",       desc:"현장 설치 완료 진척도",icon:"🔧", c:"--c2", bg:"--c2-bg", p:installPct},
+    {name:"계약관리팀", desc:"계약 라이선스 완료 현황", icon:"📝", c:"--c4", bg:"--c4-bg", p:0},
+    {name:"VAN팀",      desc:"결제테스트 체크 현황",   icon:"💳", c:"--c3", bg:"--c3-bg", p:0},
+    {name:"세팅팀",     desc:"프리셋 설정 진척도",     icon:"⚙",  c:"--c1", bg:"--c1-bg", p:presetPct},
+    {name:"설치팀",     desc:"현장 설치 완료 진척도",  icon:"🔧", c:"--c2", bg:"--c2-bg", p:installPct},
   ];
 
   const teamCards = TEAMS.map(t=>`
@@ -689,6 +785,17 @@ function renderDashboard(){
       <div class="team-pct" style="color:var(${t.c})">${t.p}%</div>
       <div class="gauge-bar"><div class="gauge-fill" style="width:${t.p}%;background:var(${t.c})"></div></div>
     </div>`).join('');
+
+  // 주간 설치 트렌드 데이터
+  const weekDays = getWeekDays();
+  const pLocal = ensureProjectLocal(CURRENT_PROJECT);
+  const trendData = weekDays.map(({date,label}) => {
+    const count = stores.filter(s => {
+      const sd = pLocal.storeData[s.bizNo];
+      return sd && sd.installTestCompletedDate === date;
+    }).length;
+    return {date, label, count};
+  });
 
   document.getElementById('dashContent').innerHTML = `
     <div class="dash-section">
@@ -718,8 +825,31 @@ function renderDashboard(){
     </div>
     <div class="dash-section">
       <div class="dash-section-title">팀별 업무 진척도 · ${PROJECT_CONFIG[CURRENT_PROJECT]?.label || ''}</div>
-      <div class="team-cards-grid">${teamCards}</div>
+      <div class="team-prog-row">
+        <div class="team-cards-grid">${teamCards}</div>
+        <div class="install-trend-card">
+          <div class="install-trend-title">설치 현황 (주간)</div>
+          <div class="install-trend-sub">${PROJECT_CONFIG[CURRENT_PROJECT]?.label || ''} · 현장설치테스트 완료 매장</div>
+          ${buildInstallTrendSVG(trendData, 'ig_' + CURRENT_PROJECT)}
+        </div>
+      </div>
     </div>`;
+}
+
+/* ---- 매장 기본정보 그리드 ---- */
+function storeInfoGrid(s){
+  const fields = [
+    ['발주유형',     s.orderType],
+    ['매장아이디',   s.storeId],
+    ['사업자번호',   s.bizNo],
+    ['네이버ID',     s.naverId],
+    ['포스 대수',    s.posCount],
+    ['전상등록여부', s.onlineBizReg],
+    ['네이버커넥트', s.naverConnect],
+  ];
+  return `<div class="store-info-grid">${
+    fields.map(([lbl,val])=>`<div class="store-info-item"><span class="store-info-label">${lbl}</span><span class="store-info-val">${(val!==undefined&&val!=='')?val:'-'}</span></div>`).join('')
+  }</div>`;
 }
 
 /* ---- 프리셋 설정 (구 매장관리 + 프리셋체크리스트 통합) ---- */
@@ -767,6 +897,7 @@ function renderPresetPage(){
           <span class="preset-chevron">${open?'▲':'▼'}</span>
         </div>
         ${open?`<div class="preset-checklist-body">
+          ${storeInfoGrid(s)}
           <ul class="checklist">
             ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
               <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
@@ -840,6 +971,14 @@ function toggleCheck(bizNo, group, checkId){
   const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
   const item = local[group].find(c=>c.id===checkId);
   item.checked = !item.checked;
+  if(group === 'installTest'){
+    if(isDone(local.installTest)){
+      const t = new Date();
+      local.installTestCompletedDate = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+    } else {
+      local.installTestCompletedDate = null;
+    }
+  }
   saveLocal();
   renderAll();
 }
@@ -1128,6 +1267,7 @@ function renderDayPanel(){
             <span class="preset-chevron">${open?'▲':'▼'}</span>
           </div>
           ${open?`<div class="preset-checklist-body">
+            ${storeInfoGrid(s)}
             <ul class="checklist">
               ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
                 <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
