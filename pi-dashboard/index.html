@@ -173,14 +173,34 @@
   .dash-cards-row{display:grid;gap:10px;margin-bottom:2px;}
   .dash-cards-row.cols-2{grid-template-columns:repeat(2,1fr);}
 
-  .progress-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:12px;}
-  .progress-card .icon-badge{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-  .progress-card .info{flex:1;min-width:0;}
-  .progress-card .proj-name{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:2px;}
-  .progress-card .proj-sub{font-size:10.5px;color:var(--muted);margin-bottom:7px;font-weight:500;}
-  .progress-card .proj-pct{font-size:20px;font-weight:800;line-height:1;margin-bottom:5px;}
   .gauge-bar{height:5px;background:#eef0f4;border-radius:99px;overflow:hidden;}
   .gauge-fill{height:100%;border-radius:99px;transition:width .5s ease;}
+
+  /* KPI 박스형 카드 */
+  .kpi-boxes-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+  .kpi-box{
+    border-radius:20px;padding:18px 20px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.16);
+    color:#fff;aspect-ratio:4/3;
+    display:flex;flex-direction:column;
+    transition:box-shadow .2s ease,transform .2s ease;
+  }
+  .kpi-box:hover{box-shadow:0 20px 38px rgba(0,0,0,0.24);transform:translateY(-3px);}
+  .kpi-box--install{background:linear-gradient(135deg,#7C6EF0,#5B4FE0);}
+  .kpi-box--setting{background:linear-gradient(135deg,#4AA3E8,#3B82C4);}
+  .kpi-box--cs{background:linear-gradient(135deg,#FF9F6B,#F4677D);}
+  .kpi-box-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .kpi-box-title{font-size:14px;font-weight:700;color:#fff;letter-spacing:.03em;}
+  .kpi-box-icon{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .kpi-projs{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;}
+  .kpi-proj-row{margin-bottom:10px;}
+  .kpi-proj-row:last-child{margin-bottom:0;}
+  .kpi-proj-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2px;}
+  .kpi-proj-name{font-size:12px;font-weight:700;color:#fff;}
+  .kpi-proj-pct{font-size:20px;font-weight:800;color:#fff;line-height:1;}
+  .kpi-proj-sub{font-size:10px;color:rgba(255,255,255,0.72);margin-bottom:5px;font-weight:500;}
+  .kpi-gauge-track{height:5px;background:rgba(255,255,255,0.25);border-radius:99px;overflow:hidden;}
+  .kpi-gauge-fill{height:100%;background:rgba(255,255,255,0.9);border-radius:99px;transition:width .5s ease;}
 
   .team-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
   .team-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px;}
@@ -590,43 +610,59 @@ function badgeCS(store){
 
 /* ---- 대시보드 ---- */
 function renderDashboard(){
-  // A: 프로젝트별 설치 현황 (전체 프로젝트)
-  const installCards = PROJECT_ORDER.map(key => {
-    const cfg = PROJECT_CONFIG[key]; if(!cfg) return '';
-    const stores = getMergedStores(key);
-    const total = stores.length;
-    const done = stores.filter(s => installDone(s)).length;
-    const p = total > 0 ? Math.round(done/total*100) : 0;
-    return `<div class="progress-card">
-      <div class="icon-badge" style="background:var(--c2-bg);color:var(--c2)">🏪</div>
-      <div class="info">
-        <div class="proj-name">${cfg.label}</div>
-        <div class="proj-sub">${done} / ${total} 매장 완료</div>
-        <div class="proj-pct" style="color:var(--c2)">${p}%</div>
-        <div class="gauge-bar"><div class="gauge-fill" style="width:${p}%;background:var(--c2)"></div></div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // B: 프로젝트별 프리셋 현황 (전체 프로젝트)
-  const presetCards = PROJECT_ORDER.map(key => {
+  // A: 세팅 현황 박스 (블루) — 전체 프로젝트 세로 나열
+  const settingRows = PROJECT_ORDER.map(key => {
     const cfg = PROJECT_CONFIG[key]; if(!cfg) return '';
     const stores = getMergedStores(key);
     const total = stores.length;
     const done = stores.filter(s => isDone(s.preset)).length;
     const p = total > 0 ? Math.round(done/total*100) : 0;
-    return `<div class="progress-card">
-      <div class="icon-badge" style="background:var(--c1-bg);color:var(--c1)">☑</div>
-      <div class="info">
-        <div class="proj-name">${cfg.label}</div>
-        <div class="proj-sub">${done} / ${total} 매장 완료</div>
-        <div class="proj-pct" style="color:var(--c1)">${p}%</div>
-        <div class="gauge-bar"><div class="gauge-fill" style="width:${p}%;background:var(--c1)"></div></div>
+    return `<div class="kpi-proj-row">
+      <div class="kpi-proj-top">
+        <div class="kpi-proj-name">${cfg.label}</div>
+        <div class="kpi-proj-pct">${p}%</div>
       </div>
+      <div class="kpi-proj-sub">${done} / ${total} 매장 완료</div>
+      <div class="kpi-gauge-track"><div class="kpi-gauge-fill" style="width:${p}%"></div></div>
     </div>`;
   }).join('');
 
-  // C: 팀별 업무 진척도 (현재 프로젝트 기준)
+  // B: 설치 현황 박스 (보라) — 전체 프로젝트 세로 나열
+  const installRows = PROJECT_ORDER.map(key => {
+    const cfg = PROJECT_CONFIG[key]; if(!cfg) return '';
+    const stores = getMergedStores(key);
+    const total = stores.length;
+    const done = stores.filter(s => installDone(s)).length;
+    const p = total > 0 ? Math.round(done/total*100) : 0;
+    return `<div class="kpi-proj-row">
+      <div class="kpi-proj-top">
+        <div class="kpi-proj-name">${cfg.label}</div>
+        <div class="kpi-proj-pct">${p}%</div>
+      </div>
+      <div class="kpi-proj-sub">${done} / ${total} 매장 완료</div>
+      <div class="kpi-gauge-track"><div class="kpi-gauge-fill" style="width:${p}%"></div></div>
+    </div>`;
+  }).join('');
+
+  // C: CS 현황 박스 (오렌지/핑크) — 프로젝트별 해결율
+  const csRows = PROJECT_ORDER.map(key => {
+    const cfg = PROJECT_CONFIG[key]; if(!cfg) return '';
+    let csTotal = 0, csResolved = 0;
+    getMergedStores(key).forEach(s => {
+      s.inquiries.forEach(i => { csTotal++; if(i.status === '처리완료') csResolved++; });
+    });
+    const p = csTotal > 0 ? Math.round(csResolved/csTotal*100) : 0;
+    return `<div class="kpi-proj-row">
+      <div class="kpi-proj-top">
+        <div class="kpi-proj-name">${cfg.label}</div>
+        <div class="kpi-proj-pct">${p}%</div>
+      </div>
+      <div class="kpi-proj-sub">해결 ${csResolved} / ${csTotal}건</div>
+      <div class="kpi-gauge-track"><div class="kpi-gauge-fill" style="width:${p}%"></div></div>
+    </div>`;
+  }).join('');
+
+  // D: 팀별 업무 진척도 (현재 프로젝트 기준) — 기존 스타일 그대로
   const stores = getMergedStores(CURRENT_PROJECT);
   const total = stores.length;
   const presetPct = total > 0 ? Math.round(stores.filter(s=>isDone(s.preset)).length/total*100) : 0;
@@ -656,12 +692,29 @@ function renderDashboard(){
 
   document.getElementById('dashContent').innerHTML = `
     <div class="dash-section">
-      <div class="dash-section-title">프로젝트별 설치 현황</div>
-      <div class="dash-cards-row cols-2">${installCards}</div>
-    </div>
-    <div class="dash-section">
-      <div class="dash-section-title">프로젝트별 프리셋 현황</div>
-      <div class="dash-cards-row cols-2">${presetCards}</div>
+      <div class="kpi-boxes-row">
+        <div class="kpi-box kpi-box--setting">
+          <div class="kpi-box-header">
+            <div class="kpi-box-title">세팅 현황</div>
+            <div class="kpi-box-icon">☑</div>
+          </div>
+          <div class="kpi-projs">${settingRows}</div>
+        </div>
+        <div class="kpi-box kpi-box--install">
+          <div class="kpi-box-header">
+            <div class="kpi-box-title">설치 현황</div>
+            <div class="kpi-box-icon">🏪</div>
+          </div>
+          <div class="kpi-projs">${installRows}</div>
+        </div>
+        <div class="kpi-box kpi-box--cs">
+          <div class="kpi-box-header">
+            <div class="kpi-box-title">CS 현황</div>
+            <div class="kpi-box-icon">☎</div>
+          </div>
+          <div class="kpi-projs">${csRows}</div>
+        </div>
+      </div>
     </div>
     <div class="dash-section">
       <div class="dash-section-title">팀별 업무 진척도 · ${PROJECT_CONFIG[CURRENT_PROJECT]?.label || ''}</div>
