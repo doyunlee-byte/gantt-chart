@@ -7,10 +7,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    --navy:#0f2444;
-    --navy-2:#16305a;
-    --navy-3:#1f3f78;
-    --bg:#f2f4f8;
+    --primary:#6C5CE7;
+    --primary-dark:#5B4FE0;
+    --primary-light:#EDE9FF;
+    --bg:#f4f5f8;
     --card:#ffffff;
     --border:#e1e5ec;
     --text:#1c2533;
@@ -24,6 +24,14 @@
     --amber-bg:#fdf3e2;
     --blue:#2563eb;
     --blue-bg:#eaf1fe;
+    --c1:#6C5CE7;
+    --c1-bg:#EDE9FF;
+    --c2:#4A90E2;
+    --c2-bg:#EBF4FF;
+    --c3:#2ECC71;
+    --c3-bg:#E8F8EF;
+    --c4:#F5A623;
+    --c4-bg:#FEF6E7;
   }
   @font-face{
     font-family:"KIMM";
@@ -39,55 +47,59 @@
   }
   *{box-sizing:border-box;}
   body{margin:0;font-family:"KIMM","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text);}
+
   header{
-    height:58px;background:var(--navy);color:#fff;display:flex;align-items:center;
+    height:58px;background:#fff;color:var(--text);display:flex;align-items:center;
     padding:0 18px;gap:18px;position:fixed;top:0;left:0;right:0;z-index:50;
-    box-shadow:0 1px 6px rgba(0,0,0,.25);
+    box-shadow:0 1px 0 var(--border);
   }
-  header .brand{font-weight:700;font-size:16px;letter-spacing:.2px;white-space:nowrap;}
-  header .brand span{color:var(--gold);}
+  header .brand{font-weight:700;font-size:16px;letter-spacing:.2px;white-space:nowrap;color:var(--primary);}
+  header .brand span{color:var(--text);}
   .project-select-wrap{display:flex;align-items:center;gap:8px;margin-left:12px;}
-  .project-select-wrap label{font-size:12px;color:#b9c4dd;}
+  .project-select-wrap label{font-size:12px;color:var(--muted);}
   #projectSelect{
-    background:var(--navy-3);color:#fff;border:1px solid #33538f;border-radius:6px;
+    background:#fff;color:var(--text);border:1px solid var(--border);border-radius:6px;
     padding:7px 10px;font-size:13px;min-width:220px;cursor:pointer;
   }
-  #projectSelect:focus{outline:2px solid var(--gold);}
-  .header-right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px;color:#c6cfe2;}
-  .header-right b{color:#fff;}
+  #projectSelect:focus{outline:2px solid var(--primary);}
+  .header-right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px;color:var(--muted);}
+  .header-right b{color:var(--text);}
+
   .layout{display:flex;padding-top:58px;min-height:100vh;}
   nav.sidebar{
-    width:220px;background:var(--navy-2);position:fixed;top:58px;bottom:0;left:0;
+    width:220px;background:#fff;border-right:1px solid var(--border);
+    position:fixed;top:58px;bottom:0;left:0;
     padding:14px 0;overflow-y:auto;
   }
   nav.sidebar .menu-item{
-    display:flex;align-items:center;gap:10px;margin:4px 12px;padding:11px 16px;color:#c7d2e8;
-    font-size:13.5px;cursor:pointer;border-radius:9px;
-    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    display:flex;align-items:center;gap:10px;
+    margin:3px 0 3px 12px;
+    padding:11px 16px;
+    color:var(--muted);
+    font-size:13.5px;cursor:pointer;
+    border-radius:9px;
+    transition:background .2s ease, color .2s ease;
   }
   nav.sidebar .menu-item:hover{
-    background:linear-gradient(145deg, var(--navy-3), var(--navy-2));
-    box-shadow:0 4px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
-    transform:translateY(-1px);
+    background:var(--primary-light);
+    color:var(--primary);
   }
   nav.sidebar .menu-item.active{
-    background:linear-gradient(145deg, var(--navy-3), #24467f);
-    box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12), inset 0 -1px 0 rgba(0,0,0,.25);
-    color:#fff;font-weight:700;transform:translateY(-1px);
-    border-left:3px solid var(--gold);
+    background:var(--primary);
+    color:#fff;
+    font-weight:700;
+    border-radius:12px 0 0 12px;
+    margin-right:0;
+    padding-right:28px;
   }
   nav.sidebar .menu-icon{width:18px;text-align:center;font-size:14px;}
-  nav.sidebar .section-label{padding:14px 20px 6px;font-size:10.5px;color:#7488ac;letter-spacing:.06em;}
+  nav.sidebar .section-label{padding:14px 20px 6px;font-size:10.5px;color:var(--muted);letter-spacing:.06em;}
   main{margin-left:220px;padding:22px 26px 60px;width:calc(100% - 220px);}
   .view{display:none;}
   .view.active{display:block;}
   h1.page-title{font-size:19px;margin:0 0 4px;}
   .page-sub{color:var(--muted);font-size:12.5px;margin:0 0 18px;}
-  .kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
-  .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
-  .kpi-card .num{font-size:24px;font-weight:700;color:var(--navy);}
-  .kpi-card .lbl{font-size:12px;color:var(--muted);margin-top:2px;}
-  .kpi-card.warn .num{color:var(--red);}
+
   .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:18px;}
   .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
   .card-head h3{font-size:14.5px;margin:0;}
@@ -101,11 +113,13 @@
   .badge.progress{background:var(--amber-bg);color:var(--amber);}
   .badge.wait{background:#eef0f4;color:var(--muted);}
   .badge.issue{background:var(--red-bg);color:var(--red);}
-  .badge.final{background:var(--navy);color:#fff;}
-  .btn{background:var(--navy);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:12.5px;cursor:pointer;}
-  .btn:hover{background:var(--navy-3);}
-  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--border);}
+  .badge.final{background:var(--primary);color:#fff;}
+  .btn{background:var(--primary);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:12.5px;cursor:pointer;transition:background .15s;}
+  .btn:hover{background:var(--primary-dark);}
+  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--border);}
+  .btn.ghost:hover{background:#f7f8fa;}
   .btn.gold{background:var(--gold);color:#3a2c00;}
+  .btn.gold:hover{background:#b8911e;}
   .btn.sm{padding:5px 10px;font-size:11.5px;}
   input[type=file]{display:none;}
   .stepper{display:flex;align-items:center;margin:6px 0 4px;}
@@ -123,13 +137,13 @@
   .modal-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);}
   .store-head-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0 18px;}
   .store-head-col{border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
-  .store-head-col h4{margin:0 0 8px;font-size:12.5px;color:var(--navy);}
+  .store-head-col h4{margin:0 0 8px;font-size:12.5px;color:var(--primary);}
   .store-head-col .row{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;color:var(--muted);}
   .store-head-col .row b{color:var(--text);font-weight:600;}
   .checklist{list-style:none;margin:0;padding:0;}
   .checklist li{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px dashed #eef0f4;}
   .checklist li:last-child{border-bottom:none;}
-  .checklist input{width:16px;height:16px;cursor:pointer;}
+  .checklist input{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);}
   .checklist li.checked span{color:var(--muted);text-decoration:line-through;}
   .stage-block{border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
   .stage-block-head{display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
@@ -137,16 +151,40 @@
   .stage-body{margin-top:10px;display:none;}
   .stage-body.open{display:block;}
   .tag{font-size:10.5px;padding:2px 7px;border-radius:4px;background:#eef0f4;color:var(--muted);margin-left:6px;}
-  .tag.forms{background:var(--blue-bg);color:var(--blue);}
+  .tag.forms{background:var(--c2-bg);color:var(--c2);}
   .filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
   select,.filter-bar select{padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;background:#fff;}
   .empty{text-align:center;color:var(--muted);font-size:13px;padding:30px 0;}
-  .upload-zone{border:1.5px dashed var(--border);border-radius:8px;padding:22px;text-align:center;color:var(--muted);font-size:12.5px;}
-  .note{background:var(--blue-bg);border:1px solid #cfe0fd;color:#1d4ed8;font-size:12px;border-radius:8px;padding:10px 12px;margin-bottom:14px;}
+  .upload-zone{border:1.5px dashed var(--border);border-radius:8px;padding:16px 20px;color:var(--muted);font-size:12.5px;}
+  .note{background:var(--c2-bg);border:1px solid #cfe0fd;color:#1d4ed8;font-size:12px;border-radius:8px;padding:10px 12px;margin-bottom:14px;}
   .day-badge{padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;}
   .day-badge.d0{background:#eafaf0;color:var(--green);}
   .day-badge.d1{background:var(--amber-bg);color:var(--amber);}
   .day-badge.d2{background:var(--red-bg);color:var(--red);}
+
+  /* Dashboard */
+  .dash-section{margin-bottom:28px;}
+  .dash-section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .dash-cards-row{display:grid;gap:14px;margin-bottom:4px;}
+  .dash-cards-row.cols-2{grid-template-columns:repeat(2,1fr);}
+
+  .progress-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px;}
+  .progress-card .icon-badge{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .progress-card .info{flex:1;min-width:0;}
+  .progress-card .proj-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+  .progress-card .proj-sub{font-size:11.5px;color:var(--muted);margin-bottom:10px;}
+  .progress-card .proj-pct{font-size:26px;font-weight:700;line-height:1;margin-bottom:8px;}
+  .gauge-bar{height:7px;background:#eef0f4;border-radius:99px;overflow:hidden;}
+  .gauge-fill{height:100%;border-radius:99px;transition:width .5s ease;}
+
+  .team-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .team-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+  .team-card .team-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .team-card .team-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .team-card .team-name{font-size:13.5px;font-weight:700;color:var(--text);}
+  .team-card .team-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+  .team-card .team-pct{font-size:28px;font-weight:700;margin-bottom:8px;}
+  .team-card .gauge-bar{height:6px;}
 </style>
 </head>
 <body>
@@ -169,40 +207,27 @@
 
     <!-- 대시보드 -->
     <section class="view" data-view="dashboard">
-      <h1 class="page-title" id="dashTitle">대시보드</h1>
-      <p class="page-sub">선택한 프로젝트의 설치·세팅 진행 현황 요약입니다.</p>
-      <div class="kpi-row" id="kpiRow"></div>
-      <div class="card">
-        <div class="card-head"><h3>매장별 진행 현황</h3></div>
-        <table>
-          <thead><tr><th>브랜드</th><th>매장명</th><th>설치일자</th><th>프리셋(사전세팅)</th><th>현장설치테스트</th><th>최종완료여부</th><th>CS</th></tr></thead>
-          <tbody id="dashStoreTbody"></tbody>
-        </table>
-      </div>
+      <h1 class="page-title">대시보드</h1>
+      <p class="page-sub">전체 프로젝트 설치·세팅 진행 현황입니다.</p>
+      <div id="dashContent"></div>
     </section>
 
-    <!-- 매장 관리 -->
-    <section class="view" data-view="stores">
-      <h1 class="page-title">매장 관리</h1>
-      <p class="page-sub">매장 마스터 데이터는 프로젝트별 구글 시트에서 자동으로 불러옵니다. (보류/설치제외/폐점 매장은 자동 제외)</p>
+    <!-- 프리셋 설정 -->
+    <section class="view" data-view="preset">
+      <h1 class="page-title">프리셋 설정</h1>
+      <p class="page-sub">매장별 프리셋(사전세팅) 체크리스트를 관리합니다. CSV/Excel 업로드로 매장을 수동 추가할 수 있습니다.</p>
       <div class="card">
         <div class="card-head">
-          <h3>시트 연동 상태</h3>
-          <div>
+          <h3>시트 연동 / 수동 추가</h3>
+          <div style="display:flex;gap:8px">
             <button class="btn ghost sm" onclick="document.getElementById('fileInput').click()" title="필수 컬럼: 브랜드, 매장명, 사업자번호, 설치담당자, 설치예정일">CSV/Excel 수동 추가</button>
             <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(event)">
-            <button class="btn sm" onclick="refreshCurrentProject()">🔄 새로고침</button>
+            <button class="btn sm" onclick="refreshCurrentProject()">새로고침</button>
           </div>
         </div>
         <div class="upload-zone" id="sheetStatusBox">연동 상태 확인 중...</div>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>매장 목록</h3><span class="page-sub" id="storeCount" style="margin:0"></span></div>
-        <table>
-          <thead><tr><th>브랜드</th><th>매장명</th><th>설치일자</th><th>프리셋(사전세팅)</th><th>현장설치테스트</th><th>최종완료여부</th><th>CS</th></tr></thead>
-          <tbody id="storesTbody"></tbody>
-        </table>
-      </div>
+      <div id="presetList"></div>
     </section>
 
     <!-- 업무 프로세스 -->
@@ -210,13 +235,6 @@
       <h1 class="page-title">설치·세팅 완료 검수 프로세스</h1>
       <p class="page-sub">프리셋(사전세팅) → 설치(시트 연동) → 현장설치테스트 → 최종완료 순으로 매장별 진행 상태를 확인합니다.</p>
       <div id="processList"></div>
-    </section>
-
-    <!-- 세팅 검수 체크리스트 -->
-    <section class="view" data-view="setting">
-      <h1 class="page-title">프리셋(사전세팅) 체크리스트</h1>
-      <p class="page-sub">매장별로 항목이 모두 체크되면 [프리셋] 완료로 자동 전환됩니다. (대시보드에서만 관리, 시트에는 반영되지 않음)</p>
-      <div id="settingList"></div>
     </section>
 
     <!-- 설치 현황 (시트 연동) -->
@@ -306,15 +324,9 @@
 
 <script>
 /* ============================================================
-   설치·세팅 통합 관리 대시보드 — 데이터 레이어
-   - "시트 데이터"(브랜드/매장명/사업자번호/설치담당자/설치예정일/점포진척도 등)는
-     프로젝트별 Google Apps Script Web App에서 매번 새로 불러옵니다. (읽기 전용)
-   - "로컬 데이터"(프리셋 체크리스트/현장설치테스트 체크리스트/CS문의)는
-     브라우저 localStorage에만 저장됩니다. 시트에는 반영되지 않습니다.
-   - 매장의 고유키는 매장명이 아니라 사업자번호(bizNo) 입니다. (동일 매장명이 여러 브랜드에 존재할 수 있음)
+   설치·세팅 통합 관리 대시보드
 ============================================================= */
 
-/* ---- 1) 프로젝트 설정: Apps Script 배포 후 webAppUrl만 채우면 바로 연동됩니다 ---- */
 const PROJECT_CONFIG = {
   cocohodo: {
     label: "코코호도",
@@ -328,7 +340,6 @@ const PROJECT_CONFIG = {
   }
 };
 
-/* ---- 2) 대시보드에서만 관리하는 체크리스트 기본값 ---- */
 const PRESET_CHECKLIST_DEFAULT = [
   "TID/MID 개별값 반영",
   "출력장비 설정",
@@ -351,11 +362,10 @@ function mkChecklist(labels){
   return labels.map((l,i)=>({id:"c"+i, label:l, checked:false}));
 }
 
-/* ---- 3) 로컬 저장 (프리셋/현장설치테스트/CS문의) ---- */
 const LOCAL_KEY = "pi_dashboard_local_v2";
 function loadLocal(){
   try{ const raw = localStorage.getItem(LOCAL_KEY); if(raw) return JSON.parse(raw); }catch(e){}
-  return { projects:{} }; // projects[key] = { manualStores:[...], storeData:{ [bizNo]:{preset:[],installTest:[],inquiries:[]} } }
+  return { projects:{} };
 }
 function saveLocal(){ localStorage.setItem(LOCAL_KEY, JSON.stringify(LOCAL)); document.getElementById('lastUpdated').textContent = new Date().toLocaleString('ko-KR'); }
 let LOCAL = loadLocal();
@@ -376,7 +386,6 @@ function ensureStoreLocal(key, bizNo){
   return p.storeData[bizNo];
 }
 
-/* ---- 4) 프로젝트 목록(사용자가 만든 순서 유지) ---- */
 function loadProjectOrder(){
   try{ const raw = localStorage.getItem("pi_project_order_v1"); if(raw) return JSON.parse(raw); }catch(e){}
   return Object.keys(PROJECT_CONFIG);
@@ -384,13 +393,12 @@ function loadProjectOrder(){
 function saveProjectOrder(){ localStorage.setItem("pi_project_order_v1", JSON.stringify(PROJECT_ORDER)); }
 let PROJECT_ORDER = loadProjectOrder();
 let CURRENT_PROJECT = PROJECT_ORDER[0];
-let SHEET_CACHE = {};      // key -> array of sheet stores (null = 연동 실패, undefined = 아직 안불러옴)
-let SHEET_ERROR = {};      // key -> error message
+let SHEET_CACHE = {};
+let SHEET_ERROR = {};
 
-/* ---- 5) 시트에서 매장 목록 불러오기 ---- */
 async function fetchSheetStores(key){
   const cfg = PROJECT_CONFIG[key];
-  if(!cfg || !cfg.webAppUrl){ SHEET_CACHE[key] = []; SHEET_ERROR[key] = "webAppUrl 미설정 — 코드 상단 PROJECT_CONFIG에 Apps Script URL을 넣어주세요."; return; }
+  if(!cfg || !cfg.webAppUrl){ SHEET_CACHE[key] = []; SHEET_ERROR[key] = "webAppUrl 미설정 — PROJECT_CONFIG에 Apps Script URL을 넣어주세요."; return; }
   try{
     const res = await fetch(cfg.webAppUrl);
     const json = await res.json();
@@ -420,7 +428,6 @@ function installStageLabel(store){
 function isDone(list){ return list && list.length>0 && list.every(c=>c.checked); }
 function pct(list){ if(!list || !list.length) return 0; return Math.round(list.filter(c=>c.checked).length/list.length*100); }
 
-/* ---- 6) 시트데이터 + 로컬데이터 합쳐서 화면에 쓸 매장 목록 생성 ---- */
 function getMergedStores(key){
   const sheetStores = SHEET_CACHE[key] || [];
   const p = ensureProjectLocal(key);
@@ -445,20 +452,21 @@ function finalStatus(store){
   return "progress";
 }
 
-/* ---- 7) 사이드바 메뉴 ---- */
+/* ---- 사이드바 ---- */
 const MENU = [
   {view:"dashboard", icon:"◆", label:"대시보드"},
-  {view:"stores", icon:"▤", label:"매장 관리"},
-  {view:"process", icon:"➜", label:"설치·세팅 프로세스"},
-  {view:"setting", icon:"☑", label:"프리셋 체크리스트"},
-  {view:"install", icon:"⛭", label:"설치 현황 (시트)"},
-  {view:"cs", icon:"☎", label:"CS 문의 관리"},
-  {view:"report", icon:"▥", label:"리포트"}
+  {view:"preset",    icon:"☑", label:"프리셋 설정"},
+  {view:"process",   icon:"➜", label:"설치·세팅 프로세스"},
+  {view:"install",   icon:"⛭", label:"설치 현황 (시트)"},
+  {view:"cs",        icon:"☎", label:"CS 문의 관리"},
+  {view:"report",    icon:"▥", label:"리포트"}
 ];
 let currentView = "dashboard";
 function renderSidebar(){
-  const nav = document.getElementById('sidebarMenu');
-  nav.innerHTML = MENU.map(m=>`<div class="menu-item ${m.view===currentView?'active':''}" onclick="switchView('${m.view}')"><span class="menu-icon">${m.icon}</span>${m.label}</div>`).join('');
+  document.getElementById('sidebarMenu').innerHTML = MENU.map(m=>`
+    <div class="menu-item ${m.view===currentView?'active':''}" onclick="switchView('${m.view}')">
+      <span class="menu-icon">${m.icon}</span>${m.label}
+    </div>`).join('');
 }
 function switchView(v){
   currentView = v;
@@ -467,10 +475,10 @@ function switchView(v){
   renderAll();
 }
 
-/* ---- 8) 프로젝트 셀렉터 ---- */
+/* ---- 프로젝트 셀렉터 ---- */
 function renderProjectSelect(){
-  const sel = document.getElementById('projectSelect');
-  sel.innerHTML = PROJECT_ORDER.map(k=>`<option value="${k}" ${k===CURRENT_PROJECT?'selected':''}>${PROJECT_CONFIG[k].label}</option>`).join('');
+  document.getElementById('projectSelect').innerHTML = PROJECT_ORDER.map(k=>
+    `<option value="${k}" ${k===CURRENT_PROJECT?'selected':''}>${PROJECT_CONFIG[k].label}</option>`).join('');
 }
 async function onProjectChange(){
   CURRENT_PROJECT = document.getElementById('projectSelect').value;
@@ -478,16 +486,14 @@ async function onProjectChange(){
   renderAll();
 }
 async function ensureSheetLoaded(key){
-  if(SHEET_CACHE[key] === undefined){
-    await fetchSheetStores(key);
-  }
+  if(SHEET_CACHE[key] === undefined) await fetchSheetStores(key);
 }
 async function refreshCurrentProject(){
   await fetchSheetStores(CURRENT_PROJECT);
   renderAll();
 }
 
-/* ---- 9) 배지 헬퍼 ---- */
+/* ---- 배지 헬퍼 ---- */
 function badgePct(list){
   if(isDone(list)) return `<span class="badge done">완료</span>`;
   const p = pct(list);
@@ -506,57 +512,115 @@ function badgeCS(store){
   return `<span class="badge issue">${open}건</span>`;
 }
 
-/* ---- 10) 대시보드 ---- */
+/* ---- 대시보드 ---- */
 function renderDashboard(){
+  // A: 프로젝트별 설치 현황 (전체 프로젝트)
+  const installCards = PROJECT_ORDER.map(key => {
+    const cfg = PROJECT_CONFIG[key]; if(!cfg) return '';
+    const stores = getMergedStores(key);
+    const total = stores.length;
+    const done = stores.filter(s => installDone(s)).length;
+    const p = total > 0 ? Math.round(done/total*100) : 0;
+    return `<div class="progress-card">
+      <div class="icon-badge" style="background:var(--c2-bg);color:var(--c2)">🏪</div>
+      <div class="info">
+        <div class="proj-name">${cfg.label}</div>
+        <div class="proj-sub">${done} / ${total} 매장 완료</div>
+        <div class="proj-pct" style="color:var(--c2)">${p}%</div>
+        <div class="gauge-bar"><div class="gauge-fill" style="width:${p}%;background:var(--c2)"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // B: 프로젝트별 프리셋 현황 (전체 프로젝트)
+  const presetCards = PROJECT_ORDER.map(key => {
+    const cfg = PROJECT_CONFIG[key]; if(!cfg) return '';
+    const stores = getMergedStores(key);
+    const total = stores.length;
+    const done = stores.filter(s => isDone(s.preset)).length;
+    const p = total > 0 ? Math.round(done/total*100) : 0;
+    return `<div class="progress-card">
+      <div class="icon-badge" style="background:var(--c1-bg);color:var(--c1)">☑</div>
+      <div class="info">
+        <div class="proj-name">${cfg.label}</div>
+        <div class="proj-sub">${done} / ${total} 매장 완료</div>
+        <div class="proj-pct" style="color:var(--c1)">${p}%</div>
+        <div class="gauge-bar"><div class="gauge-fill" style="width:${p}%;background:var(--c1)"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // C: 팀별 업무 진척도 (현재 프로젝트 기준)
   const stores = getMergedStores(CURRENT_PROJECT);
-  document.getElementById('dashTitle').textContent = `대시보드 · ${PROJECT_CONFIG[CURRENT_PROJECT].label}`;
   const total = stores.length;
-  const presetDone = stores.filter(s=>isDone(s.preset)).length;
-  const instDone = stores.filter(s=>installDone(s)).length;
-  const finalDone = stores.filter(s=>finalStatus(s)==="done").length;
-  const openCS = stores.reduce((a,s)=>a + s.inquiries.filter(i=>i.status!=="처리완료").length, 0);
-  document.getElementById('kpiRow').innerHTML = `
-    <div class="kpi-card"><div class="num">${total}</div><div class="lbl">전체 매장</div></div>
-    <div class="kpi-card"><div class="num">${presetDone}</div><div class="lbl">프리셋 완료</div></div>
-    <div class="kpi-card"><div class="num">${instDone}</div><div class="lbl">설치 완료</div></div>
-    <div class="kpi-card"><div class="num">${finalDone}</div><div class="lbl">최종 완료</div></div>
-    <div class="kpi-card ${openCS?'warn':''}"><div class="num">${openCS}</div><div class="lbl">미처리 CS</div></div>
-  `;
-  document.getElementById('dashStoreTbody').innerHTML = stores.map(storeRow).join('') ||
-    `<tr><td colspan="7" class="empty">${sheetEmptyMessage()}</td></tr>`;
-}
-function sheetEmptyMessage(){
-  const err = SHEET_ERROR[CURRENT_PROJECT];
-  return err ? err : "등록된 매장이 없습니다.";
-}
-function storeRow(s){
-  return `<tr class="store-row" onclick="openStoreModal('${s.bizNo}')">
-    <td>${s.brand}</td>
-    <td><b>${s.name}</b></td>
-    <td>${s.installDate || '-'}</td>
-    <td>${badgePct(s.preset)}</td>
-    <td>${badgePct(s.installTest)}</td>
-    <td>${badgeFinal(s)}</td>
-    <td>${badgeCS(s)}</td>
-  </tr>`;
+  const presetPct = total > 0 ? Math.round(stores.filter(s=>isDone(s.preset)).length/total*100) : 0;
+  const installPct = total > 0 ? Math.round(stores.filter(s=>installDone(s)).length/total*100) : 0;
+
+  const TEAMS = [
+    {name:"솔루션운영팀", desc:"메뉴 반영",          icon:"📋", c:"--c2", bg:"--c2-bg", p:0},
+    {name:"계약관리팀",   desc:"계약 라이선스 완료 현황", icon:"📝", c:"--c4", bg:"--c4-bg", p:0},
+    {name:"VAN팀",        desc:"결제테스트 체크 현황", icon:"💳", c:"--c3", bg:"--c3-bg", p:0},
+    {name:"제품기획팀",   desc:"가이드 제작(점포용)", icon:"📐", c:"--c1", bg:"--c1-bg", p:0},
+    {name:"세팅팀",       desc:"프리셋 설정 진척도",  icon:"⚙", c:"--c1", bg:"--c1-bg", p:presetPct},
+    {name:"설치팀",       desc:"현장 설치 완료 진척도",icon:"🔧", c:"--c2", bg:"--c2-bg", p:installPct},
+  ];
+
+  const teamCards = TEAMS.map(t=>`
+    <div class="team-card">
+      <div class="team-header">
+        <div class="team-icon" style="background:var(${t.bg});color:var(${t.c})">${t.icon}</div>
+        <div>
+          <div class="team-name">${t.name}</div>
+          <div class="team-desc">${t.desc}</div>
+        </div>
+      </div>
+      <div class="team-pct" style="color:var(${t.c})">${t.p}%</div>
+      <div class="gauge-bar"><div class="gauge-fill" style="width:${t.p}%;background:var(${t.c})"></div></div>
+    </div>`).join('');
+
+  document.getElementById('dashContent').innerHTML = `
+    <div class="dash-section">
+      <div class="dash-section-title">프로젝트별 설치 현황</div>
+      <div class="dash-cards-row cols-2">${installCards}</div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-section-title">프로젝트별 프리셋 현황</div>
+      <div class="dash-cards-row cols-2">${presetCards}</div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-section-title">팀별 업무 진척도 · ${PROJECT_CONFIG[CURRENT_PROJECT]?.label || ''}</div>
+      <div class="team-cards-grid">${teamCards}</div>
+    </div>`;
 }
 
-/* ---- 11) 매장 관리 ---- */
-function renderStores(){
+/* ---- 프리셋 설정 (구 매장관리 + 프리셋체크리스트 통합) ---- */
+function renderPresetPage(){
   const stores = getMergedStores(CURRENT_PROJECT);
-  document.getElementById('storeCount').textContent = `총 ${stores.length}개 매장`;
-  document.getElementById('storesTbody').innerHTML = stores.map(storeRow).join('') ||
-    `<tr><td colspan="7" class="empty">${sheetEmptyMessage()}</td></tr>`;
   const err = SHEET_ERROR[CURRENT_PROJECT];
   const cfg = PROJECT_CONFIG[CURRENT_PROJECT];
   const box = document.getElementById('sheetStatusBox');
-  if(!cfg.webAppUrl){
-    box.innerHTML = `이 프로젝트는 아직 시트 연동 URL이 없습니다. <code>PROJECT_CONFIG.${CURRENT_PROJECT}.webAppUrl</code>에 Apps Script Web App 주소를 넣어주세요. CSV/Excel로 수동 추가는 가능합니다.`;
+  if(!cfg || !cfg.webAppUrl){
+    box.innerHTML = `이 프로젝트는 시트 연동 URL이 없습니다. CSV/Excel로 수동 추가할 수 있습니다.`;
   } else if(err){
     box.innerHTML = `⚠ ${err}`;
   } else {
-    box.innerHTML = `✅ "${cfg.sheetName}" 시트와 연동되어 매장 ${(SHEET_CACHE[CURRENT_PROJECT]||[]).length}건을 불러왔습니다.`;
+    box.innerHTML = `✅ "${cfg.sheetName}" 시트와 연동 · ${(SHEET_CACHE[CURRENT_PROJECT]||[]).length}건 불러옴`;
   }
+  document.getElementById('presetList').innerHTML = stores.map(s=>`
+    <div class="card">
+      <div class="card-head">
+        <h3>${s.brand} · ${s.name} ${badgePct(s.preset)}</h3>
+      </div>
+      <ul class="checklist">
+        ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
+          <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
+          <span>${c.label}</span></li>`).join('')}
+      </ul>
+    </div>`).join('') || `<div class="empty">${sheetEmptyMessage()}</div>`;
+}
+
+function sheetEmptyMessage(){
+  return SHEET_ERROR[CURRENT_PROJECT] || "등록된 매장이 없습니다.";
 }
 
 function handleFileUpload(evt){
@@ -590,7 +654,15 @@ function handleFileUpload(evt){
   evt.target.value = "";
 }
 
-/* ---- 12) 업무 프로세스 (4단계: 프리셋 → 설치 → 현장설치테스트 → 최종완료) ---- */
+function toggleCheck(bizNo, group, checkId){
+  const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
+  const item = local[group].find(c=>c.id===checkId);
+  item.checked = !item.checked;
+  saveLocal();
+  renderAll();
+}
+
+/* ---- 설치·세팅 프로세스 ---- */
 const STAGE_LABELS = ["①프리셋","②설치","③현장설치테스트","④최종완료"];
 function renderProcess(){
   const stores = getMergedStores(CURRENT_PROJECT);
@@ -604,36 +676,13 @@ function renderProcess(){
       </div>
       <div class="stepper">
         ${STAGE_LABELS.map((lbl,i)=>`<div class="step ${st[i]?'done':(i===curIdx?'current':'')}">
-            <div class="dot">${st[i]?'✓':(i+1)}</div><div class="lbl">${lbl}</div></div>`).join('')}
+          <div class="dot">${st[i]?'✓':(i+1)}</div><div class="lbl">${lbl}</div></div>`).join('')}
       </div>
     </div>`;
   }).join('') || `<div class="empty">${sheetEmptyMessage()}</div>`;
 }
 
-/* ---- 13) 프리셋 체크리스트 페이지 ---- */
-function renderSettingPage(){
-  const stores = getMergedStores(CURRENT_PROJECT);
-  document.getElementById('settingList').innerHTML = stores.map(s=>`
-    <div class="card">
-      <div class="card-head">
-        <h3>${s.brand} · ${s.name} ${badgePct(s.preset)}</h3>
-      </div>
-      <ul class="checklist">
-        ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
-          <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
-          <span>${c.label}</span></li>`).join('')}
-      </ul>
-    </div>`).join('') || `<div class="empty">${sheetEmptyMessage()}</div>`;
-}
-function toggleCheck(bizNo, group, checkId){
-  const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
-  const item = local[group].find(c=>c.id===checkId);
-  item.checked = !item.checked;
-  saveLocal();
-  renderAll();
-}
-
-/* ---- 14) 설치 현황 (시트 연동, 읽기전용 + 현장설치테스트 체크) ---- */
+/* ---- 설치 현황 ---- */
 function renderInstall(){
   const stores = getMergedStores(CURRENT_PROJECT);
   document.getElementById('installTbody').innerHTML = stores.map(s=>`
@@ -645,15 +694,14 @@ function renderInstall(){
       <td>${s.installDate || '-'}</td>
       <td>${installStageLabel(s)}</td>
       <td>${badgePct(s.installTest)} <button class="btn ghost sm" onclick="openStoreModal('${s.bizNo}')">체크</button></td>
-    </tr>
-  `).join('') || `<tr><td colspan="7" class="empty">${sheetEmptyMessage()}</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="7" class="empty">${sheetEmptyMessage()}</td></tr>`;
 }
 
-/* ---- 15) CS 문의 관리 ---- */
+/* ---- CS 문의 ---- */
 function allInquiries(){
-  const stores = getMergedStores(CURRENT_PROJECT);
   const out = [];
-  stores.forEach(s => s.inquiries.forEach(i => out.push(Object.assign({}, i, {storeName:s.name, brand:s.brand, bizNo:s.bizNo}))));
+  getMergedStores(CURRENT_PROJECT).forEach(s =>
+    s.inquiries.forEach(i => out.push(Object.assign({}, i, {storeName:s.name, brand:s.brand, bizNo:s.bizNo}))));
   return out;
 }
 function renderCS(){
@@ -670,18 +718,16 @@ function renderCS(){
       <td>${i.detail}</td>
       <td>${i.status==='처리완료'?'<span class="badge done">처리완료</span>':i.status==='처리중'?'<span class="badge progress">처리중</span>':'<span class="badge issue">미처리</span>'}</td>
       <td>${i.owner}</td>
-    </tr>
-  `).join('') || `<tr><td colspan="6" class="empty">등록된 CS 문의가 없습니다.</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="6" class="empty">등록된 CS 문의가 없습니다.</td></tr>`;
 }
 function openAddInquiry(){
-  const stores = getMergedStores(CURRENT_PROJECT);
-  document.getElementById('inqStore').innerHTML = stores.map(s=>`<option value="${s.bizNo}">${s.brand} · ${s.name}</option>`).join('');
+  document.getElementById('inqStore').innerHTML = getMergedStores(CURRENT_PROJECT)
+    .map(s=>`<option value="${s.bizNo}">${s.brand} · ${s.name}</option>`).join('');
   document.getElementById('inquiryModal').classList.add('active');
 }
 function saveInquiry(){
   const bizNo = document.getElementById('inqStore').value;
-  const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
-  local.inquiries.push({
+  ensureStoreLocal(CURRENT_PROJECT, bizNo).inquiries.push({
     id:"i"+Date.now(), day:document.getElementById('inqDay').value,
     type:document.getElementById('inqType').value,
     detail:document.getElementById('inqDetail').value || "(내용 없음)",
@@ -693,14 +739,14 @@ function saveInquiry(){
   renderAll();
 }
 
-/* ---- 16) 매장 상세 모달 ---- */
+/* ---- 매장 상세 모달 ---- */
 function openStoreModal(bizNo){
   const s = findStore(CURRENT_PROJECT, bizNo);
   if(!s) return;
   const st = [isDone(s.preset), installDone(s), isDone(s.installTest), finalStatus(s)==="done"];
-  const body = `
+  document.getElementById('storeModalBody').innerHTML = `
     <h2 style="margin:0 0 2px">${s.brand} · ${s.name}</h2>
-    <p class="page-sub">사업자번호 ${s.bizNo}${s.ownerContact?(' · 점주 연락처 '+s.ownerContact):''}${s.partner?(' · 협력사 '+s.partner):''}</p>
+    <p class="page-sub">사업자번호 ${s.bizNo}${s.ownerContact?' · 점주 연락처 '+s.ownerContact:''}${s.partner?' · 협력사 '+s.partner:''}</p>
     <div class="store-head-grid">
       <div class="store-head-col">
         <h4>프리셋(사전세팅)</h4>
@@ -714,17 +760,22 @@ function openStoreModal(bizNo){
       </div>
     </div>
     <div class="stepper">
-      ${STAGE_LABELS.map((lbl,i)=>`<div class="step ${st[i]?'done':''}"><div class="dot">${st[i]?'✓':(i+1)}</div><div class="lbl">${lbl}</div></div>`).join('')}
+      ${STAGE_LABELS.map((lbl,i)=>`<div class="step ${st[i]?'done':''}">
+        <div class="dot">${st[i]?'✓':(i+1)}</div><div class="lbl">${lbl}</div></div>`).join('')}
     </div>
     ${stageBlock('프리셋(사전세팅) 체크리스트', s.bizNo, 'preset', s.preset)}
     ${stageBlock('현장설치테스트 체크리스트', s.bizNo, 'installTest', s.installTest)}
     <div class="card" style="margin-top:14px">
-      <div class="card-head"><h3>D+0 · D+1 · D+2 문의 내역</h3><button class="btn sm" onclick="closeModal('storeModal');openAddInquiry();document.getElementById('inqStore').value='${s.bizNo}'">+ 문의 등록</button></div>
+      <div class="card-head">
+        <h3>D+0 · D+1 · D+2 문의 내역</h3>
+        <button class="btn sm" onclick="closeModal('storeModal');openAddInquiry();document.getElementById('inqStore').value='${s.bizNo}'">+ 문의 등록</button>
+      </div>
       <table><thead><tr><th>발생</th><th>유형</th><th>상세내용</th><th>상태</th><th>담당</th></tr></thead>
-      <tbody>${s.inquiries.map(i=>`<tr><td><span class="day-badge ${i.day==='D+0'?'d0':i.day==='D+1'?'d1':'d2'}">${i.day}</span></td><td>${i.type}</td><td>${i.detail}</td><td>${i.status}</td><td>${i.owner}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">문의 없음</td></tr>'}</tbody></table>
-    </div>
-  `;
-  document.getElementById('storeModalBody').innerHTML = body;
+      <tbody>${s.inquiries.map(i=>`<tr>
+        <td><span class="day-badge ${i.day==='D+0'?'d0':i.day==='D+1'?'d1':'d2'}">${i.day}</span></td>
+        <td>${i.type}</td><td>${i.detail}</td><td>${i.status}</td><td>${i.owner}</td>
+      </tr>`).join('') || '<tr><td colspan="5" class="empty">문의 없음</td></tr>'}</tbody></table>
+    </div>`;
   document.getElementById('storeModal').classList.add('active');
 }
 function stageBlock(title, bizNo, group, list){
@@ -745,7 +796,7 @@ function stageBlock(title, bizNo, group, list){
 }
 function closeModal(id){ document.getElementById(id).classList.remove('active'); }
 
-/* ---- 17) 신규 프로젝트 ---- */
+/* ---- 신규 프로젝트 ---- */
 function openNewProjectModal(){
   const name = prompt("신규 프로젝트(브랜드)명을 입력하세요");
   if(!name) return;
@@ -759,14 +810,13 @@ function openNewProjectModal(){
   renderAll();
 }
 
-/* ---- 18) 렌더 루프 ---- */
+/* ---- 렌더 루프 ---- */
 function renderAll(){
   renderProjectSelect();
   renderSidebar();
   renderDashboard();
-  renderStores();
+  renderPresetPage();
   renderProcess();
-  renderSettingPage();
   renderInstall();
   renderCS();
 }
