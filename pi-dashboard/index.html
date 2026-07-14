@@ -171,7 +171,10 @@
   .preset-groups{display:flex;flex-direction:column;}
   .preset-group{padding:10px 0;border-bottom:1px dashed #eef0f4;}
   .preset-group:last-child{border-bottom:none;}
-  .preset-group-title{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px;}
+  .preset-group-title{font-size:12px;font-weight:700;color:var(--primary);}
+  .preset-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+  .preset-group-selectall{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--muted);font-weight:500;cursor:pointer;flex-shrink:0;}
+  .preset-group-selectall input{width:13px;height:13px;cursor:pointer;accent-color:var(--primary);}
   .preset-group-items{display:flex;flex-wrap:wrap;gap:6px 14px;}
   .preset-chip{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0;}
   .preset-chip input{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);flex-shrink:0;}
@@ -764,11 +767,18 @@ function refreshPresetChecklists(key){
 function renderPresetChecklistGroups(bizNo, groupKey, list){
   const byLabel = {};
   list.forEach(c => { byLabel[c.label] = c; });
-  return getPresetGroups(CURRENT_PROJECT).map(g => {
+  return getPresetGroups(CURRENT_PROJECT).map((g, gi) => {
     const items = g.labels.map(label => byLabel[label]).filter(Boolean);
     if(!items.length) return '';
+    const allChecked = items.every(c => c.checked);
     return `<div class="preset-group">
-      ${g.depth2 ? `<div class="preset-group-title">${g.depth2}</div>` : ''}
+      ${g.depth2 ? `<div class="preset-group-head">
+        <div class="preset-group-title">${g.depth2}</div>
+        <label class="preset-group-selectall">
+          <input type="checkbox" ${allChecked?'checked':''} onchange="toggleGroupAll('${bizNo}','${groupKey}',${gi},this.checked)">
+          전체선택
+        </label>
+      </div>` : ''}
       <div class="preset-group-items">
         ${items.map(c => `<label class="preset-chip ${c.checked?'checked':''}">
           <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${bizNo}','${groupKey}','${c.id}')">
@@ -1224,17 +1234,17 @@ function handleFileUpload(evt){
   evt.target.value = "";
 }
 
-function toggleCheck(bizNo, group, checkId){
-  const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
-  const item = local[group].find(c=>c.id===checkId);
-  item.checked = !item.checked;
-  if(item.checked){
+function setItemChecked(item, checked){
+  item.checked = checked;
+  if(checked){
     item.checkedBy = currentUser ? currentUser.name : '';
     const now = new Date();
     item.checkedAt = (now.getMonth()+1)+'/'+now.getDate()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   } else {
     item.checkedBy = ''; item.checkedAt = '';
   }
+}
+function syncGroupCompletion(local, group){
   if(group === 'installTest'){
     if(isDone(local.installTest)){
       const t = new Date();
@@ -1252,6 +1262,24 @@ function toggleCheck(bizNo, group, checkId){
       local.presetCompletedBy = ''; local.presetCompletedAt = '';
     }
   }
+}
+function toggleCheck(bizNo, group, checkId){
+  const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
+  const item = local[group].find(c=>c.id===checkId);
+  setItemChecked(item, !item.checked);
+  syncGroupCompletion(local, group);
+  saveLocal();
+  renderAll();
+}
+function toggleGroupAll(bizNo, group, groupIdx, checked){
+  const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
+  const groupDef = getPresetGroups(CURRENT_PROJECT)[groupIdx];
+  if(!groupDef) return;
+  const labelSet = new Set(groupDef.labels);
+  local[group].forEach(item => {
+    if(labelSet.has(item.label)) setItemChecked(item, checked);
+  });
+  syncGroupCompletion(local, group);
   saveLocal();
   renderAll();
 }
