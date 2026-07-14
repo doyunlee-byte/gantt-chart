@@ -131,7 +131,10 @@ function getEquipmentPreset() {
       groupIndexByDepth2[depth2] = groups.length;
       groups.push({ depth2: depth2, labels: [] });
     }
-    groups[groupIndexByDepth2[depth2]].labels.push(label);
+    const groupLabels = groups[groupIndexByDepth2[depth2]].labels;
+    if (groupLabels.indexOf(label) === -1) {
+      groupLabels.push(label); // 그룹 내 중복 label 제거 — 처음 등장한 것만 유지
+    }
   });
 
   return { groups: groups };

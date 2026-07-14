@@ -165,6 +165,7 @@
   .preset-row{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background .15s;}
   .preset-row:hover{background:#f7f8fa;}
   .preset-store-name{font-weight:700;font-size:13px;color:var(--text);flex:1;}
+  .preset-owner-badge{font-size:11px;color:var(--primary);font-weight:600;background:var(--c2-bg);border-radius:5px;padding:2px 8px;flex-shrink:0;}
   .preset-chevron{color:var(--muted);font-size:11px;flex-shrink:0;}
   .preset-checklist-body{padding:4px 14px 12px;border-top:1px solid var(--border);}
   .preset-groups{display:flex;flex-direction:column;}
@@ -656,6 +657,8 @@ function ensureStoreLocal(key, bizNo){
   if(!p.storeData[bizNo]){
     p.storeData[bizNo] = {
       preset: buildPresetChecklist(flattenPresetLabels(key), null),
+      presetCompletedBy: '',
+      presetCompletedAt: '',
       installTest: mkChecklist(INSTALL_TEST_CHECKLIST_DEFAULT),
       inquiries: []
     };
@@ -752,7 +755,9 @@ function refreshPresetChecklists(key){
   if(!p) return;
   const labels = flattenPresetLabels(key);
   Object.keys(p.storeData).forEach(bizNo => {
-    p.storeData[bizNo].preset = buildPresetChecklist(labels, p.storeData[bizNo].preset);
+    const sd = p.storeData[bizNo];
+    sd.preset = buildPresetChecklist(labels, sd.preset);
+    if(!isDone(sd.preset)){ sd.presetCompletedBy = ''; sd.presetCompletedAt = ''; }
   });
   saveLocal();
 }
@@ -767,7 +772,7 @@ function renderPresetChecklistGroups(bizNo, groupKey, list){
       <div class="preset-group-items">
         ${items.map(c => `<label class="preset-chip ${c.checked?'checked':''}">
           <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${bizNo}','${groupKey}','${c.id}')">
-          <span>${c.label}${c.checked&&c.checkedBy?`<span class="check-meta">(${c.checkedBy} ${c.checkedAt||''})</span>`:''}</span>
+          <span>${c.label}</span>
         </label>`).join('')}
       </div>
     </div>`;
@@ -788,11 +793,11 @@ function getMergedStores(key){
   const p = ensureProjectLocal(key);
   const merged = sheetStores.map(s => {
     const local = ensureStoreLocal(key, s.bizNo);
-    return Object.assign({}, s, { source:"sheet", preset: local.preset, installTest: local.installTest, inquiries: local.inquiries });
+    return Object.assign({}, s, { source:"sheet", preset: local.preset, presetCompletedBy: local.presetCompletedBy, installTest: local.installTest, inquiries: local.inquiries });
   });
   p.manualStores.forEach(s => {
     const local = ensureStoreLocal(key, s.bizNo);
-    merged.push(Object.assign({}, s, { source:"manual", preset: local.preset, installTest: local.installTest, inquiries: local.inquiries }));
+    merged.push(Object.assign({}, s, { source:"manual", preset: local.preset, presetCompletedBy: local.presetCompletedBy, installTest: local.installTest, inquiries: local.inquiries }));
   });
   return merged;
 }
@@ -861,6 +866,11 @@ function badgePct(list){
   const p = pct(list);
   if(p===0) return `<span class="badge wait">대기</span>`;
   return `<span class="badge progress">${p}%</span>`;
+}
+function presetOwnerBadge(store){
+  return (isDone(store.preset) && store.presetCompletedBy)
+    ? `<span class="preset-owner-badge">담당자: ${store.presetCompletedBy}</span>`
+    : '';
 }
 function badgeFinal(store){
   const st = finalStatus(store);
@@ -1141,6 +1151,7 @@ function renderPresetPage(){
       return `<div class="preset-item">
         <div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
           <span class="preset-store-name">${s.brand} · ${s.name}</span>
+          ${presetOwnerBadge(s)}
           ${badgePct(s.preset)}
           <span class="preset-chevron">${open?'▲':'▼'}</span>
         </div>
@@ -1230,6 +1241,15 @@ function toggleCheck(bizNo, group, checkId){
       local.installTestCompletedDate = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
     } else {
       local.installTestCompletedDate = null;
+    }
+  }
+  if(group === 'preset'){
+    if(isDone(local.preset)){
+      local.presetCompletedBy = currentUser ? currentUser.name : '';
+      const t = new Date();
+      local.presetCompletedAt = (t.getMonth()+1)+'/'+t.getDate()+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    } else {
+      local.presetCompletedBy = ''; local.presetCompletedAt = '';
     }
   }
   saveLocal();
@@ -1516,6 +1536,7 @@ function renderDayPanel(){
         return `<div class="preset-item">
           <div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
             <span class="preset-store-name">${s.brand} · ${s.name}</span>
+            ${presetOwnerBadge(s)}
             ${badgePct(s.preset)}
             <span class="preset-chevron">${open?'▲':'▼'}</span>
           </div>
