@@ -699,7 +699,10 @@ async function fetchSheetStores(key){
       naverId: s.naverId || "",
       posCount: (s.posCount !== undefined && s.posCount !== "") ? s.posCount : "",
       onlineBizReg: s.onlineBizReg || "",
-      naverConnect: s.naverConnect || ""
+      naverConnect: s.naverConnect || "",
+      centerName: s.centerName || "",
+      installCompleteDate: s.installCompleteDate || "",
+      installStatus: s.installStatus || ""
     })).filter(s => s.bizNo && s.name);
     SHEET_ERROR[key] = null;
   }catch(err){
@@ -1114,6 +1117,9 @@ function storeInfoGrid(s){
     ['포스 대수',    s.posCount],
     ['전상등록여부', s.onlineBizReg],
     ['네이버커넥트', s.naverConnect],
+    ['센터명',       s.centerName],
+    ['설치완료일',   s.installCompleteDate],
+    ['설치여부',     s.installStatus],
   ];
   return `<div class="store-info-grid">${
     fields.map(([lbl,val])=>`<div class="store-info-item"><span class="store-info-label">${lbl}</span><span class="store-info-val">${(val!==undefined&&val!=='')?val:'-'}</span></div>`).join('')

@@ -6,9 +6,12 @@ const HEADER_MAP = {
   name: "매장명",
   bizNo: "사업자번호",
   ownerContact: "대표자연락처",
-  installOwner: "설치담당자",     // 시트에 아직 없다면 직접 컬럼을 추가해주세요
-  installDate: "설치예정일",      // 시트에 아직 없다면 직접 컬럼을 추가해주세요
-  progress: "운영관리등록여부"    // 진행 상태를 대표하는 컬럼 (필요시 다른 컬럼으로 교체)
+  installOwner: "설치담당",       // 시트에 아직 없다면 직접 컬럼을 추가해주세요
+  installDate: "설치확정일",      // 시트에 아직 없다면 직접 컬럼을 추가해주세요
+  progress: "운영관리등록여부",   // 진행 상태를 대표하는 컬럼 (필요시 다른 컬럼으로 교체)
+  centerName: "센터",               // AG열 (실제 헤더: "센터")
+  installCompleteDate: "설치완료일", // AJ열
+  installStatus: "설치 여부"         // AK열 (실제 헤더: "설치 여부", 공백 포함)
 };
 
 const PRESET_SHEET_NAME = "장비프리셋";
@@ -57,7 +60,10 @@ function doGet(e) {
       installOwner: colIndex.installOwner >= 0 ? String(row[colIndex.installOwner]) : "",
       installDate: colIndex.installDate >= 0 ? formatDate(row[colIndex.installDate]) : "",
       progress: colIndex.progress >= 0 ? String(row[colIndex.progress]) : "",
-      partner: ""
+      partner: "",
+      centerName: colIndex.centerName >= 0 ? String(row[colIndex.centerName]).trim() : "",
+      installCompleteDate: colIndex.installCompleteDate >= 0 ? formatDate(row[colIndex.installCompleteDate]) : "",
+      installStatus: colIndex.installStatus >= 0 ? String(row[colIndex.installStatus]).trim() : ""
     });
   });
 
