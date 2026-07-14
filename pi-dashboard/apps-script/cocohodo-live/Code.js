@@ -1,21 +1,3 @@
-/**
- * 코코호도 "가맹점리스트 취합" 탭 → 대시보드 연동용 Web App
- *
- * [배포 방법]
- * 1) 코코호도 스프레드시트 열기 → 확장 프로그램 > Apps Script
- * 2) 기본 Code.gs 내용을 전부 지우고 이 파일 내용을 붙여넣기
- * 3) 우측 상단 "배포" > "새 배포" > 유형: 웹 앱
- *    - 실행 계정: 나(본인)
- *    - 액세스 권한: 링크가 있는 모든 사용자 (조직 내부용이면 "조직 내" 선택 가능)
- * 4) 배포 후 나오는 웹 앱 URL을 복사
- * 5) 대시보드 index.html 상단 PROJECT_CONFIG.cocohodo.webAppUrl 에 붙여넣기
- *
- * [주의]
- * - 헤더 행이 4행에 있다고 가정합니다 (실제 시트 구조 기준). 다르면 HEADER_ROW 값을 수정하세요.
- * - 컬럼은 "헤더 텍스트"로 찾습니다. 시트의 실제 헤더 텍스트와 아래 HEADER_MAP의 값이
- *   정확히 일치해야 합니다. 다르면 HEADER_MAP만 수정하면 됩니다 (열 위치가 바뀌어도 안전).
- */
-
 const SHEET_NAME = "가맹점리스트 취합";
 const HEADER_ROW = 4;
 
@@ -26,13 +8,7 @@ const HEADER_MAP = {
   ownerContact: "대표자연락처",
   installOwner: "설치담당자",     // 시트에 아직 없다면 직접 컬럼을 추가해주세요
   installDate: "설치예정일",      // 시트에 아직 없다면 직접 컬럼을 추가해주세요
-  progress: "운영관리등록여부",   // 진행 상태를 대표하는 컬럼 (필요시 다른 컬럼으로 교체)
-  orderType: "발주유형",
-  storeId: "매장아이디",
-  naverId: "네이버ID",
-  posCount: "포스 대수",
-  onlineBizReg: "전상등록여부",
-  naverConnect: "네이버커넥트"
+  progress: "운영관리등록여부"    // 진행 상태를 대표하는 컬럼 (필요시 다른 컬럼으로 교체)
 };
 
 const PRESET_SHEET_NAME = "장비프리셋";
@@ -81,13 +57,7 @@ function doGet(e) {
       installOwner: colIndex.installOwner >= 0 ? String(row[colIndex.installOwner]) : "",
       installDate: colIndex.installDate >= 0 ? formatDate(row[colIndex.installDate]) : "",
       progress: colIndex.progress >= 0 ? String(row[colIndex.progress]) : "",
-      partner: "",
-      orderType: colIndex.orderType >= 0 ? String(row[colIndex.orderType]).trim() : "",
-      storeId: colIndex.storeId >= 0 ? String(row[colIndex.storeId]).trim() : "",
-      naverId: colIndex.naverId >= 0 ? String(row[colIndex.naverId]).trim() : "",
-      posCount: colIndex.posCount >= 0 ? row[colIndex.posCount] : "",
-      onlineBizReg: colIndex.onlineBizReg >= 0 ? String(row[colIndex.onlineBizReg]).trim() : "",
-      naverConnect: colIndex.naverConnect >= 0 ? String(row[colIndex.naverConnect]).trim() : ""
+      partner: ""
     });
   });
 

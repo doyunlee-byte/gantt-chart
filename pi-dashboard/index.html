@@ -167,6 +167,14 @@
   .preset-store-name{font-weight:700;font-size:13px;color:var(--text);flex:1;}
   .preset-chevron{color:var(--muted);font-size:11px;flex-shrink:0;}
   .preset-checklist-body{padding:4px 14px 12px;border-top:1px solid var(--border);}
+  .preset-groups{display:flex;flex-direction:column;}
+  .preset-group{padding:10px 0;border-bottom:1px dashed #eef0f4;}
+  .preset-group:last-child{border-bottom:none;}
+  .preset-group-title{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px;}
+  .preset-group-items{display:flex;flex-wrap:wrap;gap:6px 14px;}
+  .preset-chip{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:2px 0;}
+  .preset-chip input{width:16px;height:16px;cursor:pointer;accent-color:var(--primary);flex-shrink:0;}
+  .preset-chip.checked span{color:#9ca3af;text-decoration:line-through;}
 
   /* Store info grid */
   .store-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px 8px;background:#f7f8fa;border:1px solid #eef0f4;border-radius:6px;padding:8px 10px;margin:8px 0 10px;}
@@ -647,7 +655,7 @@ function ensureStoreLocal(key, bizNo){
   const p = ensureProjectLocal(key);
   if(!p.storeData[bizNo]){
     p.storeData[bizNo] = {
-      preset: mkChecklist(PRESET_CHECKLIST_DEFAULT),
+      preset: buildPresetChecklist(flattenPresetLabels(key), null),
       installTest: mkChecklist(INSTALL_TEST_CHECKLIST_DEFAULT),
       inquiries: []
     };
@@ -692,6 +700,78 @@ async function fetchSheetStores(key){
     SHEET_CACHE[key] = [];
     SHEET_ERROR[key] = "연동 실패: " + err.message;
   }
+}
+
+let PRESET_GROUPS_CACHE = {};
+let PRESET_GROUPS_ERROR = {};
+
+async function fetchPresetGroups(key){
+  const cfg = PROJECT_CONFIG[key];
+  if(!cfg || !cfg.webAppUrl){ PRESET_GROUPS_CACHE[key] = []; PRESET_GROUPS_ERROR[key] = null; return; }
+  try{
+    const sep = cfg.webAppUrl.includes('?') ? '&' : '?';
+    const res = await fetch(cfg.webAppUrl + sep + 'mode=preset');
+    const json = await res.json();
+    PRESET_GROUPS_CACHE[key] = json.groups || [];
+    PRESET_GROUPS_ERROR[key] = json.error || null;
+  }catch(err){
+    PRESET_GROUPS_CACHE[key] = [];
+    PRESET_GROUPS_ERROR[key] = "프리셋 항목 연동 실패: " + err.message;
+  }
+  refreshPresetChecklists(key);
+}
+async function ensurePresetGroupsLoaded(key){
+  if(PRESET_GROUPS_CACHE[key] === undefined) await fetchPresetGroups(key);
+}
+function getPresetGroups(key){
+  const groups = PRESET_GROUPS_CACHE[key];
+  if(groups && groups.length) return groups;
+  return [{ depth2: "", labels: PRESET_CHECKLIST_DEFAULT }];
+}
+function flattenPresetLabels(key){
+  const out = [];
+  getPresetGroups(key).forEach(g => g.labels.forEach(l => out.push(l)));
+  return out;
+}
+function buildPresetChecklist(labels, existing){
+  const existingByLabel = {};
+  (existing || []).forEach(c => { existingByLabel[c.label] = c; });
+  return labels.map((label, i) => {
+    const prev = existingByLabel[label];
+    return {
+      id: "p" + i,
+      label: label,
+      checked: prev ? prev.checked : false,
+      checkedBy: prev ? prev.checkedBy : '',
+      checkedAt: prev ? prev.checkedAt : ''
+    };
+  });
+}
+function refreshPresetChecklists(key){
+  const p = LOCAL.projects[key];
+  if(!p) return;
+  const labels = flattenPresetLabels(key);
+  Object.keys(p.storeData).forEach(bizNo => {
+    p.storeData[bizNo].preset = buildPresetChecklist(labels, p.storeData[bizNo].preset);
+  });
+  saveLocal();
+}
+function renderPresetChecklistGroups(bizNo, groupKey, list){
+  const byLabel = {};
+  list.forEach(c => { byLabel[c.label] = c; });
+  return getPresetGroups(CURRENT_PROJECT).map(g => {
+    const items = g.labels.map(label => byLabel[label]).filter(Boolean);
+    if(!items.length) return '';
+    return `<div class="preset-group">
+      ${g.depth2 ? `<div class="preset-group-title">${g.depth2}</div>` : ''}
+      <div class="preset-group-items">
+        ${items.map(c => `<label class="preset-chip ${c.checked?'checked':''}">
+          <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${bizNo}','${groupKey}','${c.id}')">
+          <span>${c.label}${c.checked&&c.checkedBy?`<span class="check-meta">(${c.checkedBy} ${c.checkedAt||''})</span>`:''}</span>
+        </label>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function installDone(store){ return /완료/.test(store.progress || ""); }
@@ -763,6 +843,7 @@ function renderProjectSelect(){
 async function onProjectChange(){
   CURRENT_PROJECT = document.getElementById('projectSelect').value;
   await ensureSheetLoaded(CURRENT_PROJECT);
+  await ensurePresetGroupsLoaded(CURRENT_PROJECT);
   renderAll();
 }
 async function ensureSheetLoaded(key){
@@ -770,6 +851,7 @@ async function ensureSheetLoaded(key){
 }
 async function refreshCurrentProject(){
   await fetchSheetStores(CURRENT_PROJECT);
+  await fetchPresetGroups(CURRENT_PROJECT);
   renderAll();
 }
 
@@ -1064,11 +1146,9 @@ function renderPresetPage(){
         </div>
         ${open?`<div class="preset-checklist-body">
           ${storeInfoGrid(s)}
-          <ul class="checklist">
-            ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
-              <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
-              <span>${c.label}${c.checked&&c.checkedBy?`<span class="check-meta">(${c.checkedBy} ${c.checkedAt||''})</span>`:''}</span></li>`).join('')}
-          </ul>
+          <div class="preset-groups">
+            ${renderPresetChecklistGroups(s.bizNo, 'preset', s.preset)}
+          </div>
         </div>`:''}
       </div>`;
     }).join('') || `<div class="empty">${sheetEmptyMessage()}</div>`;
@@ -1441,11 +1521,9 @@ function renderDayPanel(){
           </div>
           ${open?`<div class="preset-checklist-body">
             ${storeInfoGrid(s)}
-            <ul class="checklist">
-              ${s.preset.map(c=>`<li class="${c.checked?'checked':''}">
-                <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${s.bizNo}','preset','${c.id}')">
-                <span>${c.label}${c.checked&&c.checkedBy?`<span class="check-meta">(${c.checkedBy} ${c.checkedAt||''})</span>`:''}</span></li>`).join('')}
-            </ul>
+            <div class="preset-groups">
+              ${renderPresetChecklistGroups(s.bizNo, 'preset', s.preset)}
+            </div>
           </div>`:''}
         </div>`;
       }).join('');
@@ -1464,6 +1542,7 @@ function renderAll(){
 document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active', el.dataset.view===currentView));
 (async function init(){
   await ensureSheetLoaded(CURRENT_PROJECT);
+  await ensurePresetGroupsLoaded(CURRENT_PROJECT);
   saveLocal();
   initAuth();
 })();
