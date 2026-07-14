@@ -9,6 +9,8 @@ const HEADER_MAP = {
   installOwner: "설치담당",       // 시트에 아직 없다면 직접 컬럼을 추가해주세요
   installDate: "설치확정일",      // 시트에 아직 없다면 직접 컬럼을 추가해주세요
   progress: "운영관리등록여부",   // 진행 상태를 대표하는 컬럼 (필요시 다른 컬럼으로 교체)
+  posCount: "포스 수",
+  onlineBizReg: "전산등록 여부",
   centerName: "센터",               // AG열 (실제 헤더: "센터")
   installCompleteDate: "설치완료일", // AJ열
   installStatus: "설치 여부"         // AK열 (실제 헤더: "설치 여부", 공백 포함)
@@ -34,11 +36,12 @@ function doGet(e) {
   const headerRowValues = sheet.getRange(HEADER_ROW, 1, 1, lastCol).getValues()[0];
 
   // 헤더 텍스트 → 열 인덱스(0-based) 매핑
+  // 셀 안에 줄바꿈(\n)이 들어간 헤더도 안전하게 매칭되도록 양쪽 다 줄바꿈 제거 후 비교
   const colIndex = {};
   Object.keys(HEADER_MAP).forEach(function (key) {
-    const headerText = HEADER_MAP[key];
+    const headerText = normalizeHeaderText(HEADER_MAP[key]);
     const idx = headerRowValues.findIndex(function (h) {
-      return String(h).trim() === headerText;
+      return normalizeHeaderText(h) === headerText;
     });
     colIndex[key] = idx; // 못 찾으면 -1
   });
@@ -61,6 +64,8 @@ function doGet(e) {
       installDate: colIndex.installDate >= 0 ? formatDate(row[colIndex.installDate]) : "",
       progress: colIndex.progress >= 0 ? String(row[colIndex.progress]) : "",
       partner: "",
+      posCount: colIndex.posCount >= 0 ? row[colIndex.posCount] : "",
+      onlineBizReg: colIndex.onlineBizReg >= 0 ? String(row[colIndex.onlineBizReg]).trim() : "",
       centerName: colIndex.centerName >= 0 ? String(row[colIndex.centerName]).trim() : "",
       installCompleteDate: colIndex.installCompleteDate >= 0 ? formatDate(row[colIndex.installCompleteDate]) : "",
       installStatus: colIndex.installStatus >= 0 ? String(row[colIndex.installStatus]).trim() : ""
@@ -114,6 +119,10 @@ function getEquipmentPreset() {
   });
 
   return { groups: groups };
+}
+
+function normalizeHeaderText(v) {
+  return String(v).replace(/\n/g, '').trim();
 }
 
 function formatDate(v) {

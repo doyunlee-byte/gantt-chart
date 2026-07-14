@@ -30,8 +30,8 @@ const HEADER_MAP = {
   orderType: "발주유형",
   storeId: "매장아이디",
   naverId: "네이버ID",
-  posCount: "포스 대수",
-  onlineBizReg: "전상등록여부",
+  posCount: "포스 수",
+  onlineBizReg: "전산등록 여부",
   naverConnect: "네이버커넥트",
   centerName: "센터",               // AG열 (실제 헤더: "센터")
   installCompleteDate: "설치완료일", // AJ열
@@ -58,11 +58,12 @@ function doGet(e) {
   const headerRowValues = sheet.getRange(HEADER_ROW, 1, 1, lastCol).getValues()[0];
 
   // 헤더 텍스트 → 열 인덱스(0-based) 매핑
+  // 셀 안에 줄바꿈(\n)이 들어간 헤더도 안전하게 매칭되도록 양쪽 다 줄바꿈 제거 후 비교
   const colIndex = {};
   Object.keys(HEADER_MAP).forEach(function (key) {
-    const headerText = HEADER_MAP[key];
+    const headerText = normalizeHeaderText(HEADER_MAP[key]);
     const idx = headerRowValues.findIndex(function (h) {
-      return String(h).trim() === headerText;
+      return normalizeHeaderText(h) === headerText;
     });
     colIndex[key] = idx; // 못 찾으면 -1
   });
@@ -144,6 +145,10 @@ function getEquipmentPreset() {
   });
 
   return { groups: groups };
+}
+
+function normalizeHeaderText(v) {
+  return String(v).replace(/\n/g, '').trim();
 }
 
 function formatDate(v) {
