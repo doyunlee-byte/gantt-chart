@@ -33,7 +33,7 @@ const HEADER_MAP = {
   posCount: "포스 수",
   onlineBizReg: "전산등록 여부",
   naverConnect: "네이버커넥트",
-  centerName: "센터",               // AG열 (실제 헤더: "센터")
+  centerName: "[센터]",             // AG열 (실제 헤더: "[센터]", 대괄호 포함)
   installCompleteDate: "설치완료일", // AJ열
   installStatus: "설치 여부"         // AK열 (실제 헤더: "설치 여부", 공백 포함)
 };
