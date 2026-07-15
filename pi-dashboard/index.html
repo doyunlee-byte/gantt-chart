@@ -170,10 +170,16 @@
   .preset-chevron{color:var(--muted);font-size:11px;flex-shrink:0;}
   .preset-checklist-body{padding:4px 14px 12px;border-top:1px solid var(--border);}
   .preset-groups{display:flex;flex-direction:column;}
-  .preset-group{padding:10px 0;border-bottom:1px dashed #eef0f4;}
+  .preset-group{padding:8px 0;border-bottom:1px dashed #eef0f4;}
   .preset-group:last-child{border-bottom:none;}
-  .preset-group-title{font-size:12px;font-weight:700;color:var(--primary);}
-  .preset-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+  .preset-group-summary{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 0;}
+  .preset-group-summary-title{font-size:12.5px;font-weight:700;color:var(--text);}
+  .preset-group-summary-status{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;}
+  .preset-group-summary-status.done{background:var(--green-bg);color:var(--green);}
+  .preset-group-summary-status.progress{background:var(--amber-bg);color:var(--amber);}
+  .preset-group-summary-meta{font-size:11px;color:var(--muted);}
+  .preset-group-body{margin-top:8px;padding-left:2px;}
+  .preset-group-head{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:8px;}
   .preset-group-selectall{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--muted);font-weight:500;cursor:pointer;flex-shrink:0;}
   .preset-group-selectall input{width:13px;height:13px;cursor:pointer;accent-color:var(--primary);}
   .preset-group-items{display:flex;flex-wrap:wrap;gap:6px 14px;}
@@ -697,6 +703,8 @@ function saveLocal(){ localStorage.setItem(LOCAL_KEY, JSON.stringify(LOCAL)); do
 let LOCAL = loadLocal();
 
 let presetOpenSet = new Set();
+let presetGroupOpenSet = new Set();
+let stageBlockOpenSet = new Set();
 let presetSearchQuery = '';
 let presetDateFrom = '';
 let presetDateTo = '';
@@ -794,6 +802,26 @@ function buildPresetChecklist(labels, existing){
     };
   });
 }
+function formatDateOnly(ts){
+  if(!ts) return '';
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function groupCompletionInfo(items){
+  if(!items.length || !items.every(c=>c.checked)) return null;
+  let latest = items[0], latestTs = parseEventDate(items[0].checkedAt);
+  items.forEach(c=>{
+    const ts = parseEventDate(c.checkedAt);
+    if(ts >= latestTs){ latestTs = ts; latest = c; }
+  });
+  return { date: formatDateOnly(latestTs), by: latest.checkedBy || '' };
+}
+function toggleGroupOpen(bizNo, gi){
+  const key = bizNo+'_'+gi;
+  if(presetGroupOpenSet.has(key)) presetGroupOpenSet.delete(key);
+  else presetGroupOpenSet.add(key);
+  refreshAfterChecklistChange(bizNo);
+}
 function renderPresetChecklistGroups(bizNo, groupKey, list){
   const byLabel = {};
   list.forEach(c => { byLabel[c.label] = c; });
@@ -801,20 +829,29 @@ function renderPresetChecklistGroups(bizNo, groupKey, list){
     const items = g.labels.map(label => byLabel[label]).filter(Boolean);
     if(!items.length) return '';
     const allChecked = items.every(c => c.checked);
+    const info = allChecked ? groupCompletionInfo(items) : null;
+    const isOpen = presetGroupOpenSet.has(bizNo+'_'+gi);
     return `<div class="preset-group">
-      ${g.depth2 ? `<div class="preset-group-head">
-        <div class="preset-group-title">${g.depth2}</div>
-        <label class="preset-group-selectall">
-          <input type="checkbox" ${allChecked?'checked':''} onchange="toggleGroupAll('${bizNo}','${groupKey}',${gi},this.checked)">
-          전체선택
-        </label>
-      </div>` : ''}
-      <div class="preset-group-items">
-        ${items.map(c => `<label class="preset-chip ${c.checked?'checked':''}">
-          <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${bizNo}','${groupKey}','${c.id}')">
-          <span>${c.label}</span>
-        </label>`).join('')}
+      <div class="preset-group-summary" onclick="toggleGroupOpen('${bizNo}',${gi})">
+        <span class="preset-group-summary-title">${g.depth2}</span>
+        <span class="preset-group-summary-status ${allChecked?'done':'progress'}">${allChecked?'완료':'진행중'}</span>
+        ${info ? `<span class="preset-group-summary-meta">· ${info.date}${info.by?` · ${info.by}`:''}</span>` : ''}
+        <span class="preset-chevron" style="margin-left:auto">${isOpen?'▲':'▼'}</span>
       </div>
+      ${isOpen ? `<div class="preset-group-body">
+        <div class="preset-group-head">
+          <label class="preset-group-selectall">
+            <input type="checkbox" ${allChecked?'checked':''} onchange="toggleGroupAll('${bizNo}','${groupKey}',${gi},this.checked)">
+            전체선택
+          </label>
+        </div>
+        <div class="preset-group-items">
+          ${items.map(c => `<label class="preset-chip ${c.checked?'checked':''}">
+            <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${bizNo}','${groupKey}','${c.id}')">
+            <span>${c.label}</span>
+          </label>`).join('')}
+        </div>
+      </div>` : ''}
     </div>`;
   }).join('');
 }
@@ -1299,13 +1336,17 @@ function syncGroupCompletion(local, group){
     }
   }
 }
+function refreshAfterChecklistChange(bizNo){
+  renderAll();
+  if(document.getElementById('storeModal').classList.contains('active')) openStoreModal(bizNo);
+}
 function toggleCheck(bizNo, group, checkId){
   const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
   const item = local[group].find(c=>c.id===checkId);
   setItemChecked(item, !item.checked);
   syncGroupCompletion(local, group);
   saveLocal();
-  renderAll();
+  refreshAfterChecklistChange(bizNo);
 }
 function toggleGroupAll(bizNo, group, groupIdx, checked){
   const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
@@ -1317,7 +1358,7 @@ function toggleGroupAll(bizNo, group, groupIdx, checked){
   });
   syncGroupCompletion(local, group);
   saveLocal();
-  renderAll();
+  refreshAfterChecklistChange(bizNo);
 }
 
 /* ---- 점포히스토리 ---- */
@@ -1571,19 +1612,28 @@ function openStoreModal(bizNo){
     </div>`;
   document.getElementById('storeModal').classList.add('active');
 }
+function toggleStageBlock(bizNo, group){
+  const key = bizNo+'_'+group;
+  if(stageBlockOpenSet.has(key)) stageBlockOpenSet.delete(key);
+  else stageBlockOpenSet.add(key);
+  refreshAfterChecklistChange(bizNo);
+}
 function stageBlock(title, bizNo, group, list){
-  const id = bizNo+"_"+group;
-  return `<div class="stage-block">
-    <div class="stage-block-head" onclick="document.getElementById('${id}').classList.toggle('open')">
-      <h4>${title} ${isDone(list)?'<span class="badge done" style="margin-left:6px">완료</span>':'<span class="badge progress" style="margin-left:6px">'+pct(list)+'%</span>'}</h4>
-      <span style="font-size:12px;color:var(--muted)">펼치기 ▾</span>
-    </div>
-    <div class="stage-body" id="${id}">
-      <ul class="checklist">
+  const isOpen = stageBlockOpenSet.has(bizNo+'_'+group);
+  const body = group === 'preset'
+    ? `<div class="preset-groups">${renderPresetChecklistGroups(bizNo, group, list)}</div>`
+    : `<ul class="checklist">
         ${list.map(c=>`<li class="${c.checked?'checked':''}">
           <input type="checkbox" ${c.checked?'checked':''} onchange="toggleCheck('${bizNo}','${group}','${c.id}')">
           <span>${c.label}${c.checked&&c.checkedBy?`<span class="check-meta">(${c.checkedBy} ${c.checkedAt||''})</span>`:''}</span></li>`).join('')}
-      </ul>
+      </ul>`;
+  return `<div class="stage-block">
+    <div class="stage-block-head" onclick="toggleStageBlock('${bizNo}','${group}')">
+      <h4>${title} ${isDone(list)?'<span class="badge done" style="margin-left:6px">완료</span>':'<span class="badge progress" style="margin-left:6px">'+pct(list)+'%</span>'}</h4>
+      <span style="font-size:12px;color:var(--muted)">${isOpen?'접기 ▴':'펼치기 ▾'}</span>
+    </div>
+    <div class="stage-body ${isOpen?'open':''}">
+      ${body}
     </div>
   </div>`;
 }
