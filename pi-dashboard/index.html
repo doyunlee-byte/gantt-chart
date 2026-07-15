@@ -106,7 +106,7 @@
   td{padding:9px 10px;border-bottom:1px solid #eef0f4;vertical-align:middle;}
   tr.store-row{cursor:pointer;}
   tr.store-row:hover{background:#f7f9fc;}
-  .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap;}
+  .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap;flex-shrink:0;}
   .badge.done{background:var(--green-bg);color:var(--green);}
   .badge.progress{background:var(--amber-bg);color:var(--amber);}
   .badge.wait{background:#eef0f4;color:var(--muted);}
@@ -164,7 +164,7 @@
   .preset-item{background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;overflow:hidden;}
   .preset-row{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background .15s;}
   .preset-row:hover{background:#f7f8fa;}
-  .preset-store-name{font-weight:700;font-size:13px;color:var(--text);flex:1;}
+  .preset-store-name{font-weight:700;font-size:13px;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .preset-owner-badge{font-size:11px;color:var(--primary);font-weight:600;background:var(--c2-bg);border-radius:5px;padding:2px 8px;flex-shrink:0;}
   .preset-chevron{color:var(--muted);font-size:11px;flex-shrink:0;}
   .preset-checklist-body{padding:4px 14px 12px;border-top:1px solid var(--border);}
@@ -612,12 +612,15 @@ const PROJECT_CONFIG = {
   }
 };
 
-const PRESET_CHECKLIST_DEFAULT = [
-  "TID/MID 개별값 반영",
-  "출력장비 설정",
-  "배달매출 연동 설정",
-  "스탬프/쿠폰 적용 확인",
-  "프리셋 최종 확인"
+// 프리셋 체크리스트 항목: 프로젝트(코코호도/더본외식/향후 추가 프로젝트) 공통 고정 데이터.
+// 코코호도 "장비프리셋" 탭에서 ?mode=preset으로 받아 dedupe한 결과를 그대로 하드코딩한 것.
+const EQUIPMENT_PRESET_GROUPS = [
+  { depth2: "매장운영관리", labels: ["전달방식","테이블 사용여부","포스키맵사용여부","결제수단 선택","배리어프리 기능 켜기","로고설정","주방프린터 출력 시점","연동대상 / 연동매장번호","연동대상"] },
+  { depth2: "화면관리", labels: ["색상 설정","메인 색상","카테고리 설정","장바구니 위치","장바구니 색상","옵션화면 설정","옵션보기 설정","안내문구","제목","내점주문 버튼","이미지","버튼명","포장주문 버튼","DID 화면 운영","DID 레이아웃","DID 배경 색상","호출주문 배경 색상","호출주문 안내 문구","호출번호 리스트 색상","메인 호출번호 강조 색상","대기주문 배경 색상","대기주문 안내 문구","대기번호 리스트 색상"] },
+  { depth2: "장비관리", labels: ["듀얼모니터사용여부","옵션 추천 표기 여부","옵션 가격 앞 + 부호 표시 여부","KDS 완료처리 순번","메인화면 타입"] },
+  { depth2: "매장상품관리", labels: ["출력장비설정 유형","외부 주문 채널 출력 사용여부","KDS 주문서 완료탭 이동 기준","KDS 출력 상품 상태 관리"] },
+  { depth2: "브랜드운영관리", labels: ["-","적립방법선택","스탬프 서비스 운영여부"] },
+  { depth2: "스마트주문서비스", labels: ["브랜드 스마트 주문 \n 채널사용여부"] }
 ];
 const INSTALL_TEST_CHECKLIST_DEFAULT = [
   "현장 최소 세팅 및 사용 교육",
@@ -659,7 +662,7 @@ function ensureStoreLocal(key, bizNo){
   const p = ensureProjectLocal(key);
   if(!p.storeData[bizNo]){
     p.storeData[bizNo] = {
-      preset: buildPresetChecklist(flattenPresetLabels(key), null),
+      preset: buildPresetChecklist(flattenPresetLabels(), null),
       presetCompletedBy: '',
       presetCompletedAt: '',
       installTest: mkChecklist(INSTALL_TEST_CHECKLIST_DEFAULT),
@@ -711,35 +714,12 @@ async function fetchSheetStores(key){
   }
 }
 
-let PRESET_GROUPS_CACHE = {};
-let PRESET_GROUPS_ERROR = {};
-
-async function fetchPresetGroups(key){
-  const cfg = PROJECT_CONFIG[key];
-  if(!cfg || !cfg.webAppUrl){ PRESET_GROUPS_CACHE[key] = []; PRESET_GROUPS_ERROR[key] = null; return; }
-  try{
-    const sep = cfg.webAppUrl.includes('?') ? '&' : '?';
-    const res = await fetch(cfg.webAppUrl + sep + 'mode=preset');
-    const json = await res.json();
-    PRESET_GROUPS_CACHE[key] = json.groups || [];
-    PRESET_GROUPS_ERROR[key] = json.error || null;
-  }catch(err){
-    PRESET_GROUPS_CACHE[key] = [];
-    PRESET_GROUPS_ERROR[key] = "프리셋 항목 연동 실패: " + err.message;
-  }
-  refreshPresetChecklists(key);
+function getPresetGroups(){
+  return EQUIPMENT_PRESET_GROUPS;
 }
-async function ensurePresetGroupsLoaded(key){
-  if(PRESET_GROUPS_CACHE[key] === undefined) await fetchPresetGroups(key);
-}
-function getPresetGroups(key){
-  const groups = PRESET_GROUPS_CACHE[key];
-  if(groups && groups.length) return groups;
-  return [{ depth2: "", labels: PRESET_CHECKLIST_DEFAULT }];
-}
-function flattenPresetLabels(key){
+function flattenPresetLabels(){
   const out = [];
-  getPresetGroups(key).forEach(g => g.labels.forEach(l => out.push(l)));
+  getPresetGroups().forEach(g => g.labels.forEach(l => out.push(l)));
   return out;
 }
 function buildPresetChecklist(labels, existing){
@@ -756,21 +736,10 @@ function buildPresetChecklist(labels, existing){
     };
   });
 }
-function refreshPresetChecklists(key){
-  const p = LOCAL.projects[key];
-  if(!p) return;
-  const labels = flattenPresetLabels(key);
-  Object.keys(p.storeData).forEach(bizNo => {
-    const sd = p.storeData[bizNo];
-    sd.preset = buildPresetChecklist(labels, sd.preset);
-    if(!isDone(sd.preset)){ sd.presetCompletedBy = ''; sd.presetCompletedAt = ''; }
-  });
-  saveLocal();
-}
 function renderPresetChecklistGroups(bizNo, groupKey, list){
   const byLabel = {};
   list.forEach(c => { byLabel[c.label] = c; });
-  return getPresetGroups(CURRENT_PROJECT).map((g, gi) => {
+  return getPresetGroups().map((g, gi) => {
     const items = g.labels.map(label => byLabel[label]).filter(Boolean);
     if(!items.length) return '';
     const allChecked = items.every(c => c.checked);
@@ -861,7 +830,6 @@ function renderProjectSelect(){
 async function onProjectChange(){
   CURRENT_PROJECT = document.getElementById('projectSelect').value;
   await ensureSheetLoaded(CURRENT_PROJECT);
-  await ensurePresetGroupsLoaded(CURRENT_PROJECT);
   renderAll();
 }
 async function ensureSheetLoaded(key){
@@ -869,7 +837,6 @@ async function ensureSheetLoaded(key){
 }
 async function refreshCurrentProject(){
   await fetchSheetStores(CURRENT_PROJECT);
-  await fetchPresetGroups(CURRENT_PROJECT);
   renderAll();
 }
 
@@ -1279,7 +1246,7 @@ function toggleCheck(bizNo, group, checkId){
 }
 function toggleGroupAll(bizNo, group, groupIdx, checked){
   const local = ensureStoreLocal(CURRENT_PROJECT, bizNo);
-  const groupDef = getPresetGroups(CURRENT_PROJECT)[groupIdx];
+  const groupDef = getPresetGroups()[groupIdx];
   if(!groupDef) return;
   const labelSet = new Set(groupDef.labels);
   local[group].forEach(item => {
@@ -1597,7 +1564,6 @@ function renderAll(){
 document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active', el.dataset.view===currentView));
 (async function init(){
   await ensureSheetLoaded(CURRENT_PROJECT);
-  await ensurePresetGroupsLoaded(CURRENT_PROJECT);
   saveLocal();
   initAuth();
 })();
