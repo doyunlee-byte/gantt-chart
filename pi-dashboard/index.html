@@ -164,8 +164,9 @@
   .preset-item{background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;overflow:hidden;}
   .preset-row{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background .15s;}
   .preset-row:hover{background:#f7f8fa;}
-  .preset-store-name{font-weight:700;font-size:13px;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .preset-owner-badge{font-size:11px;color:var(--primary);font-weight:600;background:var(--c2-bg);border-radius:5px;padding:2px 8px;flex-shrink:0;}
+  .preset-name-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}
+  .preset-store-name{display:block;font-weight:700;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .preset-owner-line{display:block;font-size:11px;color:var(--primary);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .preset-chevron{color:var(--muted);font-size:11px;flex-shrink:0;}
   .preset-checklist-body{padding:4px 14px 12px;border-top:1px solid var(--border);}
   .preset-groups{display:flex;flex-direction:column;}
@@ -849,8 +850,18 @@ function badgePct(list){
 }
 function presetOwnerBadge(store){
   return (isDone(store.preset) && store.presetCompletedBy)
-    ? `<span class="preset-owner-badge">담당자: ${store.presetCompletedBy}</span>`
+    ? `<span class="preset-owner-line">담당자: ${store.presetCompletedBy}</span>`
     : '';
+}
+function renderPresetRowHeader(s, open){
+  return `<div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
+    <div class="preset-name-col">
+      <span class="preset-store-name">${s.brand} · ${s.name}</span>
+      ${presetOwnerBadge(s)}
+    </div>
+    ${badgePct(s.preset)}
+    <span class="preset-chevron">${open?'▲':'▼'}</span>
+  </div>`;
 }
 function badgeFinal(store){
   const st = finalStatus(store);
@@ -1132,12 +1143,7 @@ function renderPresetPage(){
     listEl.innerHTML = stores.map(s=>{
       const open = presetOpenSet.has(s.bizNo);
       return `<div class="preset-item">
-        <div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
-          <span class="preset-store-name">${s.brand} · ${s.name}</span>
-          ${presetOwnerBadge(s)}
-          ${badgePct(s.preset)}
-          <span class="preset-chevron">${open?'▲':'▼'}</span>
-        </div>
+        ${renderPresetRowHeader(s, open)}
         ${open?`<div class="preset-checklist-body">
           ${storeInfoGrid(s)}
           <div class="preset-groups">
@@ -1535,12 +1541,7 @@ function renderDayPanel(){
     :dayStores.map(s=>{
         const open=presetOpenSet.has(s.bizNo);
         return `<div class="preset-item">
-          <div class="preset-row" onclick="togglePresetAccordion('${s.bizNo}')">
-            <span class="preset-store-name">${s.brand} · ${s.name}</span>
-            ${presetOwnerBadge(s)}
-            ${badgePct(s.preset)}
-            <span class="preset-chevron">${open?'▲':'▼'}</span>
-          </div>
+          ${renderPresetRowHeader(s, open)}
           ${open?`<div class="preset-checklist-body">
             ${storeInfoGrid(s)}
             <div class="preset-groups">
