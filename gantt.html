@@ -1401,6 +1401,11 @@ const RAW_CSVS = {
 };
 const GID_TAB = {'0':'종합','1234030367':'역량분석','1302096212':'빽다방','1804432973':'토스캠','1774731730':'왓더버거','422747828':'와플대학','773914619':'화이트펜슬','1618651644':'태스크보드'};
 
+// 코코호도 — 주간보고 전용 (별도 스프레드시트, AH:AL열 원본 매장 데이터).
+// 종합/RAW_CSVS와 다른 스프레드시트라 PROJECTS에는 합치지 않고, 주간보고 탭 렌더링 시점에만 별도 집계해서 반영.
+const KOKOHODO_CSV = 'https://docs.google.com/spreadsheets/d/1GRfnkDylr6w4VLUU-Yecd71EUjm7V72KHlL7QoMKz4E/gviz/tq?tqx=out:csv&range=AH:AL';
+const KOKOHODO_COMPLETE_TOKENS = ['완료','Y','YES','O','TRUE','1']; // AL열(설치 여부) 완료 판정값 — 실제 값 확인되면 이 목록만 교체
+
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 let BASE_RATE = 1.6;
 let viewYear = TODAY.getFullYear(), viewMonth = TODAY.getMonth();
@@ -1411,6 +1416,7 @@ const CENTERS=[{name:'비버경인',color:'#6b93ff'},{name:'비버성남',color:
 const DOWS=['일','월','화','수','목','금','토'];
 
 let PROJECTS=[], selected=new Set(), DAILY_MAP={}, CENTER_REMAIN={}, CENTER_DAILY={};
+let KOKOHODO_PROJECT = null; // 주간보고 전용 별도 프로젝트 (PROJECTS와 분리)
 const projCenterSettings={}, fcFixMap={};
 const fcSelectedProjects=new Set();
 
@@ -1531,6 +1537,48 @@ async function buildDailyMap(pname,url){
   Object.entries(cmap).forEach(([cn,v])=>CENTER_REMAIN[pname][cn]=Math.max(0,v.total-v.done));
 }
 
+// ── 코코호도 (주간보고 전용) ──────────────────────────────────────
+async function fetchKokohodoCSV(){
+  try{const r=await fetch(KOKOHODO_CSV);if(r.ok)return await r.text();}catch(e){}
+  try{const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(KOKOHODO_CSV)}`);if(r.ok)return await r.text();}catch(e){}
+  return null;
+}
+function parseKokohodoCSV(txt){
+  if(!txt)return[];
+  const lines=txt.trim().split('\n');
+  const clean=v=>(v||'').replace(/^"|"$/g,'').replace(/""/g,'"').trim();
+  return lines.slice(1).map(line=>{ // 첫 행은 헤더로 간주하고 건너뜀
+    const cols=[];let cur='',inQ=false;
+    for(const c of line){if(c==='"')inQ=!inQ;else if(c===','&&!inQ){cols.push(cur);cur='';}else cur+=c;}
+    cols.push(cur);
+    return{center:clean(cols[0]),owner:clean(cols[1]),confirmedDate:clean(cols[2]),completedDate:clean(cols[3]),installed:clean(cols[4])};
+  }).filter(r=>r.installed); // AL열(설치 여부) 값 있는 행만 실제 매장으로 카운트 (센터명은 비어있는 경우가 있어 기준 X)
+}
+function isKokohodoComplete(v){
+  const s=String(v||'').trim().toUpperCase();
+  return KOKOHODO_COMPLETE_TOKENS.some(t=>t.toUpperCase()===s);
+}
+async function buildKokohodoProject(){
+  const rows=parseKokohodoCSV(await fetchKokohodoCSV());
+  if(!rows.length)return null;
+  const total=rows.length;
+  const done=rows.filter(r=>isKokohodoComplete(r.installed)).length;
+  const remaining=total-done;
+  const fixedPersonnel=new Set(rows.filter(r=>r.owner).map(r=>r.owner)).size;
+  let projEnd=null;
+  if(remaining<=0){
+    projEnd=new Date(TODAY);
+  }else if(fixedPersonnel>0){
+    const days=Math.ceil(remaining/(fixedPersonnel*2)); // 잔여 / (픽스인원 × 2건/일), 주말 제외
+    projEnd=addBusinessDays(TODAY,days);
+  }
+  return{
+    id:'KOKOHODO',name:'코코호도',color:'#0ea5e9',bg:'rgba(14,165,233,.15)',tc:'#0369a1',
+    projStart:null,projEnd,
+    tasks:[{task:'설치',team:'',start:null,deadline:projEnd,total,done,status:done>=total?'완료':'진행중'}]
+  };
+}
+
 // ── 데이터 로드
 async function loadData(){
   const setT=t=>{const el=document.getElementById('loadTxt');if(el)el.textContent=t;};
@@ -1538,7 +1586,11 @@ async function loadData(){
   const sumTxt=await fetchCSV(CSV_SUMMARY);
   if(!sumTxt){setT('데이터 로드 실패 - 구글 시트 공개 설정을 확인해주세요');return;}
   setT('raw 데이터 불러오는 중...');
-  await Promise.allSettled(Object.entries(RAW_CSVS).map(([n,u])=>buildDailyMap(n,u)));
+  const [,kokohodo]=await Promise.all([
+    Promise.allSettled(Object.entries(RAW_CSVS).map(([n,u])=>buildDailyMap(n,u))),
+    buildKokohodoProject().catch(()=>null)
+  ]);
+  KOKOHODO_PROJECT=kokohodo;
   const rows=parseCSV(sumTxt).filter(r=>r['프로젝트']&&r['프로젝트'].trim());
   const pm={};rows.forEach(r=>{const p=r['프로젝트'];if(!pm[p])pm[p]=[];pm[p].push(r);});
   PROJECTS=Object.entries(pm).map(([name,tasks],i)=>{
@@ -4628,6 +4680,8 @@ function renderWeeklyPage(){
 
   if(!fcSelectedProjects.size && PROJECTS.length) PROJECTS.forEach(p=>fcSelectedProjects.add(p.id));
   const selP = PROJECTS.filter(p=>fcSelectedProjects.has(p.id));
+  // 코코호도는 별도 스프레드시트 기반이라 PROJECTS/선택칩과 분리 — 프로젝트 현황·마감 일정 목록에만 추가로 합침
+  const wrProjects = KOKOHODO_PROJECT ? [...PROJECTS, KOKOHODO_PROJECT] : PROJECTS;
 
   const now = new Date();
   const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
@@ -4743,7 +4797,7 @@ function renderWeeklyPage(){
 
   // 프로젝트 마감 일정 차트 (중앙 아래) — 바 2개 레이아웃 (프로젝트 수에 따라 동적 압축)
   function buildDeadlineGantt(h){
-    const pjList=PROJECTS.filter(p=>p.projEnd).sort((a,b)=>wrPct(b).pct-wrPct(a).pct);
+    const pjList=wrProjects.filter(p=>p.projEnd).sort((a,b)=>wrPct(b).pct-wrPct(a).pct);
     if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:${h}px;font-size:10px;color:#94a3b8;">마감일 데이터 없음</div>`;
 
     function formatDeadline(p){
@@ -4843,7 +4897,7 @@ function renderWeeklyPage(){
   </div>`).join('');
 
   // 프로젝트 전체 현황 (우측 아래)
-  const projListHtml=PROJECTS.filter(p=>wrPct(p).total>0).sort((a,b)=>wrPct(b).pct-wrPct(a).pct).map(p=>{
+  const projListHtml=wrProjects.filter(p=>wrPct(p).total>0).sort((a,b)=>wrPct(b).pct-wrPct(a).pct).map(p=>{
     const{total:pt,done:pd,pct:pp}=wrPct(p);
     const risk=wrRisk(p);
     const rl=risk?RL_WR[risk]:null;
