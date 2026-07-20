@@ -1144,7 +1144,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   width: 1280px;
   min-height: 0;
   flex: 1;
-  background: #F0F2F8;
+  background: #EEF2F9;
   border-radius: 12px;
   box-shadow: 0 8px 40px rgba(11,30,62,.20);
   display: flex;
@@ -1202,10 +1202,10 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   overflow: hidden;
 }
 .wr-panel {
-  background: #ffffff;
-  border: 1px solid #E8EDF5;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(11,30,62,0.07);
+  background: #D6E2F5;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(11,30,62,0.18), 0 1px 4px rgba(11,30,62,0.10);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1213,7 +1213,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
 .wr-pt {
   font-size: 8px;
   font-weight: 700;
-  color: #94A8C8;
+  color: #6A80A8;
   letter-spacing: .06em;
   text-transform: uppercase;
   padding: 5px 10px 3px;
@@ -4752,47 +4752,40 @@ function renderWeeklyPage(){
     const targetExceed=totalFix>0&&dailyTarget!==null&&dailyTarget>totalFix*2;
 
     const dl=hasEnd?Math.ceil((p.projEnd-TODAY)/86400000):null;
-    const dlStr=dl!==null?(dl<0?`D+${Math.abs(dl)}`:(dl===0?'D-Day':`D-${dl}`)):'';
-    const dlColor=dl!==null?(dl<0?'#E85D5D':dl<=7?'#f59e0b':'#94A8C8'):'#94A8C8';
-
-    const badgeHtml=isDone
-      ?`<span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;">완료</span>`
-      :`<span style="font-size:9px;font-weight:700;color:#3b82f6;background:#eff6ff;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;">진행중</span>`;
+    const dlStr=dl!==null?(dl<0?`D+${Math.abs(dl)}`:(dl===0?'D-Day':`D-${dl}`)):'예정';
+    const badgeText=isDone?'완료':dlStr;
 
     const deadlineStr=hasEnd?`${p.projEnd.getMonth()+1}월 ${p.projEnd.getDate()}일`:'미정';
     const workingDaysHtml=overdue
       ?`<b style="color:#E85D5D;">마감 초과</b>`
-      :`<b style="color:#2E6BC4;">${workingDays}일 남음</b>`;
+      :`<b style="color:#0B1E3E;">${workingDays}일 남음</b>`;
     const dailyTargetHtml=dailyTarget===null
-      ?`<b style="color:#94A8C8;">—</b>`
-      :`<b style="color:${targetExceed?'#E85D5D':'#2E6BC4'};">${dailyTarget}개/일</b>`;
+      ?`<b style="color:#6A80A8;">—</b>`
+      :`<b style="color:${targetExceed?'#E85D5D':'#0B1E3E'};">${dailyTarget}개/일</b>`;
 
-    return `<div style="background:#FFFFFF;border:1px solid #E2E8F5;border-radius:12px;box-shadow:0 2px 12px rgba(11,30,62,0.07);overflow:hidden;display:flex;flex-direction:column;">
+    return `<div style="background:#C8D8EE;border:1px solid rgba(255,255,255,0.5);border-radius:14px;box-shadow:0 6px 20px rgba(11,30,62,0.20), 0 2px 6px rgba(11,30,62,0.12);overflow:hidden;display:flex;flex-direction:column;">
   <div style="height:4px;background:${p.color};flex-shrink:0;"></div>
-  <div style="padding:11px 14px;display:flex;flex-direction:column;gap:8px;">
-    <div style="display:flex;align-items:center;gap:6px;">
-      <span style="width:7px;height:7px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
-      <span style="font-size:13px;font-weight:700;color:${p.color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;">${p.name}</span>
-      ${badgeHtml}
-      ${dlStr?`<span style="font-size:11px;font-weight:800;color:${dlColor};white-space:nowrap;flex-shrink:0;">${dlStr}</span>`:''}
+  <div style="padding:9px 11px;display:flex;flex-direction:column;gap:6px;">
+    <div style="display:flex;align-items:center;gap:5px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
+      <span style="font-size:12px;font-weight:800;color:${p.color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;">${p.name}</span>
+      <span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg, #1A3A6E, #2A5298);padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;">${badgeText}</span>
     </div>
-    <div style="border-top:1px solid #E8EDF5;"></div>
     <div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div style="flex:1;height:8px;background:#F0F4FB;border-radius:4px;overflow:hidden;">
-          <div style="height:100%;width:${pp}%;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:4px;"></div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="flex:1;height:7px;background:#FFFFFF;border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${pp}%;background:linear-gradient(90deg, #1A3A6E, #2A5298);border-radius:4px;"></div>
         </div>
-        <span style="font-size:12px;font-weight:800;color:${p.color};flex-shrink:0;">${pp}%</span>
+        <span style="font-size:11px;font-weight:800;color:${p.color};flex-shrink:0;">${pp}%</span>
       </div>
-      <div style="font-size:10px;color:#94A8C8;margin-top:4px;">완료 ${pd.toLocaleString()}개 / 전체 ${pt.toLocaleString()}개</div>
+      <div style="font-size:9px;color:#6A80A8;margin-top:3px;">완료 ${pd.toLocaleString()}개 / 전체 ${pt.toLocaleString()}개</div>
     </div>
-    <div style="border-top:1px solid #E8EDF5;"></div>
-    <div style="display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:#94A8C8;">
+    <div style="display:flex;flex-direction:column;gap:2px;font-size:9px;color:#6A80A8;border-top:1px solid rgba(11,30,62,0.12);padding-top:5px;">
       <div style="display:flex;justify-content:space-between;">
-        <span>마감일: <b style="color:#2E6BC4;">${deadlineStr}</b></span>
-        <span>워킹데이: ${workingDaysHtml}</span>
+        <span>마감 <b style="color:#0B1E3E;">${deadlineStr}</b></span>
+        <span>WD ${workingDaysHtml}</span>
       </div>
-      <div>일 목표: ${dailyTargetHtml}${totalFix>0?` <span>(픽스 ${totalFix}명 × 2건 기준)</span>`:''}</div>
+      <div>일목표 ${dailyTargetHtml}${totalFix>0?` <span>(픽스${totalFix}×2)</span>`:''}</div>
     </div>
   </div>
 </div>`;
@@ -4800,54 +4793,21 @@ function renderWeeklyPage(){
 
   function buildProjectCardsGrid(){
     const pjList=wrProjects.filter(p=>p.projEnd).sort((a,b)=>wrPct(b).pct-wrPct(a).pct);
-    if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;color:#94A8C8;">마감일 데이터 없음</div>`;
-    return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${pjList.map(buildProjectCard).join('')}</div>`;
+    if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;color:#6A80A8;">마감일 데이터 없음</div>`;
+    return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">${pjList.map(buildProjectCard).join('')}</div>`;
   }
 
-  // KPI 카드 (우측 위)
-  const RL_WR={overdue:{t:'마감초과',c:'#E85D5D'},danger:{t:'마감위험',c:'#E85D5D'},warning:{t:'주의',c:'#f59e0b'},ok:{t:'정상',c:'#2A7A5A'}};
+  // KPI 카드 (상단 1x4)
   const kpiHtml=[
     {label:'전체 진척률',value:`${kPct}%`,sub:`${kDon.toLocaleString()} / ${kTot.toLocaleString()} 매장`},
     {label:'이번 주 처리',value:`${kTW}`,sub:'매장 완료'},
     {label:'마감 위험',value:`${kRisk}`,sub:kRisk>0?'즉시 조치':'이상 없음',alert:kRisk>0},
     {label:'완료 프로젝트',value:`${kDone}/${PROJECTS.length}`,sub:'프로젝트'},
-  ].map(k=>`<div style="background:linear-gradient(135deg, #2E6BC4 0%, #3D7FD4 60%, #5A9BE0 100%);border-radius:10px;padding:16px 14px;overflow:hidden;box-shadow:0 2px 8px rgba(11,30,62,.15);">
+  ].map(k=>`<div style="background:linear-gradient(135deg, #1A3A6E, #2A5298);border-radius:10px;padding:16px 14px;overflow:hidden;box-shadow:0 2px 8px rgba(11,30,62,.15);">
     <div style="font-size:10px;font-weight:600;color:#94A8C8;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.label}</div>
-    <div style="font-size:34px;font-weight:800;color:${k.alert?'#E85D5D':'#fff'};line-height:1;letter-spacing:-.5px;">${k.value}</div>
+    <div style="font-size:34px;font-weight:800;color:${k.alert?'#ff8080':'#fff'};line-height:1;letter-spacing:-.5px;">${k.value}</div>
     <div style="font-size:9px;color:#94A8C8;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${k.sub}</div>
   </div>`).join('');
-
-  // 프로젝트 전체 현황 (우측 아래)
-  const projListHtml=wrProjects.filter(p=>wrPct(p).total>0).sort((a,b)=>wrPct(b).pct-wrPct(a).pct).map(p=>{
-    const{total:pt,done:pd,pct:pp}=wrPct(p);
-    const risk=wrRisk(p);
-    const rl=risk?RL_WR[risk]:null;
-    const hasDates=p.projStart&&p.projEnd;
-    let badgeColor='#94A8C8',badgeBg='#F0F4FB',badgeText='예정';
-    if(pp===100){badgeColor='#fff';badgeBg='linear-gradient(90deg, #2E6BC4, #5A9BE0)';badgeText='완료';}
-    else if(hasDates&&rl&&risk!=='ok'){badgeColor='#E85D5D';badgeBg='#FEF0F0';badgeText=rl.t;}
-    else if(hasDates){badgeColor='#3b82f6';badgeBg='#eff6ff';badgeText='진행중';}
-    const dl=p.projEnd?Math.ceil((p.projEnd-TODAY)/86400000):null;
-    const dlStr=dl!==null?(dl<0?`D+${Math.abs(dl)}`:(dl===0?'D-Day':`D-${dl}`)): '';
-    const dlColor=dl!==null?(dl<0?'#ef4444':dl<=7?'#f59e0b':'#94A8C8'):'transparent';
-    return `<div style="padding:9px 0;border-bottom:1px solid #E8EDF5;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
-        <div style="display:flex;align-items:center;gap:5px;min-width:0;flex:1;overflow:hidden;">
-          <span style="width:7px;height:7px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
-          <span style="font-size:11px;font-weight:700;color:#2E6BC4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
-          <span style="font-size:8px;font-weight:700;color:${badgeColor};background:${badgeBg};padding:2px 5px;border-radius:3px;flex-shrink:0;white-space:nowrap;">${badgeText}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;margin-left:5px;">
-          ${dlStr?`<span style="font-size:8.5px;font-weight:700;color:${dlColor};white-space:nowrap;">${dlStr}</span>`:''}
-          <span style="font-size:13px;font-weight:800;color:${pp===100?'#059669':p.color};white-space:nowrap;">${pp}%</span>
-        </div>
-      </div>
-      <div style="height:10px;background:#F0F4FB;border-radius:4px;overflow:hidden;">
-        <div style="height:100%;width:${pp}%;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:4px;"></div>
-      </div>
-      <div style="font-size:8px;color:#94A8C8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${pd.toLocaleString()} / ${pt.toLocaleString()} 완료</div>
-    </div>`;
-  }).join('');
 
   slide.innerHTML=`
 <div class="wr-hdr">
@@ -4862,18 +4822,14 @@ function renderWeeklyPage(){
     <span class="sync-dot" style="width:6px;height:6px;"></span>
   </div>
 </div>
-<div class="wr-body" style="flex-direction:column;gap:0;padding:0 10px 8px;">
-  <div style="display:flex;gap:8px;flex:1;min-height:0;">
-    <div class="wr-panel" style="flex:1;min-height:0;">
-      <div class="wr-pt">KPI 현황</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 10px 8px;flex-shrink:0;">${kpiHtml}</div>
-      <div class="wr-pt" style="border-top:1px solid #E8EDF5;">프로젝트 현황</div>
-      <div style="flex:1;min-height:0;overflow:auto;padding:0 10px 8px;">${projListHtml}</div>
-    </div>
-    <div class="wr-panel" style="flex:2;min-height:0;">
-      <div class="wr-pt">프로젝트 마감 일정</div>
-      <div style="flex:1;min-height:0;padding:4px 10px 8px;overflow:auto;">${buildProjectCardsGrid()}</div>
-    </div>
+<div class="wr-body" style="flex-direction:column;gap:10px;padding:10px 12px 10px;">
+  <div class="wr-panel" style="flex-shrink:0;">
+    <div class="wr-pt">KPI 현황</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 12px 12px;">${kpiHtml}</div>
+  </div>
+  <div class="wr-panel" style="flex:1;min-height:0;">
+    <div class="wr-pt">프로젝트 마감 일정</div>
+    <div style="flex:1;min-height:0;padding:4px 12px 10px;overflow:auto;">${buildProjectCardsGrid()}</div>
   </div>
 </div>`;
 }
