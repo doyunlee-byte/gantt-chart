@@ -1404,7 +1404,9 @@ const GID_TAB = {'0':'종합','1234030367':'역량분석','1302096212':'빽다�
 // 코코호도 — 주간보고 전용 (별도 스프레드시트, AH:AL열 원본 매장 데이터).
 // 종합/RAW_CSVS와 다른 스프레드시트라 PROJECTS에는 합치지 않고, 주간보고 탭 렌더링 시점에만 별도 집계해서 반영.
 const KOKOHODO_CSV = 'https://docs.google.com/spreadsheets/d/1GRfnkDylr6w4VLUU-Yecd71EUjm7V72KHlL7QoMKz4E/gviz/tq?tqx=out:csv&range=AH:AL';
-const KOKOHODO_COMPLETE_TOKENS = ['완료','Y','YES','O','TRUE','1']; // AL열(설치 여부) 완료 판정값 — 실제 값 확인되면 이 목록만 교체
+// AL열(설치 여부)은 "완료" 또는 "예정" 둘 중 하나만 씀 — 미완료 매장은 전부 "예정"으로 기입됨
+const KOKOHODO_STATUS_DONE = '완료';
+const KOKOHODO_STATUS_PENDING = '예정';
 
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 let BASE_RATE = 1.6;
@@ -1552,11 +1554,10 @@ function parseKokohodoCSV(txt){
     for(const c of line){if(c==='"')inQ=!inQ;else if(c===','&&!inQ){cols.push(cur);cur='';}else cur+=c;}
     cols.push(cur);
     return{center:clean(cols[0]),owner:clean(cols[1]),confirmedDate:clean(cols[2]),completedDate:clean(cols[3]),installed:clean(cols[4])};
-  }).filter(r=>r.installed); // AL열(설치 여부) 값 있는 행만 실제 매장으로 카운트 (센터명은 비어있는 경우가 있어 기준 X)
+  }).filter(r=>r.installed===KOKOHODO_STATUS_DONE||r.installed===KOKOHODO_STATUS_PENDING); // AL열이 "완료"/"예정"인 행만 실제 매장으로 카운트
 }
 function isKokohodoComplete(v){
-  const s=String(v||'').trim().toUpperCase();
-  return KOKOHODO_COMPLETE_TOKENS.some(t=>t.toUpperCase()===s);
+  return String(v||'').trim()===KOKOHODO_STATUS_DONE;
 }
 async function buildKokohodoProject(){
   const rows=parseKokohodoCSV(await fetchKokohodoCSV());
