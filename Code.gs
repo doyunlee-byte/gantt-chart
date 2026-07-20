@@ -13,6 +13,7 @@ function doGet(e) {
 
   if (action === 'loadSettings') return _loadSettingsJSON();
   if (action === 'createSlide')  return _createSlide();
+  if (action === 'kokohodo')     return _getKokohodoData();
 
   if (tab) return _getSheetCSV(tab);
 
@@ -81,6 +82,31 @@ function _getSheetCSV(tabName) {
     return ContentService
       .createTextOutput('')
       .setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
+// ── 코코호도 — 별도 스프레드시트, 필터 상태와 무관하게 원본 데이터를 그대로 읽음 ──
+// (getDataRange/getValues는 시트에 걸린 필터의 영향을 받지 않음)
+function _getKokohodoData() {
+  try {
+    const ss = SpreadsheetApp.openById('1GRfnkDylr6w4VLUU-Yecd71EUjm7V72KHlL7QoMKz4E');
+    const sh = ss.getSheetByName('가맹점리스트 취합');
+    if (!sh) return _jsonResponse({ rows: [] });
+
+    const data = sh.getDataRange().getValues();
+    const rows = [];
+    // AH=인덱스33(센터), AI=34(담당자), AL=37(설치 여부) — 0-based
+    for (let i = 1; i < data.length; i++) {
+      const center    = data[i][33];
+      const owner     = data[i][34];
+      const installed = String(data[i][37] || '').trim();
+      if (installed === '완료' || installed === '예정') {
+        rows.push({ center: String(center || ''), owner: String(owner || ''), installed: installed });
+      }
+    }
+    return _jsonResponse({ rows: rows });
+  } catch (err) {
+    return _jsonResponse({ error: err.message, rows: [] });
   }
 }
 

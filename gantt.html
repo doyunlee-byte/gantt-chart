@@ -1403,7 +1403,8 @@ const GID_TAB = {'0':'종합','1234030367':'역량분석','1302096212':'빽다�
 
 // 코코호도 — 주간보고 전용 (별도 스프레드시트, AH:AL열 원본 매장 데이터).
 // 종합/RAW_CSVS와 다른 스프레드시트라 PROJECTS에는 합치지 않고, 주간보고 탭 렌더링 시점에만 별도 집계해서 반영.
-const KOKOHODO_CSV = 'https://docs.google.com/spreadsheets/d/1GRfnkDylr6w4VLUU-Yecd71EUjm7V72KHlL7QoMKz4E/gviz/tq?tqx=out:csv&range=AH:AL';
+// gviz/export CSV는 시트에 필터가 걸리면 숨겨진 행이 누락되는 문제가 있어, Apps Script(Code.gs _getKokohodoData)가
+// getDataRange().getValues()로 필터 무관하게 원본을 읽어 ?action=kokohodo로 내려주는 걸 사용.
 // AL열(설치 여부)은 "완료" 또는 "예정" 둘 중 하나만 씀 — 미완료 매장은 전부 "예정"으로 기입됨
 const KOKOHODO_STATUS_DONE = '완료';
 const KOKOHODO_STATUS_PENDING = '예정';
@@ -1540,27 +1541,18 @@ async function buildDailyMap(pname,url){
 }
 
 // ── 코코호도 (주간보고 전용) ──────────────────────────────────────
-async function fetchKokohodoCSV(){
-  try{const r=await fetch(KOKOHODO_CSV);if(r.ok)return await r.text();}catch(e){}
-  try{const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(KOKOHODO_CSV)}`);if(r.ok)return await r.text();}catch(e){}
-  return null;
-}
-function parseKokohodoCSV(txt){
-  if(!txt)return[];
-  const lines=txt.trim().split('\n');
-  const clean=v=>(v||'').replace(/^"|"$/g,'').replace(/""/g,'"').trim();
-  return lines.slice(1).map(line=>{ // 첫 행은 헤더로 간주하고 건너뜀
-    const cols=[];let cur='',inQ=false;
-    for(const c of line){if(c==='"')inQ=!inQ;else if(c===','&&!inQ){cols.push(cur);cur='';}else cur+=c;}
-    cols.push(cur);
-    return{center:clean(cols[0]),owner:clean(cols[1]),confirmedDate:clean(cols[2]),completedDate:clean(cols[3]),installed:clean(cols[4])};
-  }).filter(r=>r.installed===KOKOHODO_STATUS_DONE||r.installed===KOKOHODO_STATUS_PENDING); // AL열이 "완료"/"예정"인 행만 실제 매장으로 카운트
+async function fetchKokohodoRows(){
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=kokohodo`);
+    if(r.ok){const json=await r.json();return json.rows||[];}
+  }catch(e){}
+  return [];
 }
 function isKokohodoComplete(v){
   return String(v||'').trim()===KOKOHODO_STATUS_DONE;
 }
 async function buildKokohodoProject(){
-  const rows=parseKokohodoCSV(await fetchKokohodoCSV());
+  const rows=await fetchKokohodoRows(); // Code.gs에서 이미 AL이 "완료"/"예정"인 행만 필터링해서 내려줌
   if(!rows.length)return null;
   const total=rows.length;
   const done=rows.filter(r=>isKokohodoComplete(r.installed)).length;
