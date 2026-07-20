@@ -4728,152 +4728,80 @@ function renderWeeklyPage(){
     return `<button onclick="toggleWeeklyChip('${p.id}')" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0;border:1.5px solid ${on?p.color:'#E8EDF5'};background:${on?p.color+'18':'#F0F4FB'};color:${on?p.color:'#94A8C8'};"><span style="width:5px;height:5px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>${p.name}</button>`;
   }).join('');
 
-  // 주간 실적 비교 (막대 차트)
-  const weekData={};
-  CENTERS.forEach(c=>{
-    let tw=0,lw=0;
-    selP.forEach(gp=>{
-      const cd=(CENTER_DAILY[gp.name]||{})[c.name]||{};
-      Object.entries(cd).forEach(([ds,cnt])=>{
-        if(wrInRange(ds,thisMonday,thisSunday)) tw+=cnt;
-        if(wrInRange(ds,lastMonday,lastSunday)) lw+=cnt;
-      });
-    });
-    weekData[c.name]={tw,lw,color:c.color};
-  });
-  const wColor=selP.length===1?(selP[0]?.color||'#6366f1'):'#818cf8';
-
-  function buildWrLineChart(ch){
-    const W=400,pL=34,pR=12,pT=42,pB=36,gW=W-pL-pR,gH=ch-pT-pB;
-    const n=CENTERS.length;
-    if(!n) return '';
-    const maxV=Math.max(1,...Object.values(weekData).flatMap(d=>[d.tw,d.lw]));
-    function xOf(i){return pL+(n===1?gW/2:i*gW/(n-1));}
-    function yOf(v){return pT+gH-(v/maxV)*gH;}
-    let s='';
-    // 가로 그리드선
-    [0,0.25,0.5,0.75,1].forEach(r=>{
-      const y=pT+gH-r*gH;
-      s+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(180,196,220,0.2)" stroke-width="${r===0?1.5:0.8}"/>`;
-      if(r>0) s+=`<text x="${pL-5}" y="${y+4}" text-anchor="end" font-size="9" fill="#94A8C8">${Math.round(maxV*r)}</text>`;
-    });
-    // 포인트 배열 생성
-    const lwPts=CENTERS.map((c,i)=>({x:xOf(i),y:yOf(weekData[c.name]?.lw||0)}));
-    const twPts=CENTERS.map((c,i)=>({x:xOf(i),y:yOf(weekData[c.name]?.tw||0)}));
-    // 전주 곡선 (연한 블루)
-    s+=`<path d="${smoothPath(lwPts)}" fill="none" stroke="#C8D8F0" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/>`;
-    // 금주 곡선 영역 채우기
-    const twCurve=smoothPath(twPts);
-    s+=`<path d="${twCurve} L${xOf(n-1)},${pT+gH} L${xOf(0)},${pT+gH}Z" fill="rgba(61,127,212,0.08)" stroke="none"/>`;
-    s+=`<path d="${twCurve}" fill="none" stroke="#5A9BE0" stroke-width="4" stroke-linecap="round"/>`;
-    // 점 및 레이블
-    CENTERS.forEach((c,i)=>{
-      const lw=weekData[c.name]?.lw||0;
-      const tw=weekData[c.name]?.tw||0;
-      const x=xOf(i),ly=yOf(lw),ty=yOf(tw);
-      s+=`<circle cx="${x}" cy="${ly}" r="5" fill="#fff" stroke="#C8D8F0" stroke-width="2"/>`;
-      if(lw>0) s+=`<text x="${x}" y="${ly-10}" text-anchor="middle" font-size="10" fill="#94A8C8">${lw}</text>`;
-      s+=`<circle cx="${x}" cy="${ty}" r="7" fill="#5A9BE0" stroke="#fff" stroke-width="2.5"/>`;
-      if(tw>0) s+=`<text x="${x}" y="${ty-13}" text-anchor="middle" font-size="12" font-weight="700" fill="#5A9BE0">${tw}</text>`;
-      s+=`<text x="${x}" y="${pT+gH+24}" text-anchor="middle" font-size="12" font-weight="600" fill="#94A8C8">${c.name.replace('비버','')}</text>`;
-    });
-    // 범례
-    const lgY=pT-24;
-    s+=`<line x1="${pL}" y1="${lgY}" x2="${pL+18}" y2="${lgY}" stroke="#C8D8F0" stroke-width="3" stroke-dasharray="6,4"/>`;
-    s+=`<circle cx="${pL+9}" cy="${lgY}" r="4" fill="#fff" stroke="#C8D8F0" stroke-width="2"/>`;
-    s+=`<text x="${pL+24}" y="${lgY+4}" font-size="9" fill="#94A8C8">전주</text>`;
-    s+=`<line x1="${pL+54}" y1="${lgY}" x2="${pL+72}" y2="${lgY}" stroke="#5A9BE0" stroke-width="4"/>`;
-    s+=`<circle cx="${pL+63}" cy="${lgY}" r="5" fill="#5A9BE0"/>`;
-    s+=`<text x="${pL+78}" y="${lgY+4}" font-size="9" fill="#94A8C8">금주</text>`;
-    return `<svg width="100%" height="${ch}" viewBox="0 0 ${W} ${ch}">${s}</svg>`;
+  // 프로젝트 카드 목록 — 마감일 · 워킹데이 · 일 목표 계산
+  function getWorkingDays(start, end) {
+    let count = 0;
+    let cur = new Date(start);
+    while (cur <= end) {
+      const day = cur.getDay();
+      if (day !== 0 && day !== 6) count++;
+      cur.setDate(cur.getDate() + 1);
+    }
+    return count;
   }
 
-  // 프로젝트 마감 일정 차트 (중앙 아래) — 바 2개 레이아웃 (프로젝트 수에 따라 동적 압축)
-  function buildDeadlineGantt(h){
+  function buildProjectCard(p){
+    const{total:pt,done:pd,pct:pp}=wrPct(p);
+    const isDone=pp>=100;
+    const remaining=Math.max(0,pt-pd);
+    const totalFix=CENTERS.reduce((s,c)=>s+(projCenterSettings[p.id]?.[c.name]?.realPersonnel||0),0);
+    const hasEnd=!!p.projEnd;
+    const overdue=hasEnd&&p.projEnd<TODAY;
+    const workingDays=hasEnd&&!overdue?getWorkingDays(TODAY,p.projEnd):0;
+    const dailyTarget=(!overdue&&workingDays>0&&remaining>0)?Math.ceil(remaining/workingDays):null;
+    const targetExceed=totalFix>0&&dailyTarget!==null&&dailyTarget>totalFix*2;
+
+    const dl=hasEnd?Math.ceil((p.projEnd-TODAY)/86400000):null;
+    const dlStr=dl!==null?(dl<0?`D+${Math.abs(dl)}`:(dl===0?'D-Day':`D-${dl}`)):'';
+    const dlColor=dl!==null?(dl<0?'#E85D5D':dl<=7?'#f59e0b':'#94A8C8'):'#94A8C8';
+
+    const badgeHtml=isDone
+      ?`<span style="font-size:9px;font-weight:700;color:#fff;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;">완료</span>`
+      :`<span style="font-size:9px;font-weight:700;color:#3b82f6;background:#eff6ff;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;">진행중</span>`;
+
+    const deadlineStr=hasEnd?`${p.projEnd.getMonth()+1}월 ${p.projEnd.getDate()}일`:'미정';
+    const workingDaysHtml=overdue
+      ?`<b style="color:#E85D5D;">마감 초과</b>`
+      :`<b style="color:#2E6BC4;">${workingDays}일 남음</b>`;
+    const dailyTargetHtml=dailyTarget===null
+      ?`<b style="color:#94A8C8;">—</b>`
+      :`<b style="color:${targetExceed?'#E85D5D':'#2E6BC4'};">${dailyTarget}개/일</b>`;
+
+    return `<div style="background:#FFFFFF;border:1px solid #E2E8F5;border-radius:12px;box-shadow:0 2px 12px rgba(11,30,62,0.07);overflow:hidden;display:flex;flex-direction:column;">
+  <div style="height:4px;background:${p.color};flex-shrink:0;"></div>
+  <div style="padding:11px 14px;display:flex;flex-direction:column;gap:8px;">
+    <div style="display:flex;align-items:center;gap:6px;">
+      <span style="width:7px;height:7px;border-radius:50%;background:${p.color};flex-shrink:0;"></span>
+      <span style="font-size:13px;font-weight:700;color:${p.color};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;">${p.name}</span>
+      ${badgeHtml}
+      ${dlStr?`<span style="font-size:11px;font-weight:800;color:${dlColor};white-space:nowrap;flex-shrink:0;">${dlStr}</span>`:''}
+    </div>
+    <div style="border-top:1px solid #E8EDF5;"></div>
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;height:8px;background:#F0F4FB;border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${pp}%;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:4px;"></div>
+        </div>
+        <span style="font-size:12px;font-weight:800;color:${p.color};flex-shrink:0;">${pp}%</span>
+      </div>
+      <div style="font-size:10px;color:#94A8C8;margin-top:4px;">완료 ${pd.toLocaleString()}개 / 전체 ${pt.toLocaleString()}개</div>
+    </div>
+    <div style="border-top:1px solid #E8EDF5;"></div>
+    <div style="display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:#94A8C8;">
+      <div style="display:flex;justify-content:space-between;">
+        <span>마감일: <b style="color:#2E6BC4;">${deadlineStr}</b></span>
+        <span>워킹데이: ${workingDaysHtml}</span>
+      </div>
+      <div>일 목표: ${dailyTargetHtml}${totalFix>0?` <span>(픽스 ${totalFix}명 × 2건 기준)</span>`:''}</div>
+    </div>
+  </div>
+</div>`;
+  }
+
+  function buildProjectCardsGrid(){
     const pjList=wrProjects.filter(p=>p.projEnd).sort((a,b)=>wrPct(b).pct-wrPct(a).pct);
-    if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:${h}px;font-size:10px;color:#94a3b8;">마감일 데이터 없음</div>`;
-
-    function formatDeadline(p){
-      const{total:pt,done:pd}=wrPct(p);
-      const remaining=pt-pd;
-      const totalFix=CENTERS.reduce((s,c)=>s+(projCenterSettings[p.id]?.[c.name]?.realPersonnel||0),0);
-      if(totalFix>0&&remaining>0){
-        const days=Math.ceil(remaining/(totalFix*2));
-        const est=addBusinessDays(TODAY,days);
-        return `${est.getMonth()+1}월 ${est.getDate()}일 예상`;
-      }
-      if(!p.projEnd) return '';
-      return `${p.projEnd.getMonth()+1}월 ${p.projEnd.getDate()}일 예상`;
-    }
-
-    const n=pjList.length;
-    const legendH=22;
-    const rowsH=h-legendH;
-    const rowH=Math.floor(rowsH/n); // 모든 프로젝트가 스크롤 없이 꼭 맞게
-
-    // 행 높이에 따라 시각 요소 동적 스케일
-    const showLabels=rowH>=50;
-    const barH1=Math.max(12,Math.min(15,Math.round(rowH*0.20)));
-    const barH2=Math.max(7,Math.min(10,Math.round(rowH*0.12)));
-    const barGap=Math.max(4,Math.min(7,Math.round(rowH*0.09)));
-    const labelSz=8;
-    const labelSpace=showLabels?(labelSz*1.4+3):0; // 라벨+margin
-    const contentH=barH1+barGap+barH2+(showLabels?labelSpace*2:0);
-    const padV=Math.max(3,Math.floor((rowH-contentH)/2));
-    const pctSz=Math.max(15,Math.min(22,Math.round(rowH*0.28)));
-    const dlSz=Math.max(10,Math.min(13,Math.round(rowH*0.16)));
-    const nmSz=Math.max(11,Math.min(15,Math.round(rowH*0.185)));
-
-    const rows=pjList.map((p,i)=>{
-      const{pct:pp}=wrPct(p);
-      const isDone=pp>=100;
-      const c=p.color;
-
-      let expPct=0;
-      if(p.projStart&&p.projEnd){
-        const tot=Math.max(1,p.projEnd.getTime()-p.projStart.getTime());
-        expPct=Math.min(100,Math.max(0,Math.round((TODAY.getTime()-p.projStart.getTime())/tot*100)));
-      }
-
-      const isLast=i===n-1;
-      const borderStyle=isLast?'none':'0.5px solid #E8EDF5';
-
-      const deadlineMeta=isDone
-        ?`<span style="font-size:${dlSz}px;font-weight:700;color:#fff;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:3px;padding:1px 4px;display:inline-block;white-space:nowrap;">완료</span>`
-        :`<span style="font-size:${dlSz}px;color:#94A8C8;white-space:nowrap;">${formatDeadline(p)}</span>`;
-
-      const lbl1=showLabels?`<div style="font-size:${labelSz}px;color:#94A8C8;margin-bottom:2px;font-weight:500;">실질 진척도</div>`:'';
-      const lbl2=showLabels?`<div style="font-size:${labelSz}px;color:#94A8C8;margin-bottom:2px;font-weight:500;">예상 완료</div>`:'';
-
-      return `<div style="display:flex;align-items:center;gap:8px;padding:${padV}px 0;border-bottom:${borderStyle};height:${rowH}px;box-sizing:border-box;">
-  <div style="flex:0 0 110px;display:flex;align-items:center;gap:6px;overflow:hidden;min-width:0;">
-    <span style="width:6px;height:6px;border-radius:50%;background:${c};flex-shrink:0;display:inline-block;"></span>
-    <span style="font-size:${nmSz}px;font-weight:600;color:#2E6BC4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
-  </div>
-  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:${barGap}px;">
-    <div>${lbl1}<div style="height:${barH1}px;background:#F0F4FB;border-radius:4px;overflow:hidden;"><div style="width:${pp}%;height:100%;background:linear-gradient(90deg, #2E6BC4, #5A9BE0);border-radius:4px;"></div></div></div>
-    <div>${lbl2}<div style="height:${barH2}px;background:#F0F4FB;border-radius:4px;overflow:hidden;"><div style="width:${expPct}%;height:100%;background:#C8D8F0;border-radius:4px;"></div></div></div>
-  </div>
-  <div style="flex:0 0 68px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-    <div style="font-size:${pctSz}px;font-weight:500;color:#2E6BC4;line-height:1;">${pp}%</div>
-    <div>${deadlineMeta}</div>
-  </div>
-</div>`;
-    }).join('');
-
-    const legend=`<div style="display:flex;align-items:center;gap:12px;height:${legendH}px;flex-shrink:0;">
-  <span style="display:flex;align-items:center;gap:4px;font-size:8px;color:#94A8C8;">
-    <span style="width:10px;height:4px;border-radius:2px;background:#94A8C8;display:inline-block;"></span>실질 진척도
-  </span>
-  <span style="display:flex;align-items:center;gap:4px;font-size:8px;color:#94A8C8;">
-    <span style="width:10px;height:4px;border-radius:2px;background:#94A8C8;opacity:0.3;display:inline-block;"></span>예상 완료 기간
-  </span>
-</div>`;
-
-    return `<div style="height:${h}px;display:flex;flex-direction:column;overflow:hidden;">
-  ${legend}
-  <div style="flex:1;overflow:hidden;">${rows}</div>
-</div>`;
+    if(!pjList.length) return `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;color:#94A8C8;">마감일 데이터 없음</div>`;
+    return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${pjList.map(buildProjectCard).join('')}</div>`;
   }
 
   // KPI 카드 (우측 위)
@@ -4921,8 +4849,6 @@ function renderWeeklyPage(){
     </div>`;
   }).join('');
 
-  const chartH = Math.max(480, window.innerHeight - 192);
-
   slide.innerHTML=`
 <div class="wr-hdr">
   <div class="wr-hl">
@@ -4944,13 +4870,9 @@ function renderWeeklyPage(){
       <div class="wr-pt" style="border-top:1px solid #E8EDF5;">프로젝트 현황</div>
       <div style="flex:1;min-height:0;overflow:auto;padding:0 10px 8px;">${projListHtml}</div>
     </div>
-    <div class="wr-panel" style="flex:1;min-height:0;">
+    <div class="wr-panel" style="flex:2;min-height:0;">
       <div class="wr-pt">프로젝트 마감 일정</div>
-      <div style="flex:1;min-height:0;padding:4px 10px 8px;overflow:hidden;">${buildDeadlineGantt(chartH)}</div>
-    </div>
-    <div class="wr-panel" style="flex:1;min-height:0;">
-      <div class="wr-pt">센터별 주간 실적 비교</div>
-      <div style="height:${chartH}px;padding:4px 10px 8px;overflow:hidden;">${buildWrLineChart(chartH)}</div>
+      <div style="flex:1;min-height:0;padding:4px 10px 8px;overflow:auto;">${buildProjectCardsGrid()}</div>
     </div>
   </div>
 </div>`;
