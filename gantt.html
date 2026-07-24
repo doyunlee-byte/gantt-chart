@@ -520,19 +520,92 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .cat-library-title { font-size: 13px; font-weight: 700; color: var(--text2); }
   .cat-library-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 
-  /* ─── Project Dashboard (매장 배포 현황) ─── */
-  .deploy-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
-  .deploy-summary-card { background: var(--surface); padding: 12px 16px; }
-  .deploy-summary-label { font-size: 9px; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
-  .deploy-summary-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+  /* ─── Project Dashboard: 라벤더 테마 + 사이드바 레이아웃 ───
+     .pg가 간트차트 탭 전용 CSS 변수를 스코프드로 재정의하는 것과 동일한 패턴.
+     #pageDeploy 안에서만 --bg/--surface/--accent 등 기존 변수명을 라벤더 값으로 덮어써서
+     전역(:root)과 간트차트 탭(.pg)에는 전혀 영향을 주지 않음. */
   .badge-muted { background: rgba(176,183,204,.12); color: var(--text2); }
-  .deploy-store-list { display: flex; flex-direction: column; gap: 8px; }
-  .deploy-store-card { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 10px 14px; }
-  .deploy-store-name { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .deploy-store-owner { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); flex-shrink: 0; }
-  .deploy-store-updated { font-size: 11px; color: var(--text3); flex-shrink: 0; min-width: 100px; text-align: right; }
-  @media (max-width: 1000px) { .deploy-summary { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 640px) { .deploy-store-card { flex-wrap: wrap; } .deploy-store-updated { text-align: left; } }
+
+  #pageDeploy{
+    --bg:#F6F4FC; --surface:#FFFFFF; --surface2:#F1EDFB;
+    --border:#E7E1F7; --border2:#DDD3F5;
+    --text:#332C4D; --text2:#726B90; --text3:#A199BC;
+    --accent:#7C5CFC;
+    --green:#1F9D6C; --amber:#C2870A; --red:#DD4C79;
+    --blue-bg:#EAE4FC; --blue-text:#4A38B0; --blue-avatar:#8B6EF2;
+    --teal-bg:#DFF6EC; --teal-text:#136A4C; --teal-avatar:#22A87A;
+    --teal2-bg:#E1F1FA; --teal2-text:#0E5A78; --teal2-avatar:#2AA8D6;
+    --amber-bg:#FBF0DA; --amber-text:#7A5109; --amber-avatar:#D9A032;
+    --purple-bg:#EEE8FE; --purple-text:#4B3AA0; --purple-avatar:#9B7EF5;
+    --red-bg:#FCE7EE; --red-text:#A32B58;
+    --radius:14px; --radius-sm:10px;
+    display:flex; flex:1; min-height:0; overflow:hidden;
+    background:var(--bg); color:var(--text);
+  }
+  #pageDeploy *{ font-family:'Pretendard',-apple-system,sans-serif; }
+
+  .pd-sidebar{ width:196px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); padding:18px 12px; display:flex; flex-direction:column; gap:2px; }
+  .pd-sidebar-title{ font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; padding:0 10px; margin-bottom:10px; }
+  .pd-menu-item{ display:flex; align-items:center; gap:9px; padding:9px 10px; border-radius:10px; border:none; background:transparent; color:var(--text2); font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; text-align:left; transition:all .15s; }
+  .pd-menu-item:hover{ background:var(--surface2); color:var(--text); }
+  .pd-menu-item.active{ background:var(--accent); color:#fff; }
+  .pd-menu-icon{ font-size:15px; width:18px; text-align:center; flex-shrink:0; }
+
+  .pd-main{ flex:1; min-width:0; overflow-y:auto; padding:22px 26px; }
+  .pd-view-header{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+  .pd-view-title{ font-size:20px; font-weight:700; letter-spacing:-.3px; }
+  .pd-view-sub{ font-size:12.5px; color:var(--text2); margin-top:3px; }
+  .pd-refresh-btn{ background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); padding:7px 14px; font-size:12px; font-weight:600; font-family:inherit; cursor:pointer; transition:opacity .15s; }
+  .pd-refresh-btn:hover{ opacity:.85; }
+
+  .pd-kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  .pd-kpi-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; display:flex; align-items:center; gap:12px; }
+  .pd-kpi-icon{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .pd-kpi-value{ font-size:22px; font-weight:800; line-height:1; color:var(--text); }
+  .pd-kpi-label{ font-size:11.5px; color:var(--text2); margin-top:3px; }
+
+  .pd-card-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .pd-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
+  .pd-card-title{ font-size:13px; font-weight:700; color:var(--text); margin-bottom:12px; }
+
+  .pd-donut-wrap{ display:flex; align-items:center; gap:20px; }
+  .pd-donut-legend{ display:flex; flex-direction:column; gap:7px; flex:1; }
+  .pd-donut-legend-row{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text2); }
+  .pd-donut-legend-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .pd-donut-legend-val{ margin-left:auto; font-weight:700; color:var(--text); }
+
+  .pd-bar-wrap{ display:flex; flex-direction:column; gap:10px; }
+  .pd-bar-row{ display:flex; align-items:center; gap:10px; }
+  .pd-bar-label{ font-size:12px; color:var(--text2); width:52px; flex-shrink:0; }
+  .pd-bar-track{ flex:1; height:9px; border-radius:5px; background:var(--surface2); overflow:hidden; }
+  .pd-bar-fill{ height:100%; border-radius:5px; background:var(--accent); }
+  .pd-bar-val{ font-size:12px; font-weight:700; color:var(--text); width:20px; text-align:right; flex-shrink:0; }
+
+  .pd-store-row{ display:flex; align-items:center; gap:12px; padding:10px 4px; border-bottom:1px solid var(--border); }
+  .pd-store-row:last-child{ border-bottom:none; }
+  .pd-store-name{ flex:1; font-size:13px; font-weight:600; color:var(--text); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pd-store-owner{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); flex-shrink:0; }
+  .pd-store-time{ font-size:11px; color:var(--text3); width:80px; text-align:right; flex-shrink:0; }
+
+  .pd-filter-bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .pd-filter-chip{ display:inline-flex; align-items:center; font-size:12px; font-weight:500; font-family:inherit; padding:4px 13px; border-radius:20px; border:1px solid var(--border2); background:var(--surface); color:var(--text2); cursor:pointer; transition:all .15s; }
+  .pd-filter-chip:hover{ opacity:.75; }
+  .pd-filter-chip.active{ background:var(--accent); color:#fff; border-color:transparent; font-weight:700; }
+
+  .pd-table{ width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .pd-table th{ background:var(--surface2); color:var(--text2); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); }
+  .pd-table td{ padding:11px 14px; font-size:13px; color:var(--text); border-bottom:1px solid var(--border); }
+  .pd-table tr:last-child td{ border-bottom:none; }
+  .pd-table tbody tr:hover td{ background:var(--surface2); }
+
+  .pd-issue-list{ display:flex; flex-direction:column; gap:10px; }
+  .pd-issue-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; }
+  .pd-issue-top{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .pd-issue-store{ font-size:13px; font-weight:700; color:var(--text); }
+  .pd-issue-date{ font-size:11px; color:var(--text3); margin-left:auto; }
+  .pd-issue-desc{ font-size:12.5px; color:var(--text2); line-height:1.5; margin-bottom:8px; }
+  .pd-issue-bottom{ display:flex; align-items:center; gap:8px; }
+  .pd-issue-owner{ font-size:11.5px; color:var(--text2); display:flex; align-items:center; gap:5px; }
   .cat-card { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 12px; min-width: 160px; max-width: 220px; }
   .cat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 4px; }
   .cat-card-name { font-size: 12px; font-weight: 700; color: var(--text); }
@@ -1241,15 +1314,15 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
         <div class="mob-main-t">Project <span style="color:#4f7cff">Gantt Chart</span></div>
         <div class="mob-sub-t" id="mobSubDate"></div>
       </div>
+      <div class="page-tabs">
+        <button class="page-tab active" id="tabGantt" onclick="switchPage('gantt')" style="white-space:nowrap;font-size:10px;padding:4px 5px;">📊 간트차트</button>
+        <button class="page-tab" id="tabDeploy" onclick="switchPage('deploy')" style="white-space:nowrap;font-size:10px;padding:4px 5px;">🚀 Project Dashboard</button>
+      </div>
     </div>
     <div class="topbar-right" style="flex-wrap:nowrap;overflow:hidden;gap:4px;">
       <div class="theme-toggle" onclick="toggleTheme()">
         <span id="themeIcon">🌙</span>
         <div class="toggle-track"><div class="toggle-thumb"></div></div>
-      </div>
-      <div class="page-tabs">
-        <button class="page-tab active" id="tabGantt" onclick="switchPage('gantt')" style="white-space:nowrap;font-size:10px;padding:4px 5px;">📊 간트차트</button>
-        <button class="page-tab" id="tabDeploy" onclick="switchPage('deploy')" style="white-space:nowrap;font-size:10px;padding:4px 5px;">🚀 Project Dashboard</button>
       </div>
     </div>
   </div>
@@ -1288,18 +1361,69 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   </div>
 
   <!-- Project Dashboard 페이지 (매장별 프로그램 배포 현황) -->
-  <div id="pageDeploy" style="display:none;flex:1;overflow-y:auto;padding:16px 20px;flex-direction:column;gap:14px;">
-    <div class="board-container">
-      <div class="page-header">
-        <div>
-          <div class="page-title">🚀 Project Dashboard</div>
-          <div class="page-sub">매장별 프로그램 배포 현황</div>
+  <div id="pageDeploy" style="display:none;">
+    <aside class="pd-sidebar">
+      <div class="pd-sidebar-title">Project Dashboard</div>
+      <nav>
+        <button class="pd-menu-item active" id="pdMenuOverview" onclick="switchDeployView('overview')"><span class="pd-menu-icon">📊</span>통합 대시보드</button>
+        <button class="pd-menu-item" id="pdMenuSchedule" onclick="switchDeployView('schedule')"><span class="pd-menu-icon">🗓️</span>센터 일정</button>
+        <button class="pd-menu-item" id="pdMenuIssues" onclick="switchDeployView('issues')"><span class="pd-menu-icon">⚠️</span>이슈 히스토리</button>
+      </nav>
+    </aside>
+    <div class="pd-main">
+
+      <!-- 통합 대시보드 -->
+      <div class="pd-view" id="pdViewOverview">
+        <div class="pd-view-header">
+          <div>
+            <div class="pd-view-title">통합 대시보드</div>
+            <div class="pd-view-sub">매장별 프로그램 배포 현황 요약</div>
+          </div>
+          <button class="pd-refresh-btn" onclick="loadDeployOverview()">🔄 새로고침</button>
         </div>
-        <button class="ai-send-btn" onclick="loadDeployData()" style="font-size:12px;padding:6px 14px;">🔄 새로고침</button>
+        <div class="pd-kpi-row" id="pdKpiRow"></div>
+        <div class="pd-card-grid">
+          <div class="pd-card">
+            <div class="pd-card-title">상태별 비율</div>
+            <div class="pd-donut-wrap" id="pdDonutWrap"></div>
+          </div>
+          <div class="pd-card">
+            <div class="pd-card-title">담당자별 처리 현황</div>
+            <div class="pd-bar-wrap" id="pdBarWrap"></div>
+          </div>
+        </div>
+        <div class="pd-card">
+          <div class="pd-card-title">최근 업데이트된 매장</div>
+          <div id="pdRecentList"></div>
+        </div>
       </div>
-      <div class="deploy-summary" id="deploySummary"></div>
-      <div class="board-filter-bar" id="deployFilterBar"></div>
-      <div id="deployListContainer"></div>
+
+      <!-- 센터 일정 -->
+      <div class="pd-view" id="pdViewSchedule" style="display:none;">
+        <div class="pd-view-header">
+          <div>
+            <div class="pd-view-title">센터 일정</div>
+            <div class="pd-view-sub">설치센터별 예정 일정</div>
+          </div>
+          <button class="pd-refresh-btn" onclick="loadDeploySchedule()">🔄 새로고침</button>
+        </div>
+        <div class="pd-filter-bar" id="pdScheduleFilterBar"></div>
+        <div id="pdScheduleTableWrap"></div>
+      </div>
+
+      <!-- 이슈 히스토리 -->
+      <div class="pd-view" id="pdViewIssues" style="display:none;">
+        <div class="pd-view-header">
+          <div>
+            <div class="pd-view-title">이슈 히스토리</div>
+            <div class="pd-view-sub">매장 배포 관련 이슈 로그</div>
+          </div>
+          <button class="pd-refresh-btn" onclick="loadDeployIssues()">🔄 새로고침</button>
+        </div>
+        <div class="pd-filter-bar" id="pdIssueFilterBar"></div>
+        <div class="pd-issue-list" id="pdIssueList"></div>
+      </div>
+
     </div>
   </div>
 
@@ -1336,7 +1460,7 @@ function switchPage(page){
   ['mobTabGantt','mobTabDeploy'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
   const mobEl=document.getElementById(page==='gantt'?'mobTabGantt':'mobTabDeploy');if(mobEl)mobEl.classList.add('active');
   if(page==='gantt'){renderAll();}
-  if(page==='deploy'){if(!deployDataLoaded)loadDeployData();else renderDeployPage();}
+  if(page==='deploy'){enterDeployPage();}
 }
 
 // ── 테마
@@ -1674,9 +1798,11 @@ window.addEventListener('load', function(){ pgComputeAxis(); pgRenderAxis(); pgR
 setTimeout(function(){ pgComputeAxis(); pgRenderAxis(); pgRenderRows(); }, 80);
 </script>
 <script>
-// ── Project Dashboard (매장별 프로그램 배포 현황) ──────────────────────
+// ── Project Dashboard (매장별 프로그램 배포 현황) — 사이드바 3뷰: 통합 대시보드 / 센터 일정 / 이슈 히스토리
 const DEPLOY_STATUSES = ['대기중', '배포중', '완료', '실패'];
 const DEPLOY_STATUS_BADGE = { '대기중': 'badge-muted', '배포중': 'badge-amber', '완료': 'badge-green', '실패': 'badge-red' };
+const DEPLOY_STATUS_COLOR = { '대기중': 'var(--text3)', '배포중': 'var(--amber)', '완료': 'var(--green)', '실패': 'var(--red)' };
+const SCHEDULE_STATUS_BADGE = { '예정': 'badge-muted', '진행중': 'badge-amber', '완료': 'badge-green', '지연': 'badge-red' };
 const DEPLOY_AVATAR_COLOR_KEYS = ['blue', 'teal', 'amber', 'purple', 'teal2'];
 const DEPLOY_AVATAR_COLOR_MAP = {
   blue:   { bg: 'var(--blue-avatar)',   text: 'var(--blue-text)' },
@@ -1685,10 +1811,35 @@ const DEPLOY_AVATAR_COLOR_MAP = {
   amber:  { bg: 'var(--amber-avatar)',  text: 'var(--amber-text)' },
   purple: { bg: 'var(--purple-avatar)', text: 'var(--purple-text)' },
 };
+function avatarColorFor(i) { return DEPLOY_AVATAR_COLOR_MAP[DEPLOY_AVATAR_COLOR_KEYS[i % DEPLOY_AVATAR_COLOR_KEYS.length]]; }
+function formatDeployDateTime(d) {
+  const mo = d.getMonth() + 1, da = d.getDate();
+  const hh = String(d.getHours()).padStart(2, '0'), mi = String(d.getMinutes()).padStart(2, '0');
+  return `${mo}/${da} ${hh}:${mi}`;
+}
+function formatDeployDay(d) { return `${d.getMonth() + 1}/${d.getDate()}`; }
 
+// ── 사이드바 뷰 전환 (switchPage와 동일 패턴: display 토글 + active 토글 + lazy load) ──
+let deployCurrentView = 'overview';
+function switchDeployView(view) {
+  deployCurrentView = view;
+  document.getElementById('pdViewOverview').style.display = view === 'overview' ? 'block' : 'none';
+  document.getElementById('pdViewSchedule').style.display = view === 'schedule' ? 'block' : 'none';
+  document.getElementById('pdViewIssues').style.display = view === 'issues' ? 'block' : 'none';
+  document.getElementById('pdMenuOverview').classList.toggle('active', view === 'overview');
+  document.getElementById('pdMenuSchedule').classList.toggle('active', view === 'schedule');
+  document.getElementById('pdMenuIssues').classList.toggle('active', view === 'issues');
+  if (view === 'overview') { deployOverviewLoaded ? renderDeployOverview() : loadDeployOverview(); }
+  if (view === 'schedule') { deployScheduleLoaded ? renderDeploySchedule() : loadDeploySchedule(); }
+  if (view === 'issues') { deployIssuesLoaded ? renderDeployIssues() : loadDeployIssues(); }
+}
+function enterDeployPage() { switchDeployView(deployCurrentView); }
+
+// ═══════════════════════════════════════════════════════════════
+// 1) 통합 대시보드
+// ═══════════════════════════════════════════════════════════════
 let deployStores = [];
-let deployDataLoaded = false;
-let deployStatusFilter = '전체';
+let deployOverviewLoaded = false;
 
 // mock 데이터 생성 — 내부 시스템 API 연동 전 임시 데이터 (매장 14개, 상태 골고루 섞음)
 function generateMockStoreDeployments() {
@@ -1710,82 +1861,258 @@ async function fetchStoreDeploymentStatus() {
   return generateMockStoreDeployments();
 }
 
-async function loadDeployData() {
-  const container = document.getElementById('deployListContainer');
-  if (container) container.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text3);font-size:13px;">🚀 배포 현황 불러오는 중...</div>`;
+async function loadDeployOverview() {
+  const el = document.getElementById('pdKpiRow');
+  if (el) el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text3);font-size:13px;">📊 불러오는 중...</div>`;
   try {
     deployStores = await fetchStoreDeploymentStatus();
-    deployDataLoaded = true;
-    renderDeployPage();
+    deployOverviewLoaded = true;
+    renderDeployOverview();
   } catch (e) {
     console.error('[Deploy] fetchStoreDeploymentStatus 에러:', e);
-    if (container) container.innerHTML = `<div class="empty-state"><p>🚀 배포 현황을 불러올 수 없습니다.<br><small style="color:var(--text3);">${e.message}</small></p></div>`;
+    if (el) el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p>데이터를 불러올 수 없습니다.</p></div>`;
   }
 }
 
-function formatDeployUpdatedAt(d) {
-  const mo = d.getMonth() + 1, da = d.getDate();
-  const hh = String(d.getHours()).padStart(2, '0'), mi = String(d.getMinutes()).padStart(2, '0');
-  return `${mo}/${da} ${hh}:${mi}`;
+function renderDeployOverview() {
+  renderPdKpis();
+  renderPdDonut();
+  renderPdOwnerBar();
+  renderPdRecentList();
 }
 
-function renderDeploySummary() {
-  const el = document.getElementById('deploySummary');
+function renderPdKpis() {
+  const el = document.getElementById('pdKpiRow');
   if (!el) return;
   const cards = [
-    { label: '전체 매장', value: deployStores.length },
-    { label: '완료', value: deployStores.filter(s => s.status === '완료').length },
-    { label: '배포중', value: deployStores.filter(s => s.status === '배포중').length },
-    { label: '실패', value: deployStores.filter(s => s.status === '실패').length },
+    { icon: '🏬', label: '전체 매장', value: deployStores.length, bg: 'var(--purple-bg)', fg: 'var(--purple-text)' },
+    { icon: '✅', label: '배포 완료', value: deployStores.filter(s => s.status === '완료').length, bg: 'var(--teal-bg)', fg: 'var(--teal-text)' },
+    { icon: '🚚', label: '배포중', value: deployStores.filter(s => s.status === '배포중').length, bg: 'var(--amber-bg)', fg: 'var(--amber-text)' },
+    { icon: '⛔', label: '실패', value: deployStores.filter(s => s.status === '실패').length, bg: 'var(--red-bg)', fg: 'var(--red-text)' },
   ];
   el.innerHTML = cards.map(c => `
-    <div class="deploy-summary-card">
-      <div class="deploy-summary-label">${c.label}</div>
-      <div class="deploy-summary-value">${c.value}</div>
+    <div class="pd-kpi-card">
+      <div class="pd-kpi-icon" style="background:${c.bg};color:${c.fg};">${c.icon}</div>
+      <div>
+        <div class="pd-kpi-value">${c.value}</div>
+        <div class="pd-kpi-label">${c.label}</div>
+      </div>
     </div>`).join('');
 }
 
-function setDeployStatusFilter(status) {
-  deployStatusFilter = status;
-  renderDeployPage();
+function renderPdDonut() {
+  const el = document.getElementById('pdDonutWrap');
+  if (!el) return;
+  const total = deployStores.length || 1;
+  const segs = DEPLOY_STATUSES.map(s => ({ status: s, count: deployStores.filter(x => x.status === s).length, color: DEPLOY_STATUS_COLOR[s] }));
+  const R = 46, C = 2 * Math.PI * R;
+  let offset = 0;
+  const circles = segs.filter(s => s.count > 0).map(seg => {
+    const len = (seg.count / total) * C;
+    const rotate = (offset / C) * 360;
+    offset += len;
+    return `<circle r="${R}" cx="60" cy="60" fill="none" stroke="${seg.color}" stroke-width="16" stroke-dasharray="${len} ${C - len}" transform="rotate(${rotate} 60 60)" />`;
+  }).join('');
+  el.innerHTML = `
+    <svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0;transform:rotate(-90deg);">
+      ${circles || `<circle r="${R}" cx="60" cy="60" fill="none" stroke="var(--surface2)" stroke-width="16" />`}
+    </svg>
+    <div class="pd-donut-legend">
+      ${segs.map(seg => `
+        <div class="pd-donut-legend-row">
+          <span class="pd-donut-legend-dot" style="background:${seg.color}"></span>
+          <span>${seg.status}</span>
+          <span class="pd-donut-legend-val">${seg.count}</span>
+        </div>`).join('')}
+    </div>`;
 }
 
-function renderDeployFilterBar() {
-  const el = document.getElementById('deployFilterBar');
+function renderPdOwnerBar() {
+  const el = document.getElementById('pdBarWrap');
   if (!el) return;
-  const options = ['전체', ...DEPLOY_STATUSES];
+  const counts = {};
+  deployStores.forEach(s => { counts[s.owner] = (counts[s.owner] || 0) + 1; });
+  const owners = Object.keys(counts);
+  const max = Math.max(1, ...Object.values(counts));
+  if (!owners.length) { el.innerHTML = `<div class="empty-state"><p>데이터가 없습니다.</p></div>`; return; }
+  el.innerHTML = owners.map(o => {
+    const v = counts[o];
+    return `<div class="pd-bar-row">
+      <span class="pd-bar-label">${o}</span>
+      <div class="pd-bar-track"><div class="pd-bar-fill" style="width:${(v / max * 100).toFixed(0)}%"></div></div>
+      <span class="pd-bar-val">${v}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderPdRecentList() {
+  const el = document.getElementById('pdRecentList');
+  if (!el) return;
+  const sorted = [...deployStores].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 8);
+  if (!sorted.length) { el.innerHTML = `<div class="empty-state"><p>데이터가 없습니다.</p></div>`; return; }
+  el.innerHTML = sorted.map((s, i) => {
+    const badgeClass = DEPLOY_STATUS_BADGE[s.status] || 'badge-muted';
+    const c = avatarColorFor(i);
+    return `<div class="pd-store-row">
+      <span class="pd-store-name">${s.storeName}</span>
+      <span class="metric-badge ${badgeClass}" style="margin-top:0;">${s.status}</span>
+      <span class="pd-store-owner"><span class="avatar" style="background:${c.bg};color:${c.text}">${s.owner.charAt(0)}</span>${s.owner}</span>
+      <span class="pd-store-time">${formatDeployDateTime(s.updatedAt)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 2) 센터 일정
+// ═══════════════════════════════════════════════════════════════
+let deploySchedules = [];
+let deployScheduleLoaded = false;
+let deployScheduleFilter = '전체';
+
+// mock 데이터 생성 — 설치센터별 예정 일정 (13건)
+function generateMockCenterSchedules() {
+  const centers = ['서울중앙센터', '경기북부센터', '부산센터', '대구센터', '광주센터'];
+  const storeNames = ['강남점', '홍대점', '신촌점', '잠실점', '수원점', '대구점', '부산서면점', '광주점', '대전점', '인천점', '청주점', '전주점', '울산점'];
+  const statuses = ['예정', '진행중', '완료', '지연'];
+  const now = Date.now();
+  return storeNames.map((name, i) => ({
+    id: `sched-${i + 1}`,
+    center: centers[i % centers.length],
+    storeName: name,
+    installDate: new Date(now + (i - 4) * 86400000 * 2),
+    status: statuses[i % statuses.length],
+  }));
+}
+
+// 실제 내부 시스템 API 연동 시 이 함수 내부만 교체하면 됩니다.
+async function fetchCenterSchedules() {
+  return generateMockCenterSchedules();
+}
+
+async function loadDeploySchedule() {
+  const el = document.getElementById('pdScheduleTableWrap');
+  if (el) el.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text3);font-size:13px;">🗓️ 일정 불러오는 중...</div>`;
+  try {
+    deploySchedules = await fetchCenterSchedules();
+    deployScheduleLoaded = true;
+    renderDeploySchedule();
+  } catch (e) {
+    console.error('[Deploy] fetchCenterSchedules 에러:', e);
+    if (el) el.innerHTML = `<div class="empty-state"><p>일정을 불러올 수 없습니다.</p></div>`;
+  }
+}
+
+function setDeployScheduleFilter(status) { deployScheduleFilter = status; renderDeploySchedule(); }
+
+function renderDeployScheduleFilterBar() {
+  const el = document.getElementById('pdScheduleFilterBar');
+  if (!el) return;
+  const options = ['전체', '예정', '진행중', '완료', '지연'];
   el.innerHTML = `<span class="board-filter-label">상태</span>` + options.map(o =>
-    `<button class="board-filter-chip${deployStatusFilter === o ? ' active' : ''}" onclick="setDeployStatusFilter('${o}')">${o}</button>`
+    `<button class="pd-filter-chip${deployScheduleFilter === o ? ' active' : ''}" onclick="setDeployScheduleFilter('${o}')">${o}</button>`
   ).join('');
 }
 
-function buildDeployStoreCard(s, i) {
-  const badgeClass = DEPLOY_STATUS_BADGE[s.status] || 'badge-muted';
-  const c = DEPLOY_AVATAR_COLOR_MAP[DEPLOY_AVATAR_COLOR_KEYS[i % DEPLOY_AVATAR_COLOR_KEYS.length]];
-  return `<div class="deploy-store-card">
-    <span class="deploy-store-name">${s.storeName}</span>
-    <span class="metric-badge ${badgeClass}" style="margin-top:0;">${s.status}</span>
-    <span class="deploy-store-owner"><span class="avatar" style="background:${c.bg};color:${c.text}">${s.owner.charAt(0)}</span>${s.owner}</span>
-    <span class="deploy-store-updated">${formatDeployUpdatedAt(s.updatedAt)}</span>
-  </div>`;
-}
-
-function renderDeployStoreList() {
-  const el = document.getElementById('deployListContainer');
+function renderDeploySchedule() {
+  renderDeployScheduleFilterBar();
+  const el = document.getElementById('pdScheduleTableWrap');
   if (!el) return;
-  const filtered = deployStatusFilter === '전체' ? deployStores : deployStores.filter(s => s.status === deployStatusFilter);
-  if (!filtered.length) {
-    el.innerHTML = `<div class="empty-state"><p>해당 상태의 매장이 없습니다.</p></div>`;
-    return;
-  }
-  el.innerHTML = `<div class="deploy-store-list">${filtered.map(buildDeployStoreCard).join('')}</div>`;
+  const filtered = deployScheduleFilter === '전체' ? deploySchedules : deploySchedules.filter(s => s.status === deployScheduleFilter);
+  if (!filtered.length) { el.innerHTML = `<div class="empty-state"><p>해당 상태의 일정이 없습니다.</p></div>`; return; }
+  const sorted = [...filtered].sort((a, b) => a.installDate - b.installDate);
+  el.innerHTML = `<table class="pd-table"><thead><tr><th>센터명</th><th>매장명</th><th>설치 예정일</th><th>상태</th></tr></thead><tbody>${
+    sorted.map(s => `<tr>
+      <td>${s.center}</td>
+      <td>${s.storeName}</td>
+      <td>${formatDeployDay(s.installDate)}</td>
+      <td><span class="metric-badge ${SCHEDULE_STATUS_BADGE[s.status] || 'badge-muted'}" style="margin-top:0;">${s.status}</span></td>
+    </tr>`).join('')
+  }</tbody></table>`;
 }
 
-function renderDeployPage() {
-  if (!deployDataLoaded) { loadDeployData(); return; }
-  renderDeploySummary();
-  renderDeployFilterBar();
-  renderDeployStoreList();
+// ═══════════════════════════════════════════════════════════════
+// 3) 이슈 히스토리
+// ═══════════════════════════════════════════════════════════════
+let deployIssues = [];
+let deployIssuesLoaded = false;
+let deployIssueFilter = '전체';
+
+// mock 데이터 생성 — 매장 배포 이슈 로그 (9건)
+function generateMockIssueHistory() {
+  const issues = [
+    { storeName: '강남점', desc: 'POS 단말기 배포 스크립트 실행 중 네트워크 타임아웃 발생' },
+    { storeName: '홍대점', desc: '설치 프로그램 버전 불일치로 재배포 필요' },
+    { storeName: '신촌점', desc: '매장 내부 방화벽 정책으로 원격 업데이트 차단' },
+    { storeName: '잠실점', desc: '배포 후 결제 모듈 인증 오류 발생' },
+    { storeName: '대구점', desc: '설치 담당자 일정 변경으로 방문 지연' },
+    { storeName: '부산서면점', desc: '기존 버전 데이터 마이그레이션 실패' },
+    { storeName: '대전점', desc: '매장 전산 교체로 하드웨어 사양 재확인 필요' },
+    { storeName: '인천점', desc: '배포 서버 응답 지연으로 설치 중단' },
+    { storeName: '전주점', desc: '태블릿 펌웨어 업데이트 후 앱 크래시 발생' },
+  ];
+  const owners = ['김도윤', '이수민', '박지훈', '최유진', '정하은'];
+  const now = Date.now();
+  return issues.map((it, i) => ({
+    id: `issue-${i + 1}`,
+    storeName: it.storeName,
+    desc: it.desc,
+    occurredAt: new Date(now - (i + 1) * 86400000 * 1.6),
+    resolveStatus: i % 3 === 2 ? '진행중' : '해결됨',
+    owner: owners[i % owners.length],
+  }));
+}
+
+// 실제 내부 시스템 API 연동 시 이 함수 내부만 교체하면 됩니다.
+async function fetchIssueHistory() {
+  return generateMockIssueHistory();
+}
+
+async function loadDeployIssues() {
+  const el = document.getElementById('pdIssueList');
+  if (el) el.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text3);font-size:13px;">⚠️ 이슈 불러오는 중...</div>`;
+  try {
+    deployIssues = await fetchIssueHistory();
+    deployIssuesLoaded = true;
+    renderDeployIssues();
+  } catch (e) {
+    console.error('[Deploy] fetchIssueHistory 에러:', e);
+    if (el) el.innerHTML = `<div class="empty-state"><p>이슈 내역을 불러올 수 없습니다.</p></div>`;
+  }
+}
+
+function setDeployIssueFilter(status) { deployIssueFilter = status; renderDeployIssues(); }
+
+function renderDeployIssueFilterBar() {
+  const el = document.getElementById('pdIssueFilterBar');
+  if (!el) return;
+  const options = ['전체', '진행중', '해결됨'];
+  el.innerHTML = `<span class="board-filter-label">상태</span>` + options.map(o =>
+    `<button class="pd-filter-chip${deployIssueFilter === o ? ' active' : ''}" onclick="setDeployIssueFilter('${o}')">${o}</button>`
+  ).join('');
+}
+
+function renderDeployIssues() {
+  renderDeployIssueFilterBar();
+  const el = document.getElementById('pdIssueList');
+  if (!el) return;
+  const filtered = deployIssueFilter === '전체' ? deployIssues : deployIssues.filter(i => i.resolveStatus === deployIssueFilter);
+  if (!filtered.length) { el.innerHTML = `<div class="empty-state"><p>해당 이슈가 없습니다.</p></div>`; return; }
+  const sorted = [...filtered].sort((a, b) => b.occurredAt - a.occurredAt);
+  el.innerHTML = sorted.map((it, i) => {
+    const badge = it.resolveStatus === '해결됨' ? 'badge-green' : 'badge-amber';
+    const c = avatarColorFor(i);
+    return `<div class="pd-issue-card">
+      <div class="pd-issue-top">
+        <span class="pd-issue-store">${it.storeName}</span>
+        <span class="metric-badge ${badge}" style="margin-top:0;">${it.resolveStatus}</span>
+        <span class="pd-issue-date">${formatDeployDay(it.occurredAt)}</span>
+      </div>
+      <div class="pd-issue-desc">${it.desc}</div>
+      <div class="pd-issue-bottom">
+        <span class="pd-issue-owner"><span class="avatar" style="width:16px;height:16px;font-size:7px;background:${c.bg};color:${c.text}">${it.owner.charAt(0)}</span>담당: ${it.owner}</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 </script>
