@@ -606,6 +606,59 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
   .pd-issue-desc{ font-size:12.5px; color:var(--text2); line-height:1.5; margin-bottom:8px; }
   .pd-issue-bottom{ display:flex; align-items:center; gap:8px; }
   .pd-issue-owner{ font-size:11.5px; color:var(--text2); display:flex; align-items:center; gap:5px; }
+
+  /* ─── 전체일정: 캘린더 / 매장분포 서브탭 ─── */
+  .badge-accent{ background:rgba(124,92,252,.15); color:var(--accent); }
+
+  .pd-subtab-bar{ display:flex; gap:6px; margin-bottom:16px; }
+  .pd-subtab{ padding:6px 16px; border-radius:20px; border:1px solid var(--border2); background:var(--surface); color:var(--text2); font-size:12.5px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .15s; }
+  .pd-subtab:hover{ border-color:var(--accent); color:var(--accent); }
+  .pd-subtab.active{ background:var(--accent); color:#fff; border-color:transparent; }
+
+  .pd-cal-nav{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .pd-cal-nav-btn{ background:var(--surface); border:1px solid var(--border2); color:var(--text2); border-radius:8px; padding:5px 11px; cursor:pointer; font-family:inherit; font-size:13px; transition:all .15s; }
+  .pd-cal-nav-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .pd-cal-month{ font-size:15px; font-weight:700; color:var(--text); min-width:110px; text-align:center; }
+
+  .pd-cal-layout{ display:flex; gap:16px; align-items:flex-start; }
+  .pd-cal-grid-wrap{ flex:1; min-width:0; }
+  .pd-cal-dow-row{ display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:4px; }
+  .pd-cal-dow{ font-size:11px; font-weight:700; color:var(--text3); text-align:center; padding:4px 0; }
+  .pd-cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+  .pd-cal-cell{ background:var(--surface); border:1px solid var(--border); border-radius:10px; min-height:86px; padding:6px; display:flex; flex-direction:column; gap:3px; cursor:pointer; transition:border-color .15s; overflow:hidden; }
+  .pd-cal-cell:hover{ border-color:var(--accent); }
+  .pd-cal-cell.is-outside{ opacity:.4; }
+  .pd-cal-cell.is-today .pd-cal-daynum{ color:var(--accent); }
+  .pd-cal-cell.is-selected{ background:var(--surface2); border-color:var(--accent); }
+  .pd-cal-daynum{ font-size:11.5px; font-weight:700; color:var(--text2); }
+  .pd-cal-badge{ font-size:9.5px; font-weight:700; padding:1px 5px; border-radius:4px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pd-cal-more{ font-size:9.5px; color:var(--text3); font-weight:700; }
+
+  .pd-cal-detail{ width:300px; flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; align-self:flex-start; }
+  .pd-cal-detail-date{ font-size:14px; font-weight:700; color:var(--text); margin-bottom:10px; }
+  .pd-cal-detail-item{ border-bottom:1px solid var(--border); padding:10px 0; }
+  .pd-cal-detail-item:last-child{ border-bottom:none; }
+  .pd-cal-detail-store{ font-weight:700; font-size:13px; color:var(--text); }
+  .pd-cal-detail-meta{ font-size:11.5px; color:var(--text2); margin-top:4px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .pd-cancel-btn{ margin-top:7px; font-size:11px; padding:4px 11px; border-radius:7px; border:1px solid var(--red-text); background:var(--red-bg); color:var(--red-text); cursor:pointer; font-family:inherit; font-weight:600; }
+  .pd-cancel-btn:hover{ opacity:.8; }
+
+  .pd-reco-wrap{ margin-top:12px; padding-top:12px; border-top:1px dashed var(--border2); }
+  .pd-reco-title{ font-size:11.5px; font-weight:700; color:var(--text2); margin-bottom:8px; line-height:1.5; }
+  .pd-reco-card{ background:var(--surface2); border:1px solid var(--border2); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+  .pd-reco-store{ font-weight:700; font-size:12.5px; color:var(--text); }
+  .pd-reco-reason{ font-size:10.5px; color:var(--text2); margin:5px 0 8px; line-height:1.6; }
+  .pd-reco-assign-btn{ font-size:11px; padding:4px 11px; border-radius:7px; border:none; background:var(--accent); color:#fff; cursor:pointer; font-family:inherit; font-weight:600; }
+  .pd-reco-assign-btn:hover{ opacity:.85; }
+
+  .pd-dist-wrap{ display:flex; gap:16px; align-items:flex-start; }
+  .pd-dist-svg-card{ flex:1; min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; }
+  .pd-dist-regions{ width:260px; flex-shrink:0; display:flex; flex-direction:column; gap:10px; }
+  .pd-region-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+  .pd-region-name{ font-size:13px; font-weight:700; color:var(--text); margin-bottom:4px; }
+  .pd-region-count{ font-size:11px; color:var(--text2); margin-bottom:8px; }
+  .pd-region-breakdown{ display:flex; gap:5px; flex-wrap:wrap; }
+
   .cat-card { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 12px; min-width: 160px; max-width: 220px; }
   .cat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 4px; }
   .cat-card-name { font-size: 12px; font-weight: 700; color: var(--text); }
@@ -1366,7 +1419,7 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
       <div class="pd-sidebar-title">Project Dashboard</div>
       <nav>
         <button class="pd-menu-item active" id="pdMenuOverview" onclick="switchDeployView('overview')"><span class="pd-menu-icon">📊</span>통합 대시보드</button>
-        <button class="pd-menu-item" id="pdMenuSchedule" onclick="switchDeployView('schedule')"><span class="pd-menu-icon">🗓️</span>센터 일정</button>
+        <button class="pd-menu-item" id="pdMenuSchedule" onclick="switchDeployView('schedule')"><span class="pd-menu-icon">🗓️</span>전체일정</button>
         <button class="pd-menu-item" id="pdMenuIssues" onclick="switchDeployView('issues')"><span class="pd-menu-icon">⚠️</span>이슈 히스토리</button>
       </nav>
     </aside>
@@ -1398,17 +1451,48 @@ td.day-td.cur-week{background:rgba(107,147,255,.04)!important;}
         </div>
       </div>
 
-      <!-- 센터 일정 -->
+      <!-- 전체일정 (캘린더 / 매장분포) -->
       <div class="pd-view" id="pdViewSchedule" style="display:none;">
         <div class="pd-view-header">
           <div>
-            <div class="pd-view-title">센터 일정</div>
-            <div class="pd-view-sub">설치센터별 예정 일정</div>
+            <div class="pd-view-title">전체일정</div>
+            <div class="pd-view-sub">설치 일정 캘린더 · 매장 분포 · 취소 시 대체 매장 추천</div>
           </div>
           <button class="pd-refresh-btn" onclick="loadDeploySchedule()">🔄 새로고침</button>
         </div>
-        <div class="pd-filter-bar" id="pdScheduleFilterBar"></div>
-        <div id="pdScheduleTableWrap"></div>
+
+        <div class="pd-subtab-bar">
+          <button class="pd-subtab active" id="pdSubtabCalendar" onclick="setScheduleSubtab('calendar')">📅 캘린더</button>
+          <button class="pd-subtab" id="pdSubtabDistribution" onclick="setScheduleSubtab('distribution')">🗺️ 매장분포</button>
+        </div>
+
+        <!-- 캘린더 서브뷰 -->
+        <div id="pdCalendarView">
+          <div class="pd-cal-nav">
+            <button class="pd-cal-nav-btn" onclick="pdCalShiftMonth(-1)">◀</button>
+            <div class="pd-cal-month" id="pdCalMonthLabel"></div>
+            <button class="pd-cal-nav-btn" onclick="pdCalShiftMonth(1)">▶</button>
+          </div>
+          <div class="pd-cal-layout">
+            <div class="pd-cal-grid-wrap">
+              <div class="pd-cal-dow-row" id="pdCalDowRow"></div>
+              <div class="pd-cal-grid" id="pdCalGrid"></div>
+            </div>
+            <div class="pd-cal-detail" id="pdCalDetail"></div>
+          </div>
+        </div>
+
+        <!-- 매장분포 서브뷰 -->
+        <div id="pdDistributionView" style="display:none;">
+          <div class="pd-dist-wrap">
+            <div class="pd-dist-svg-card">
+              <div class="pd-card-title">매장 분포</div>
+              <svg id="pdDistSvg" viewBox="0 0 360 260" width="100%" height="360"></svg>
+            </div>
+            <div class="pd-dist-regions" id="pdDistRegions"></div>
+          </div>
+          <div class="pd-cal-detail" id="pdDistDetail" style="margin-top:14px; width:100%;"></div>
+        </div>
       </div>
 
       <!-- 이슈 히스토리 -->
@@ -1802,7 +1886,7 @@ setTimeout(function(){ pgComputeAxis(); pgRenderAxis(); pgRenderRows(); }, 80);
 const DEPLOY_STATUSES = ['대기중', '배포중', '완료', '실패'];
 const DEPLOY_STATUS_BADGE = { '대기중': 'badge-muted', '배포중': 'badge-amber', '완료': 'badge-green', '실패': 'badge-red' };
 const DEPLOY_STATUS_COLOR = { '대기중': 'var(--text3)', '배포중': 'var(--amber)', '완료': 'var(--green)', '실패': 'var(--red)' };
-const SCHEDULE_STATUS_BADGE = { '예정': 'badge-muted', '진행중': 'badge-amber', '완료': 'badge-green', '지연': 'badge-red' };
+const SCHEDULE_STATUS_BADGE = { '예정': 'badge-muted', '진행중': 'badge-amber', '완료': 'badge-green', '지연': 'badge-red', '설치가능': 'badge-accent', '취소됨': 'badge-muted' };
 const DEPLOY_AVATAR_COLOR_KEYS = ['blue', 'teal', 'amber', 'purple', 'teal2'];
 const DEPLOY_AVATAR_COLOR_MAP = {
   blue:   { bg: 'var(--blue-avatar)',   text: 'var(--blue-text)' },
@@ -1830,7 +1914,7 @@ function switchDeployView(view) {
   document.getElementById('pdMenuSchedule').classList.toggle('active', view === 'schedule');
   document.getElementById('pdMenuIssues').classList.toggle('active', view === 'issues');
   if (view === 'overview') { deployOverviewLoaded ? renderDeployOverview() : loadDeployOverview(); }
-  if (view === 'schedule') { deployScheduleLoaded ? renderDeploySchedule() : loadDeploySchedule(); }
+  if (view === 'schedule') { deployScheduleLoaded ? setScheduleSubtab(pdScheduleSubtab) : loadDeploySchedule(); }
   if (view === 'issues') { deployIssuesLoaded ? renderDeployIssues() : loadDeployIssues(); }
 }
 function enterDeployPage() { switchDeployView(deployCurrentView); }
@@ -1963,25 +2047,51 @@ function renderPdRecentList() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 2) 센터 일정
+// 2) 전체일정 — 캘린더 / 매장분포, 취소 시 대체 매장 추천
 // ═══════════════════════════════════════════════════════════════
 let deploySchedules = [];
 let deployScheduleLoaded = false;
-let deployScheduleFilter = '전체';
+let pdScheduleSubtab = 'calendar';
+let pdCalYear = null, pdCalMonth = null, pdCalSelectedDate = null;
+let pdDistSelectedStoreId = null;
+const SCHEDULE_STATUS_COLOR = { '예정': 'var(--text3)', '진행중': 'var(--amber)', '완료': 'var(--green)', '지연': 'var(--red)', '설치가능': 'var(--accent)', '취소됨': 'var(--text3)' };
 
-// mock 데이터 생성 — 설치센터별 예정 일정 (13건)
+// mock 데이터 생성 — 매장별 지역/좌표/담당자/설치시간 포함 예정 일정 (13건)
+// x,y는 실좌표 연동 전까지 쓰는 임의 평면 좌표(지역별로 뭉쳐 배치해 근접도 계산에 사용)
 function generateMockCenterSchedules() {
-  const centers = ['서울중앙센터', '경기북부센터', '부산센터', '대구센터', '광주센터'];
-  const storeNames = ['강남점', '홍대점', '신촌점', '잠실점', '수원점', '대구점', '부산서면점', '광주점', '대전점', '인천점', '청주점', '전주점', '울산점'];
-  const statuses = ['예정', '진행중', '완료', '지연'];
+  const STORE_GEO = {
+    '강남점':     { region: '서울권', x: 152, y: 78 },
+    '홍대점':     { region: '서울권', x: 130, y: 64 },
+    '신촌점':     { region: '서울권', x: 126, y: 70 },
+    '잠실점':     { region: '서울권', x: 170, y: 82 },
+    '수원점':     { region: '경기권', x: 138, y: 100 },
+    '인천점':     { region: '경기권', x: 98, y: 78 },
+    '청주점':     { region: '충청권', x: 168, y: 138 },
+    '대전점':     { region: '충청권', x: 176, y: 150 },
+    '대구점':     { region: '경상권', x: 258, y: 168 },
+    '울산점':     { region: '경상권', x: 292, y: 192 },
+    '부산서면점': { region: '경상권', x: 280, y: 220 },
+    '광주점':     { region: '전라권', x: 148, y: 208 },
+    '전주점':     { region: '전라권', x: 164, y: 178 },
+  };
+  const owners = ['김도윤', '이수민', '박지훈', '최유진', '정하은'];
+  const times = ['09:00', '10:30', '13:00', '14:30', '16:00'];
+  const statuses = ['예정', '진행중', '완료', '지연', '설치가능', '설치가능'];
   const now = Date.now();
-  return storeNames.map((name, i) => ({
-    id: `sched-${i + 1}`,
-    center: centers[i % centers.length],
-    storeName: name,
-    installDate: new Date(now + (i - 4) * 86400000 * 2),
-    status: statuses[i % statuses.length],
-  }));
+  return Object.keys(STORE_GEO).map((name, i) => {
+    const geo = STORE_GEO[name];
+    return {
+      id: `sched-${i + 1}`,
+      storeName: name,
+      region: geo.region,
+      x: geo.x,
+      y: geo.y,
+      owner: owners[i % owners.length],
+      installDate: new Date(now + (i - 4) * 86400000 * 2),
+      installTime: times[i % times.length],
+      status: statuses[i % statuses.length],
+    };
+  });
 }
 
 // 실제 내부 시스템 API 연동 시 이 함수 내부만 교체하면 됩니다.
@@ -1990,44 +2100,232 @@ async function fetchCenterSchedules() {
 }
 
 async function loadDeploySchedule() {
-  const el = document.getElementById('pdScheduleTableWrap');
-  if (el) el.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text3);font-size:13px;">🗓️ 일정 불러오는 중...</div>`;
+  const el = document.getElementById('pdCalGrid');
+  if (el) el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text3);font-size:13px;">🗓️ 일정 불러오는 중...</div>`;
   try {
     deploySchedules = await fetchCenterSchedules();
     deployScheduleLoaded = true;
-    renderDeploySchedule();
+    const today = new Date();
+    pdCalYear = today.getFullYear();
+    pdCalMonth = today.getMonth();
+    setScheduleSubtab(pdScheduleSubtab);
   } catch (e) {
     console.error('[Deploy] fetchCenterSchedules 에러:', e);
-    if (el) el.innerHTML = `<div class="empty-state"><p>일정을 불러올 수 없습니다.</p></div>`;
+    if (el) el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p>일정을 불러올 수 없습니다.</p></div>`;
   }
 }
 
-function setDeployScheduleFilter(status) { deployScheduleFilter = status; renderDeploySchedule(); }
-
-function renderDeployScheduleFilterBar() {
-  const el = document.getElementById('pdScheduleFilterBar');
-  if (!el) return;
-  const options = ['전체', '예정', '진행중', '완료', '지연'];
-  el.innerHTML = `<span class="board-filter-label">상태</span>` + options.map(o =>
-    `<button class="pd-filter-chip${deployScheduleFilter === o ? ' active' : ''}" onclick="setDeployScheduleFilter('${o}')">${o}</button>`
-  ).join('');
+// ── 서브탭 전환 ──
+function setScheduleSubtab(tab) {
+  pdScheduleSubtab = tab;
+  document.getElementById('pdCalendarView').style.display = tab === 'calendar' ? 'block' : 'none';
+  document.getElementById('pdDistributionView').style.display = tab === 'distribution' ? 'block' : 'none';
+  document.getElementById('pdSubtabCalendar').classList.toggle('active', tab === 'calendar');
+  document.getElementById('pdSubtabDistribution').classList.toggle('active', tab === 'distribution');
+  if (tab === 'calendar') renderPdCalendar();
+  if (tab === 'distribution') renderPdDistribution();
 }
 
-function renderDeploySchedule() {
-  renderDeployScheduleFilterBar();
-  const el = document.getElementById('pdScheduleTableWrap');
+// ── 일정 상세 아이템 (캘린더/매장분포 공통) ──
+function pdDateKey(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+
+function renderScheduleDetailItem(s, recoWrapId) {
+  const badgeClass = SCHEDULE_STATUS_BADGE[s.status] || 'badge-muted';
+  const cancelable = s.status !== '완료' && s.status !== '취소됨';
+  return `<div class="pd-cal-detail-item">
+    <div class="pd-cal-detail-store">${s.storeName}</div>
+    <div class="pd-cal-detail-meta">담당 ${s.owner} · ${s.installTime} · <span class="metric-badge ${badgeClass}" style="margin-top:0;">${s.status}</span></div>
+    ${cancelable ? `<button class="pd-cancel-btn" onclick="handleCancelSchedule('${s.id}','${recoWrapId}')">취소</button>` : ''}
+  </div>`;
+}
+
+// ── 취소 → 대체 매장 추천 ──
+function pdCalcDistanceKm(a, b) {
+  const raw = Math.hypot(a.x - b.x, a.y - b.y);
+  return Math.max(1, Math.round(raw * 0.6));
+}
+
+function pdBuildReplacementReasons(canceled, candidate, km) {
+  const reasons = [`취소 매장에서 약 ${km}km 거리 (차량 이동 약 ${Math.round(km * 1.3)}분)`, '설치 가능 상태'];
+  if (candidate.owner === canceled.owner) reasons.push('동일 담당자 배정 가능');
+  if (candidate.region === canceled.region) reasons.push(`동일 권역(${candidate.region})`);
+  return reasons;
+}
+
+function pdComputeReplacementCandidates(canceledStoreId) {
+  const canceled = deploySchedules.find(s => s.id === canceledStoreId);
+  if (!canceled) return [];
+  const pool = deploySchedules.filter(s => s.id !== canceledStoreId && s.status === '설치가능');
+  return pool
+    .map(s => ({ ...s, distanceKm: pdCalcDistanceKm(canceled, s) }))
+    .sort((a, b) => a.distanceKm - b.distanceKm)
+    .slice(0, 3)
+    .map(s => ({ ...s, reasons: pdBuildReplacementReasons(canceled, s, s.distanceKm) }));
+}
+
+// 실제 내부 시스템 API/좌표 연동 시 이 함수 내부만 교체하면 됩니다.
+async function fetchNearbyReplacementCandidates(canceledStoreId) {
+  return pdComputeReplacementCandidates(canceledStoreId);
+}
+
+async function handleCancelSchedule(id, recoWrapId) {
+  const item = deploySchedules.find(s => s.id === id);
+  if (!item) return;
+  item.status = '취소됨';
+  if (pdScheduleSubtab === 'calendar') { renderPdCalendar(); } else { renderPdDistSvg(); renderPdDistRegionCards(); renderPdDistDetail(); }
+  const loadingEl = document.getElementById(recoWrapId);
+  if (loadingEl) loadingEl.innerHTML = `<div class="pd-reco-wrap"><div class="pd-reco-title">⏳ ${item.owner} 담당자 일정에 빈 시간 발생 · 대체 매장 탐색 중...</div></div>`;
+  try {
+    const candidates = await fetchNearbyReplacementCandidates(id);
+    renderReplacementCandidates(item, candidates, recoWrapId);
+  } catch (e) {
+    console.error('[Deploy] fetchNearbyReplacementCandidates 에러:', e);
+    const el = document.getElementById(recoWrapId);
+    if (el) el.innerHTML = `<div class="pd-reco-wrap"><div class="pd-reco-title">대체 매장을 찾을 수 없습니다.</div></div>`;
+  }
+}
+
+function renderReplacementCandidates(canceledItem, candidates, recoWrapId) {
+  const el = document.getElementById(recoWrapId);
   if (!el) return;
-  const filtered = deployScheduleFilter === '전체' ? deploySchedules : deploySchedules.filter(s => s.status === deployScheduleFilter);
-  if (!filtered.length) { el.innerHTML = `<div class="empty-state"><p>해당 상태의 일정이 없습니다.</p></div>`; return; }
-  const sorted = [...filtered].sort((a, b) => a.installDate - b.installDate);
-  el.innerHTML = `<table class="pd-table"><thead><tr><th>센터명</th><th>매장명</th><th>설치 예정일</th><th>상태</th></tr></thead><tbody>${
-    sorted.map(s => `<tr>
-      <td>${s.center}</td>
-      <td>${s.storeName}</td>
-      <td>${formatDeployDay(s.installDate)}</td>
-      <td><span class="metric-badge ${SCHEDULE_STATUS_BADGE[s.status] || 'badge-muted'}" style="margin-top:0;">${s.status}</span></td>
-    </tr>`).join('')
-  }</tbody></table>`;
+  if (!candidates.length) {
+    el.innerHTML = `<div class="pd-reco-wrap"><div class="pd-reco-title">⏳ ${canceledItem.owner} 담당자 일정에 빈 시간 발생</div><div class="empty-state"><p>인근에 설치 가능한 대체 매장이 없습니다.</p></div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="pd-reco-wrap">
+    <div class="pd-reco-title">⏳ ${canceledItem.owner} 담당자 일정에 빈 시간 발생 · 대체 매장 추천 ${candidates.length}건</div>
+    ${candidates.map(c => `
+      <div class="pd-reco-card">
+        <div class="pd-reco-store">${c.storeName} <span style="color:var(--text3);font-weight:500;font-size:10.5px;">(${c.region})</span></div>
+        <div class="pd-reco-reason">${c.reasons.map(r => `· ${r}`).join('<br>')}</div>
+        <button class="pd-reco-assign-btn" onclick="assignReplacement('${canceledItem.id}','${c.id}','${recoWrapId}')">이 매장으로 대체</button>
+      </div>`).join('')}
+  </div>`;
+}
+
+function assignReplacement(canceledId, candidateId, recoWrapId) {
+  const canceled = deploySchedules.find(s => s.id === canceledId);
+  const candidate = deploySchedules.find(s => s.id === candidateId);
+  if (!canceled || !candidate) return;
+  candidate.status = '예정';
+  candidate.installDate = canceled.installDate;
+  candidate.installTime = canceled.installTime;
+  candidate.owner = canceled.owner;
+  if (pdScheduleSubtab === 'calendar') { renderPdCalendar(); } else { renderPdDistSvg(); renderPdDistRegionCards(); renderPdDistDetail(); }
+  const el = document.getElementById(recoWrapId);
+  if (el) el.innerHTML = `<div class="pd-reco-wrap"><div class="pd-reco-title" style="color:var(--green);">✅ ${candidate.storeName} 매장으로 대체 배정 완료</div></div>`;
+}
+
+// ── 캘린더 서브뷰 ──
+function pdCalShiftMonth(delta) {
+  pdCalMonth += delta;
+  if (pdCalMonth < 0) { pdCalMonth = 11; pdCalYear--; }
+  if (pdCalMonth > 11) { pdCalMonth = 0; pdCalYear++; }
+  pdCalSelectedDate = null;
+  renderPdCalendar();
+}
+
+function pdCalSelectDate(key) {
+  pdCalSelectedDate = key;
+  renderPdCalendar();
+}
+
+function renderPdCalendar() {
+  const monthLabelEl = document.getElementById('pdCalMonthLabel');
+  if (monthLabelEl) monthLabelEl.textContent = `${pdCalYear}년 ${pdCalMonth + 1}월`;
+  const dowRow = document.getElementById('pdCalDowRow');
+  if (dowRow && !dowRow.childElementCount) {
+    dowRow.innerHTML = ['일', '월', '화', '수', '목', '금', '토'].map(d => `<div class="pd-cal-dow">${d}</div>`).join('');
+  }
+  const byDate = {};
+  deploySchedules.forEach(s => { (byDate[pdDateKey(s.installDate)] = byDate[pdDateKey(s.installDate)] || []).push(s); });
+  const first = new Date(pdCalYear, pdCalMonth, 1);
+  const gridStart = new Date(pdCalYear, pdCalMonth, 1 - first.getDay());
+  const todayKey = pdDateKey(new Date());
+  const cells = [];
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
+    const key = pdDateKey(d);
+    const items = byDate[key] || [];
+    const isOutside = d.getMonth() !== pdCalMonth;
+    const shown = items.slice(0, 2);
+    const extra = items.length - shown.length;
+    cells.push(`<div class="pd-cal-cell${isOutside ? ' is-outside' : ''}${key === todayKey ? ' is-today' : ''}${key === pdCalSelectedDate ? ' is-selected' : ''}" onclick="pdCalSelectDate('${key}')">
+      <div class="pd-cal-daynum">${d.getDate()}</div>
+      ${shown.map(s => `<div class="pd-cal-badge" style="background:${SCHEDULE_STATUS_COLOR[s.status] || 'var(--text3)'}">${s.storeName}</div>`).join('')}
+      ${extra > 0 ? `<div class="pd-cal-more">+${extra}건</div>` : ''}
+    </div>`);
+  }
+  document.getElementById('pdCalGrid').innerHTML = cells.join('');
+  renderPdCalDetail();
+}
+
+function renderPdCalDetail() {
+  const el = document.getElementById('pdCalDetail');
+  if (!el) return;
+  if (!pdCalSelectedDate) { el.innerHTML = `<div class="empty-state"><p>날짜를 선택하면<br>상세 일정을 볼 수 있어요.</p></div>`; return; }
+  const items = deploySchedules.filter(s => pdDateKey(s.installDate) === pdCalSelectedDate);
+  const [y, m, d] = pdCalSelectedDate.split('-');
+  let html = `<div class="pd-cal-detail-date">${y}년 ${Number(m)}월 ${Number(d)}일</div>`;
+  html += items.length ? items.map(s => renderScheduleDetailItem(s, 'pdCalRecoWrap')).join('') : `<div class="empty-state"><p>예정된 일정이 없습니다.</p></div>`;
+  html += `<div id="pdCalRecoWrap"></div>`;
+  el.innerHTML = html;
+}
+
+// ── 매장분포 서브뷰 ──
+function renderPdDistribution() {
+  renderPdDistSvg();
+  renderPdDistRegionCards();
+  renderPdDistDetail();
+}
+
+function renderPdDistSvg() {
+  const el = document.getElementById('pdDistSvg');
+  if (!el) return;
+  el.innerHTML = deploySchedules.map(s => {
+    const color = SCHEDULE_STATUS_COLOR[s.status] || 'var(--text3)';
+    const sel = s.id === pdDistSelectedStoreId;
+    return `<g onclick="pdDistSelectStore('${s.id}')" style="cursor:pointer;">
+      <circle cx="${s.x}" cy="${s.y}" r="${sel ? 9 : 6}" fill="${color}" stroke="${sel ? 'var(--accent)' : '#fff'}" stroke-width="${sel ? 2.5 : 1.5}" />
+      <text x="${s.x}" y="${s.y - 10}" font-size="8" text-anchor="middle" fill="var(--text2)">${s.storeName}</text>
+    </g>`;
+  }).join('');
+}
+
+function pdDistSelectStore(id) {
+  pdDistSelectedStoreId = id;
+  renderPdDistSvg();
+  renderPdDistDetail();
+}
+
+function renderPdDistRegionCards() {
+  const el = document.getElementById('pdDistRegions');
+  if (!el) return;
+  const regions = {};
+  deploySchedules.forEach(s => { (regions[s.region] = regions[s.region] || []).push(s); });
+  el.innerHTML = Object.keys(regions).map(r => {
+    const items = regions[r];
+    const statusCounts = {};
+    items.forEach(s => { statusCounts[s.status] = (statusCounts[s.status] || 0) + 1; });
+    return `<div class="pd-region-card">
+      <div class="pd-region-name">${r}</div>
+      <div class="pd-region-count">매장 ${items.length}개</div>
+      <div class="pd-region-breakdown">${Object.keys(statusCounts).map(st =>
+        `<span class="metric-badge ${SCHEDULE_STATUS_BADGE[st] || 'badge-muted'}" style="margin-top:0;">${st} ${statusCounts[st]}</span>`
+      ).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPdDistDetail() {
+  const el = document.getElementById('pdDistDetail');
+  if (!el) return;
+  if (!pdDistSelectedStoreId) { el.innerHTML = `<div class="empty-state"><p>지도에서 매장을 선택하면 상세정보를 볼 수 있어요.</p></div>`; return; }
+  const s = deploySchedules.find(x => x.id === pdDistSelectedStoreId);
+  if (!s) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="pd-cal-detail-date">${s.storeName} <span style="color:var(--text3);font-weight:500;font-size:11px;">(${s.region})</span></div>` +
+    renderScheduleDetailItem(s, 'pdDistRecoWrap') +
+    `<div id="pdDistRecoWrap"></div>`;
 }
 
 // ═══════════════════════════════════════════════════════════════
