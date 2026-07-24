@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>팀 대시보드</title>
+<style>
+  :root{
+    --bg:#EEF2F9;
+    --panel:#D6E2F5;
+    --panel-pt:#6A80A8;
+    --card:#C8D8EE;
+    --navy-dark:#0B1E3E;
+    --navy:#1A3A6E;
+    --navy-light:#2A5298;
+    --muted:#6A80A8;
+    --white:#ffffff;
+    --danger:#E85D5D;
+    --danger-light:#ff8080;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    background:var(--bg);
+    color:var(--navy-dark);
+  }
+  header{
+    height:58px;background:#fff;display:flex;align-items:center;
+    padding:0 20px;gap:12px;box-shadow:0 1px 0 #E2E8F5;
+  }
+  header .brand{font-weight:800;font-size:16px;color:var(--navy);}
+  header .date{margin-left:auto;font-size:12px;color:var(--muted);}
+
+  main{max-width:1280px;margin:0 auto;padding:20px 16px 40px;}
+
+  .panel{
+    background:var(--panel);
+    border-radius:14px;
+    box-shadow:0 4px 16px rgba(11,30,62,0.18), 0 1px 4px rgba(11,30,62,0.10);
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+  .panel-title{
+    font-size:11px;font-weight:700;color:var(--panel-pt);
+    letter-spacing:.06em;text-transform:uppercase;
+    padding:12px 14px 6px;
+  }
+
+  .kpi-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+    padding:0 14px 14px;
+  }
+  .kpi-card{
+    background:linear-gradient(135deg, var(--navy), var(--navy-light));
+    border-radius:10px;padding:16px 14px;box-shadow:0 2px 8px rgba(11,30,62,.15);
+  }
+  .kpi-label{
+    font-size:10px;font-weight:600;color:#94A8C8;margin-bottom:8px;
+    text-transform:uppercase;letter-spacing:.05em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .kpi-value{font-size:34px;font-weight:800;color:#fff;line-height:1;letter-spacing:-.5px;}
+  .kpi-value.alert{color:var(--danger-light);}
+  .kpi-sub{font-size:9px;color:#94A8C8;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .project-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+    padding:4px 14px 14px;
+  }
+  @media (max-width: 1000px){ .project-grid{grid-template-columns:repeat(2,1fr);} .kpi-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width: 560px){ .project-grid{grid-template-columns:1fr;} .kpi-grid{grid-template-columns:1fr;} }
+
+  .project-card{
+    background:var(--card);border:1px solid rgba(255,255,255,0.5);
+    border-radius:14px;box-shadow:0 6px 20px rgba(11,30,62,0.20), 0 2px 6px rgba(11,30,62,0.12);
+    overflow:hidden;display:flex;flex-direction:column;
+  }
+  .project-card .bar{height:4px;flex-shrink:0;}
+  .project-card .body{padding:9px 11px;display:flex;flex-direction:column;gap:6px;}
+  .project-card .head{display:flex;align-items:center;gap:5px;}
+  .project-card .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .project-card .name{
+    font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;flex:1;min-width:0;
+  }
+  .project-card .badge{
+    font-size:9px;font-weight:700;color:#fff;
+    background:linear-gradient(135deg, var(--navy), var(--navy-light));
+    padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;
+  }
+  .project-card .progress-row{display:flex;align-items:center;gap:6px;}
+  .project-card .progress-track{flex:1;height:7px;background:#FFFFFF;border-radius:4px;overflow:hidden;}
+  .project-card .progress-fill{height:100%;background:linear-gradient(90deg, var(--navy), var(--navy-light));border-radius:4px;}
+  .project-card .progress-pct{font-size:11px;font-weight:800;flex-shrink:0;}
+  .project-card .count{font-size:9px;color:var(--muted);margin-top:3px;}
+  .project-card .meta{
+    display:flex;flex-direction:column;gap:2px;font-size:9px;color:var(--muted);
+    border-top:1px solid rgba(11,30,62,0.12);padding-top:5px;
+  }
+  .project-card .meta-row{display:flex;justify-content:space-between;}
+  .project-card .meta b{color:var(--navy-dark);}
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">팀 대시보드</span>
+  <span class="date" id="todayLabel"></span>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="panel-title">KPI 현황</div>
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">프로젝트 마감 일정</div>
+    <div class="project-grid" id="projectGrid"></div>
+  </div>
+</main>
+
+<script>
+// 더미 데이터 — 실제 데이터 연동 시 이 배열만 교체하면 됩니다.
+const PROJECTS = [
+  { name: '코코호도', color: '#6C5CE7', total: 120, done: 96, end: addDays(5) },
+  { name: '더반', color: '#4A90E2', total: 80, done: 80, end: addDays(-2) },
+  { name: '설치·세팅', color: '#2ECC71', total: 200, done: 140, end: addDays(12) },
+  { name: '신규 프로젝트 A', color: '#F5A623', total: 60, done: 18, end: addDays(20) },
+];
+
+function addDays(n){ const d = new Date(); d.setDate(d.getDate() + n); return d; }
+
+function pct(p){ return p.total > 0 ? Math.round((p.done / p.total) * 100) : 0; }
+
+function buildKPIs(){
+  const totalDone = PROJECTS.reduce((s,p) => s + p.done, 0);
+  const totalAll = PROJECTS.reduce((s,p) => s + p.total, 0);
+  const overallPct = totalAll > 0 ? Math.round((totalDone / totalAll) * 100) : 0;
+  const atRisk = PROJECTS.filter(p => pct(p) < 100 && daysLeft(p.end) <= 3).length;
+  const doneCount = PROJECTS.filter(p => pct(p) === 100).length;
+
+  const kpis = [
+    { label: '전체 진척률', value: `${overallPct}%`, sub: `${totalDone.toLocaleString()} / ${totalAll.toLocaleString()} 완료` },
+    { label: '진행중 프로젝트', value: `${PROJECTS.length - doneCount}`, sub: '건' },
+    { label: '마감 위험', value: `${atRisk}`, sub: atRisk > 0 ? '즉시 조치' : '이상 없음', alert: atRisk > 0 },
+    { label: '완료 프로젝트', value: `${doneCount}/${PROJECTS.length}`, sub: '프로젝트' },
+  ];
+
+  document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
+    <div class="kpi-card">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value${k.alert ? ' alert' : ''}">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join('');
+}
+
+function daysLeft(end){ return Math.ceil((end - new Date()) / 86400000); }
+
+function buildProjectCard(p){
+  const pp = pct(p);
+  const isDone = pp === 100;
+  const dl = daysLeft(p.end);
+  const dlStr = dl < 0 ? `D+${Math.abs(dl)}` : (dl === 0 ? 'D-Day' : `D-${dl}`);
+  const badgeText = isDone ? '완료' : dlStr;
+  const deadlineStr = `${p.end.getMonth() + 1}월 ${p.end.getDate()}일`;
+  const overdue = !isDone && dl < 0;
+  const workingDaysHtml = overdue
+    ? `<b style="color:var(--danger);">마감 초과</b>`
+    : `<b>${Math.max(dl, 0)}일 남음</b>`;
+
+  return `
+    <div class="project-card">
+      <div class="bar" style="background:${p.color};"></div>
+      <div class="body">
+        <div class="head">
+          <span class="dot" style="background:${p.color};"></span>
+          <span class="name" style="color:${p.color};">${p.name}</span>
+          <span class="badge">${badgeText}</span>
+        </div>
+        <div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" style="width:${pp}%;"></div></div>
+            <span class="progress-pct" style="color:${p.color};">${pp}%</span>
+          </div>
+          <div class="count">완료 ${p.done.toLocaleString()}개 / 전체 ${p.total.toLocaleString()}개</div>
+        </div>
+        <div class="meta">
+          <div class="meta-row">
+            <span>마감 <b>${deadlineStr}</b></span>
+            <span>남은 기간 ${workingDaysHtml}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildProjectGrid(){
+  const sorted = [...PROJECTS].sort((a, b) => pct(b) - pct(a));
+  document.getElementById('projectGrid').innerHTML = sorted.map(buildProjectCard).join('');
+}
+
+document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
+buildKPIs();
+buildProjectGrid();
+</script>
+</body>
+</html>
